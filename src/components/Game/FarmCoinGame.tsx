@@ -1,10 +1,12 @@
 // @ts-nocheck
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Coins, TrendingUp, ShoppingCart, Search, Lock, Package } from 'lucide-react';
+import { Coins, TrendingUp, ShoppingCart, Search, Lock, Package, Shield, AlertTriangle } from 'lucide-react';
 import { upgrades as upgradesData, categories } from '../../data/upgrades';
 import { GameState, Upgrade, UpgradeTier } from '../../types';
 import { saveGameState, createMarketplaceListing } from '../../firebase/firestore';
 import { getTierColor, getTierName, getTierGlow, canUnlockCompositeUpgrade, getMissingRequirements } from '../../utils/tierSystem';
+import { antiBot } from '../../utils/antiBot';
+import { uniqueItems, UniqueItem } from '../../utils/uniqueItems';
 import Marketplace from './Marketplace';
 import Ranking from './Ranking';
 
@@ -45,6 +47,9 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
   const [bulkSellPrice, setBulkSellPrice] = useState<'floor' | 'custom'>('floor');
   const [customPrice, setCustomPrice] = useState(0);
   const [showAllIncomeItems, setShowAllIncomeItems] = useState(false);
+  const [botWarning, setBotWarning] = useState<string>('');
+  const [uniqueItemsOwned, setUniqueItemsOwned] = useState<UniqueItem[]>([]);
+  const [showUniqueItemNotification, setShowUniqueItemNotification] = useState<UniqueItem | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const coinIdRef = useRef(0);
 
@@ -140,8 +145,24 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
     }
   };
 
-  // Click manual com efeitos visuais
+  // Click manual com efeitos visuais e proteção anti-bot
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // 🛡️ PROTEÇÃO ANTI-BOT
+    const validation = antiBot.validateClick(uid);
+    
+    if (!validation.allowed) {
+      // Bloquear click
+      setBotWarning(validation.reason || 'Click bloqueado');
+      setTimeout(() => setBotWarning(''), 5000);
+      return;
+    }
+
+    // Mostrar aviso se houver
+    if (validation.warning) {
+      setBotWarning(validation.warning);
+      setTimeout(() => setBotWarning(''), 3000);
+    }
+
     // Efeito de click no botão
     setClickEffect(true);
     setTimeout(() => setClickEffect(false), 150);
@@ -200,6 +221,27 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
       const newIncome = upgrade.baseIncome * Math.pow(upgrade.incomeMultiplier, newCount);
 
       let updatedUpgrades: Upgrade[] = [];
+
+      // 🎁 TENTAR GERAR ITEM ÚNICO (apenas para upgrades de produção em cadeia)
+      if (upgrade.isComposite) {
+        const uniqueItem = uniqueItems.generateUniqueItem(
+          uid,
+          upgrade.id,
+          upgrade.name,
+          upgrade.baseCost
+        );
+
+        if (uniqueItem) {
+          // Mostrar notificação de item único gerado!
+          setShowUniqueItemNotification(uniqueItem);
+          setTimeout(() => setShowUniqueItemNotification(null), 10000);
+
+          // Atualizar lista de itens únicos
+          setUniqueItemsOwned(prev => [...prev, uniqueItem]);
+          
+          console.log(`🎉 ITEM ÚNICO GERADO! ${uniqueItem.name} #${uniqueItem.serialNumber}`);
+        }
+      }
 
       // Atualizar upgrades e recalcular desbloqueios
       setUpgrades(prev => {
@@ -486,6 +528,41 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-yellow-50 to-green-100 p-mobile sm:p-4 pb-safe">
+      {/* 🎁 Notificação de Item Único */}
+      {showUniqueItemNotification && (
+        <div className="fixed top-20 right-4 z-50 animate-bounce">
+          <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 text-white p-6 rounded-2xl shadow-2xl border-4 border-yellow-300 max-w-sm">
+            <div className="flex items-start gap-4">
+              <div className="text-6xl">{showUniqueItemNotification.icon}</div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl font-bold">🎉 ITEM ÚNICO!</span>
+                </div>
+                <h3 className="text-xl font-bold mb-1">{showUniqueItemNotification.name}</h3>
+                <p className="text-sm opacity-90 mb-2">{showUniqueItemNotification.description}</p>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="bg-white/20 px-2 py-1 rounded-full">
+                    #{showUniqueItemNotification.serialNumber}
+                  </span>
+                  <span className="bg-white/20 px-2 py-1 rounded-full">
+                    Raridade: {showUniqueItemNotification.rarity.toFixed(1)}
+                  </span>
+                  <span className="bg-white/20 px-2 py-1 rounded-full">
+                    Bônus: +{((showUniqueItemNotification.bonusMultiplier - 1) * 100).toFixed(0)}%
+                  </span>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowUniqueItemNotification(null)}
+              className="absolute top-2 right-2 text-white/80 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header Stats */}
       <div className="max-w-7xl mx-auto mb-mobile">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-mobile">
@@ -653,6 +730,24 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
             <p className="text-center mt-6 text-gray-600 text-base font-medium">
               Clique para ganhar <span className="font-bold text-yellow-600 text-lg">+0.1</span> moedas
             </p>
+
+            {/* 🛡️ Aviso Anti-Bot */}
+            {botWarning && (
+              <div className={`mt-4 p-3 rounded-lg text-center font-semibold text-sm ${
+                botWarning.includes('🤖') || botWarning.includes('🚫') 
+                  ? 'bg-red-100 text-red-700 border-2 border-red-300'
+                  : 'bg-yellow-100 text-yellow-700 border-2 border-yellow-300'
+              }`}>
+                <div className="flex items-center justify-center gap-2">
+                  {botWarning.includes('🤖') || botWarning.includes('🚫') ? (
+                    <Shield className="w-5 h-5" />
+                  ) : (
+                    <AlertTriangle className="w-5 h-5" />
+                  )}
+                  <span>{botWarning}</span>
+                </div>
+              </div>
+            )}
 
             {/* Botão de Inventário */}
             <button
