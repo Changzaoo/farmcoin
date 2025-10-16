@@ -66,30 +66,34 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
     }, 0);
   }, [upgrades]);
 
-  // Atualizar moedas passivamente e salvar
+  // Atualizar moedas passivamente em tempo real (100ms para aspecto fluido)
   useEffect(() => {
-    const interval = setInterval(async () => {
-      const perSecond = calculatePassiveIncome();
-      
-      setGameState(prev => {
-        const newState = {
+    const perSecond = calculatePassiveIncome();
+    
+    if (perSecond > 0) {
+      const interval = setInterval(() => {
+        setGameState(prev => ({
           ...prev,
-          coins: prev.coins + perSecond,
-          totalCoins: prev.totalCoins + perSecond,
+          coins: prev.coins + (perSecond / 10), // Divide por 10 pois atualiza 10x por segundo
+          totalCoins: prev.totalCoins + (perSecond / 10),
           perSecond
-        };
-        
-        // Salvar automaticamente a cada ganho passivo
-        if (perSecond > 0) {
-          saveGame(newState);
-        }
-        
-        return newState;
-      });
-    }, 1000);
+        }));
+      }, 100); // Atualiza a cada 100ms (10x por segundo) para efeito fluido
 
-    return () => clearInterval(interval);
+      return () => clearInterval(interval);
+    }
   }, [calculatePassiveIncome]);
+
+  // Salvar no banco de dados periodicamente (a cada 3 segundos)
+  useEffect(() => {
+    const saveInterval = setInterval(() => {
+      if (calculatePassiveIncome() > 0) {
+        saveGame(gameState);
+      }
+    }, 3000); // Salva a cada 3 segundos
+
+    return () => clearInterval(saveInterval);
+  }, [gameState, calculatePassiveIncome]);
 
   // Salvar jogo (pode receber estado opcional)
   const saveGame = async (stateToSave?: GameState) => {
@@ -215,6 +219,23 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
   const inventoryItems = upgrades
     .filter(u => (u.count || 0) > 0)
     .sort((a, b) => (b.count || 0) - (a.count || 0));
+
+  // Calcular quantidade de itens por categoria
+  const getCategoryCount = (category: string) => {
+    if (category === 'Todos') {
+      return upgrades.filter(u => {
+        const canAfford = gameState.coins >= (u.cost || 0);
+        const isUnlocked = !u.isComposite || u.unlocked;
+        return canAfford && isUnlocked;
+      }).length;
+    }
+    return upgrades.filter(u => {
+      const matchesCategory = u.category === category;
+      const canAfford = gameState.coins >= (u.cost || 0);
+      const isUnlocked = !u.isComposite || u.unlocked;
+      return matchesCategory && canAfford && isUnlocked;
+    }).length;
+  };
 
   // Formatar número
   const formatNumber = (num: number): string => {
@@ -445,19 +466,31 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
 
                   {/* Categorias */}
                   <div className="flex flex-wrap gap-2">
-                    {categories.map(category => (
-                      <button
-                        key={category}
-                        onClick={() => setSelectedCategory(category)}
-                        className={`px-4 py-2 rounded-xl font-medium transition-all ${
-                          selectedCategory === category
-                            ? 'bg-green-500 text-white shadow-lg'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                      >
-                        {category}
-                      </button>
-                    ))}
+                    {categories.map(category => {
+                      const availableCount = getCategoryCount(category);
+                      return (
+                        <button
+                          key={category}
+                          onClick={() => setSelectedCategory(category)}
+                          className={`px-4 py-2 rounded-xl font-medium transition-all flex items-center gap-2 ${
+                            selectedCategory === category
+                              ? 'bg-green-500 text-white shadow-lg'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          <span>{category}</span>
+                          {availableCount > 0 && (
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                              selectedCategory === category
+                                ? 'bg-white/30 text-white'
+                                : 'bg-green-500 text-white'
+                            }`}>
+                              {availableCount}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
               </div>
             </div>
 
