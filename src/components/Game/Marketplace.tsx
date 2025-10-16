@@ -261,25 +261,25 @@ export default function Marketplace({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Tabs */}
-      <div className="flex gap-2">
+      <div className="flex gap-3 flex-wrap">
         <button
           onClick={() => setActiveTab('browse')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+          className={`px-6 py-3 rounded-2xl font-black text-sm transition-all duration-200 shadow-lg ${
             activeTab === 'browse'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              ? 'bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 text-white scale-110 shadow-[0_0_20px_rgba(59,130,246,0.5)]'
+              : 'glass-vibrant text-white/90 hover:scale-105 dopamine-hover border border-white/30'
           }`}
         >
           🛒 Navegar
         </button>
         <button
           onClick={() => setActiveTab('myListings')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+          className={`px-6 py-3 rounded-2xl font-black text-sm transition-all duration-200 shadow-lg ${
             activeTab === 'myListings'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              ? 'bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 text-white scale-110 shadow-[0_0_20px_rgba(168,85,247,0.5)]'
+              : 'glass-vibrant text-white/90 hover:scale-105 dopamine-hover border border-white/30'
           }`}
         >
           📦 Minhas Vendas
@@ -287,7 +287,7 @@ export default function Marketplace({
         {activeTab === 'myListings' && (
           <button
             onClick={() => setShowCreateModal(true)}
-            className="ml-auto px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-all"
+            className="ml-auto px-6 py-3 bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] text-white rounded-2xl font-black text-sm transition-all shadow-lg dopamine-hover animate-pulse"
           >
             ➕ Nova Listagem
           </button>
@@ -296,10 +296,10 @@ export default function Marketplace({
 
       {/* Painel de Filtros */}
       {activeTab === 'browse' && (
-        <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-lg p-4 space-y-4 border-2 border-blue-200 shadow-lg">
+        <div className="glass-vibrant rounded-2xl p-6 space-y-5 border-2 border-white/30 shadow-xl">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-              🔍 Filtros Avançados
+            <h3 className="text-2xl font-black text-white drop-shadow-lg flex items-center gap-3">
+              <span className="text-3xl">🔍</span> Filtros Avançados
             </h3>
             <button
               onClick={() => {
@@ -310,44 +310,44 @@ export default function Marketplace({
                 setFilterMinEfficiency(0);
                 setSortBy('price');
               }}
-              className="text-sm px-3 py-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all shadow-md hover:shadow-lg"
+              className="text-sm px-5 py-2.5 bg-gradient-to-r from-red-400 via-pink-400 to-red-400 hover:shadow-[0_0_20px_rgba(239,68,68,0.5)] text-white rounded-xl transition-all shadow-lg dopamine-hover font-black"
             >
               🔄 Limpar Filtros
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Filtro de Raridade */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-black text-white/90 mb-2 drop-shadow">
                 ⭐ Raridade:
               </label>
               <select
                 value={filterTier}
                 onChange={(e) => setFilterTier(e.target.value as UpgradeTier | 'all')}
-                className="w-full px-3 py-2 bg-white text-gray-800 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none shadow-sm hover:border-blue-400 transition-colors"
+                className="w-full px-4 py-3 glass-vibrant backdrop-blur-md text-white font-bold border-2 border-white/30 rounded-xl focus:ring-4 focus:ring-blue-400/50 focus:border-blue-300 outline-none shadow-lg hover:border-blue-300 transition-all cursor-pointer"
               >
-                <option value="all">Todas</option>
-                <option value={UpgradeTier.COMUM}>⚪ Comum</option>
-                <option value={UpgradeTier.INCOMUM}>🟢 Incomum</option>
-                <option value={UpgradeTier.RARO}>🔵 Raro</option>
-                <option value={UpgradeTier.EPICO}>🟣 Épico</option>
-                <option value={UpgradeTier.LENDARIO}>🟠 Lendário</option>
-                <option value={UpgradeTier.MITICO}>🔴 Mítico</option>
+                <option value="all" className="bg-gray-800">Todas</option>
+                <option value={UpgradeTier.COMUM} className="bg-gray-800">⚪ Comum</option>
+                <option value={UpgradeTier.INCOMUM} className="bg-gray-800">🟢 Incomum</option>
+                <option value={UpgradeTier.RARO} className="bg-gray-800">🔵 Raro</option>
+                <option value={UpgradeTier.EPICO} className="bg-gray-800">🟣 Épico</option>
+                <option value={UpgradeTier.LENDARIO} className="bg-gray-800">🟠 Lendário</option>
+                <option value={UpgradeTier.MITICO} className="bg-gray-800">🔴 Mítico</option>
               </select>
             </div>
 
             {/* Filtro de Categoria */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-black text-white/90 mb-2 drop-shadow">
                 📁 Categoria:
               </label>
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className="w-full px-3 py-2 bg-white text-gray-800 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none shadow-sm hover:border-blue-400 transition-colors"
+                className="w-full px-4 py-3 glass-vibrant backdrop-blur-md text-white font-bold border-2 border-white/30 rounded-xl focus:ring-4 focus:ring-blue-400/50 focus:border-blue-300 outline-none shadow-lg hover:border-blue-300 transition-all cursor-pointer"
               >
-                <option value="all">Todas</option>
+                <option value="all" className="bg-gray-800">Todas</option>
                 <option value="plantacoes">🌾 Plantações</option>
                 <option value="animais">🐄 Animais</option>
                 <option value="producao">🏭 Produção</option>
@@ -402,54 +402,54 @@ export default function Marketplace({
           </div>
 
           {/* Ordenação */}
-          <div className="flex items-center gap-3 pt-2 border-t border-blue-200">
-            <label className="text-sm font-semibold text-gray-700">
+          <div className="flex items-center gap-4 pt-4 border-t-2 border-white/20">
+            <label className="text-sm font-black text-white/90 drop-shadow">
               🔀 Ordenar por:
             </label>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-3 flex-wrap">
               <button
                 onClick={() => setSortBy('price')}
-                className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all shadow-sm ${
+                className={`px-4 py-2 rounded-xl text-sm font-black transition-all shadow-lg ${
                   sortBy === 'price'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
-                    : 'bg-white text-gray-700 border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-400'
+                    ? 'bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 text-white shadow-[0_0_20px_rgba(59,130,246,0.5)] scale-105'
+                    : 'glass-vibrant text-white/80 border border-white/30 hover:scale-105 dopamine-hover'
                 }`}
               >
                 💰 Preço
               </button>
               <button
                 onClick={() => setSortBy('efficiency')}
-                className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all shadow-sm ${
+                className={`px-4 py-2 rounded-xl text-sm font-black transition-all shadow-lg ${
                   sortBy === 'efficiency'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
-                    : 'bg-white text-gray-700 border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-400'
+                    ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] scale-105'
+                    : 'glass-vibrant text-white/80 border border-white/30 hover:scale-105 dopamine-hover'
                 }`}
               >
                 📊 Eficiência
               </button>
               <button
                 onClick={() => setSortBy('tier')}
-                className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all shadow-sm ${
+                className={`px-4 py-2 rounded-xl text-sm font-black transition-all shadow-lg ${
                   sortBy === 'tier'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
-                    : 'bg-white text-gray-700 border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-400'
+                    ? 'bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 text-white shadow-[0_0_20px_rgba(168,85,247,0.5)] scale-105'
+                    : 'glass-vibrant text-white/80 border border-white/30 hover:scale-105 dopamine-hover'
                 }`}
               >
                 ⭐ Raridade
               </button>
               <button
                 onClick={() => setSortBy('name')}
-                className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all shadow-sm ${
+                className={`px-4 py-2 rounded-xl text-sm font-black transition-all shadow-lg ${
                   sortBy === 'name'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
-                    : 'bg-white text-gray-700 border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-400'
+                    ? 'bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 text-white shadow-[0_0_20px_rgba(251,191,36,0.5)] scale-105'
+                    : 'glass-vibrant text-white/80 border border-white/30 hover:scale-105 dopamine-hover'
                 }`}
               >
                 🔤 Nome
               </button>
             </div>
-            <div className="ml-auto text-sm text-gray-400">
-              {listings.length} {listings.length === 1 ? 'item encontrado' : 'itens encontrados'}
+            <div className="ml-auto text-sm font-black bg-gradient-to-r from-blue-200 via-cyan-200 to-purple-200 bg-clip-text text-transparent drop-shadow-lg">
+              ✨ {listings.length} {listings.length === 1 ? 'item encontrado' : 'itens encontrados'}
             </div>
           </div>
         </div>
@@ -457,65 +457,75 @@ export default function Marketplace({
 
       {/* Listings Grid */}
       {loading ? (
-        <div className="text-center py-12 text-gray-400">Carregando...</div>
+        <div className="text-center py-16 glass-vibrant rounded-3xl">
+          <div className="text-8xl mb-4 animate-spin">⏳</div>
+          <p className="text-2xl font-black text-white drop-shadow-lg">Carregando...</p>
+        </div>
       ) : listings.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">
-          {activeTab === 'browse' ? 'Nenhum item disponível no momento' : 'Você não tem listagens ativas'}
+        <div className="text-center py-16 glass-vibrant rounded-3xl">
+          <div className="text-8xl mb-4 animate-bounce">📦</div>
+          <p className="text-2xl font-black text-white drop-shadow-lg">
+            {activeTab === 'browse' ? 'Nenhum item disponível no momento' : 'Você não tem listagens ativas'}
+          </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {listings.map((listing) => (
             <div
               key={listing.id}
-              className={`bg-gray-800 rounded-xl p-4 border-2 ${getTierGlow(listing.upgradeTier || UpgradeTier.COMUM)}`}
+              className={`glass-vibrant rounded-2xl p-5 border-2 border-white/30 shadow-xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 dopamine-hover ${getTierGlow(listing.upgradeTier || UpgradeTier.COMUM)}`}
             >
               {/* Header */}
-              <div className="flex items-start gap-3 mb-3">
-                <span className="text-4xl">{listing.upgradeIcon}</span>
+              <div className="flex items-start gap-4 mb-4">
+                <span className="text-6xl animate-float drop-shadow-2xl">{listing.upgradeIcon}</span>
                 <div className="flex-1">
-                  <h3 className="font-bold text-white">{listing.upgradeName}</h3>
+                  <h3 className="font-black text-xl text-white drop-shadow-lg mb-2">{listing.upgradeName}</h3>
                   <span
-                    className={`text-xs px-2 py-1 rounded ${getTierColor(listing.upgradeTier || UpgradeTier.COMUM)}`}
+                    className={`text-xs px-3 py-1.5 rounded-full font-black shadow-lg animate-pulse ${getTierColor(listing.upgradeTier || UpgradeTier.COMUM)}`}
                   >
-                    {getTierName(listing.upgradeTier || UpgradeTier.COMUM)}
+                    ✨ {getTierName(listing.upgradeTier || UpgradeTier.COMUM)}
                   </span>
                 </div>
               </div>
 
               {/* Seller */}
-              <div className="text-sm text-gray-400 mb-2">
-                Vendedor: <span className="text-white">{listing.sellerUsername}</span>
+              <div className="text-sm text-white/80 font-semibold mb-3 glass-vibrant p-2 rounded-lg border border-white/20">
+                👤 Vendedor: <span className="text-white font-black">{listing.sellerUsername}</span>
               </div>
 
               {/* Quantity & Stats */}
-              <div className="bg-gray-900 rounded-lg p-3 mb-3 space-y-1 text-sm">
+              <div className="glass-vibrant rounded-xl p-4 mb-4 space-y-2 text-sm border border-white/20 shadow-lg">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Quantidade:</span>
-                  <span className="text-white font-bold">{listing.quantity}x</span>
+                  <span className="text-white/80 font-semibold">Quantidade:</span>
+                  <span className="text-white font-black text-lg">{listing.quantity}x</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Preço/Unidade:</span>
-                  <span className="text-yellow-400 font-bold">{formatNumber(listing.pricePerUnit)} 🪙</span>
+                  <span className="text-white/80 font-semibold">Preço/Unidade:</span>
+                  <span className="font-black text-lg bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg">{formatNumber(listing.pricePerUnit)} 🪙</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Renda/Unidade:</span>
-                  <span className="text-green-400 font-bold">{formatNumber(listing.incomePerUnit)}/s</span>
+                <div className="flex justify-between border-t border-white/20 pt-2">
+                  <span className="text-white/80 font-semibold">Renda/Unidade:</span>
+                  <span className="font-black bg-gradient-to-r from-green-200 via-emerald-200 to-teal-200 bg-clip-text text-transparent drop-shadow-lg">{formatNumber(listing.incomePerUnit)}/s</span>
                 </div>
-                <div className="flex justify-between text-base border-t border-gray-700 pt-2 mt-2">
-                  <span className="text-gray-300 font-semibold">Total:</span>
-                  <span className="text-yellow-400 font-bold">{formatNumber(listing.totalPrice)} 🪙</span>
+                <div className="flex justify-between text-base border-t-2 border-white/30 pt-3 mt-2">
+                  <span className="text-white font-black">💎 Total:</span>
+                  <span className="font-black text-xl bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg animate-pulse">{formatNumber(listing.totalPrice)} 🪙</span>
                 </div>
               </div>
 
               {/* Actions */}
               {activeTab === 'browse' ? (
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <button
                     onClick={() => handlePurchase(listing)}
                     disabled={coins < listing.totalPrice}
-                    className="flex-1 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition-all"
+                    className={`flex-1 py-3 rounded-2xl font-black text-sm transition-all shadow-lg ${
+                      coins >= listing.totalPrice
+                        ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 text-white hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] hover:scale-105 active:scale-95 animate-pulse'
+                        : 'bg-gray-400/50 text-gray-300 cursor-not-allowed backdrop-blur-sm'
+                    }`}
                   >
-                    💰 Comprar
+                    💰 Comprar Agora!
                   </button>
                   {listing.acceptOffers && (
                     <button
@@ -523,18 +533,18 @@ export default function Marketplace({
                         setSelectedListing(listing);
                         setShowOfferModal(true);
                       }}
-                      className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all"
+                      className="flex-1 py-3 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] text-white rounded-2xl font-black text-sm transition-all shadow-lg dopamine-hover"
                     >
-                      📧 Oferecer
+                      📧 Fazer Oferta
                     </button>
                   )}
                 </div>
               ) : (
                 <button
                   onClick={() => handleCancelListing(listing.id!)}
-                  className="w-full py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all"
+                  className="w-full py-3 bg-gradient-to-r from-red-400 via-pink-400 to-red-400 hover:shadow-[0_0_20px_rgba(239,68,68,0.5)] text-white rounded-2xl font-black transition-all shadow-lg dopamine-hover"
                 >
-                  🚫 Cancelar
+                  🚫 Cancelar Venda
                 </button>
               )}
             </div>

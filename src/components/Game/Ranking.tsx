@@ -117,35 +117,35 @@ export default function Ranking({
   const tabInfo = getTabInfo();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Tabs */}
-      <div className="flex gap-2">
+      <div className="flex gap-3">
         <button
           onClick={() => setActiveTab('coins')}
-          className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all ${
+          className={`flex-1 px-6 py-3 rounded-2xl font-black text-sm transition-all duration-200 shadow-lg ${
             activeTab === 'coins'
-              ? 'bg-yellow-600 text-white'
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              ? 'bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 text-white scale-110 shadow-[0_0_20px_rgba(251,191,36,0.5)]'
+              : 'glass-vibrant text-white/90 hover:scale-105 dopamine-hover border border-white/30'
           }`}
         >
           💰 Moedas
         </button>
         <button
           onClick={() => setActiveTab('perSecond')}
-          className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all ${
+          className={`flex-1 px-6 py-3 rounded-2xl font-black text-sm transition-all duration-200 shadow-lg ${
             activeTab === 'perSecond'
-              ? 'bg-green-600 text-white'
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 text-white scale-110 shadow-[0_0_20px_rgba(16,185,129,0.5)]'
+              : 'glass-vibrant text-white/90 hover:scale-105 dopamine-hover border border-white/30'
           }`}
         >
           📈 Renda
         </button>
         <button
           onClick={() => setActiveTab('upgrades')}
-          className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all ${
+          className={`flex-1 px-6 py-3 rounded-2xl font-black text-sm transition-all duration-200 shadow-lg ${
             activeTab === 'upgrades'
-              ? 'bg-purple-600 text-white'
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              ? 'bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 text-white scale-110 shadow-[0_0_20px_rgba(168,85,247,0.5)]'
+              : 'glass-vibrant text-white/90 hover:scale-105 dopamine-hover border border-white/30'
           }`}
         >
           ⭐ Upgrades
@@ -154,17 +154,17 @@ export default function Ranking({
 
       {/* Sua Posição */}
       {currentUserRank && (
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-4 text-white">
+        <div className="glass-vibrant rounded-2xl p-6 text-white border-2 border-white/30 shadow-xl achievement-glow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm opacity-90">Sua Posição</p>
-              <p className="text-2xl font-bold">
+              <p className="text-sm text-white/80 font-semibold mb-1">✨ Sua Posição</p>
+              <p className="text-3xl font-black drop-shadow-lg">
                 {getMedalEmoji(currentUserRank)} {currentUsername}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm opacity-90">{tabInfo.label}</p>
-              <p className="text-2xl font-bold">
+              <p className="text-sm text-white/80 font-semibold mb-1">{tabInfo.label}</p>
+              <p className="text-3xl font-black bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg">
                 {tabInfo.icon} {formatNumber(tabInfo.value)}
               </p>
             </div>
@@ -174,17 +174,22 @@ export default function Ranking({
 
       {/* Lista de Ranking */}
       {loading ? (
-        <div className="text-center py-12 text-gray-400">Carregando ranking...</div>
+        <div className="text-center py-16 glass-vibrant rounded-3xl">
+          <div className="text-8xl mb-4 animate-spin">⏳</div>
+          <p className="text-2xl font-black text-white drop-shadow-lg">Carregando ranking...</p>
+        </div>
       ) : rankings.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">
-          <p className="text-lg font-semibold">Nenhum jogador no ranking ainda</p>
-          <p className="text-sm mt-2">Seja o primeiro!</p>
+        <div className="text-center py-16 glass-vibrant rounded-3xl">
+          <div className="text-8xl mb-4 animate-bounce">🏆</div>
+          <p className="text-2xl font-black text-white drop-shadow-lg">Nenhum jogador no ranking ainda</p>
+          <p className="text-lg text-white/80 mt-2 font-semibold">Seja o primeiro! 🚀</p>
         </div>
       ) : (
-        <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+        <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
           {rankings.map((entry, index) => {
             const position = index + 1;
             const isCurrentUser = entry.uid === currentUserId;
+            const isTopThree = position <= 3;
             
             let displayValue = 0;
             if (activeTab === 'coins') displayValue = entry.coins;
@@ -194,27 +199,33 @@ export default function Ranking({
             return (
               <div
                 key={entry.uid}
-                className={`p-4 rounded-lg border-2 transition-all ${
+                className={`glass-vibrant p-5 rounded-2xl border-2 transition-all duration-300 shadow-lg ${
                   isCurrentUser
-                    ? 'bg-gradient-to-r from-blue-100 to-purple-100 border-blue-500 shadow-lg'
-                    : 'bg-white border-gray-200 hover:border-gray-300'
-                }`}
+                    ? 'border-blue-300 achievement-glow scale-[1.02]'
+                    : isTopThree
+                    ? 'border-yellow-300/50 hover:scale-[1.01] dopamine-hover'
+                    : 'border-white/20 hover:scale-[1.01] dopamine-hover'
+                } ${isTopThree && 'shadow-[0_0_30px_rgba(251,191,36,0.3)]'}`}
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
                   {/* Posição */}
-                  <div className={`text-2xl font-bold ${getPositionColor(position)} min-w-[60px] text-center`}>
+                  <div className={`text-4xl font-black min-w-[80px] text-center drop-shadow-lg ${
+                    position === 1 ? 'animate-pulse' : ''
+                  }`}>
                     {getMedalEmoji(position)}
                   </div>
 
                   {/* Informações do Jogador */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className={`font-bold text-gray-800 ${isCurrentUser ? 'text-blue-600' : ''}`}>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className={`font-black text-xl drop-shadow-lg ${
+                        isCurrentUser ? 'text-blue-200' : 'text-white'
+                      }`}>
                         {entry.username}
-                        {isCurrentUser && <span className="ml-2 text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">VOCÊ</span>}
+                        {isCurrentUser && <span className="ml-2 text-xs bg-gradient-to-r from-blue-400 to-cyan-400 text-white px-3 py-1 rounded-full font-black shadow-lg animate-pulse">VOCÊ</span>}
                       </h3>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="font-black text-lg mt-1 bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg">
                       {tabInfo.icon} {formatNumber(displayValue)} {activeTab === 'perSecond' && '/s'}
                     </p>
                   </div>
