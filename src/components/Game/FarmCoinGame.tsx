@@ -568,24 +568,26 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
       <div className="max-w-7xl mx-auto mb-mobile">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-mobile">
           {/* Moedas Atuais */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-mobile sm:p-6 shadow-xl border-2 border-yellow-400">
+          <div className="glass-vibrant rounded-2xl p-mobile sm:p-6 shadow-2xl achievement-glow dopamine-hover">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-mobile-xs sm:text-sm text-gray-600 mb-1">Moedas</p>
-                <p className="text-mobile-lg sm:text-3xl font-bold text-yellow-600">
+                <p className="text-mobile-xs sm:text-sm text-white/80 mb-1 font-semibold">💰 Moedas</p>
+                <p className="text-mobile-lg sm:text-4xl font-black bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg">
                   {formatNumber(gameState.coins)}
                 </p>
               </div>
-              <Coins className="w-8 h-8 sm:w-12 sm:h-12 text-yellow-500" />
+              <div className="text-4xl sm:text-5xl animate-float filter drop-shadow-2xl">
+                💎
+              </div>
             </div>
           </div>
 
           {/* Renda Passiva */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-mobile sm:p-6 shadow-xl border-2 border-green-400">
+          <div className="glass-vibrant rounded-2xl p-mobile sm:p-6 shadow-2xl achievement-glow dopamine-hover">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="text-mobile-xs sm:text-sm text-gray-600 mb-1">Por Segundo</p>
-                <p className="text-mobile-lg sm:text-3xl font-bold text-green-600">
+                <p className="text-mobile-xs sm:text-sm text-white/80 mb-1 font-semibold">📈 Por Segundo</p>
+                <p className="text-mobile-lg sm:text-4xl font-black bg-gradient-to-r from-green-200 via-emerald-200 to-teal-200 bg-clip-text text-transparent drop-shadow-lg">
                   {formatNumber(gameState.perSecond)}
                 </p>
                 
@@ -643,23 +645,25 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
           </div>
 
           {/* Upgrades Info */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-blue-400">
+          <div className="glass-vibrant rounded-2xl p-6 shadow-2xl achievement-glow dopamine-hover">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Upgrades</p>
-                <p className="text-3xl font-bold text-blue-600">
+                <p className="text-sm text-white/80 mb-1 font-semibold">🎁 Upgrades</p>
+                <p className="text-4xl font-black bg-gradient-to-r from-blue-200 via-cyan-200 to-purple-200 bg-clip-text text-transparent drop-shadow-lg">
                   {upgradeStats.owned}/{upgradeStats.total}
                 </p>
               </div>
-              <ShoppingCart className="w-12 h-12 text-blue-500" />
+              <div className="text-5xl animate-float filter drop-shadow-2xl">
+                🎮
+              </div>
             </div>
             <div className="flex gap-2 text-xs">
-              <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full font-semibold">
-                ✅ {upgradeStats.available} disponíveis
+              <span className="px-3 py-1 bg-gradient-to-r from-green-400 to-emerald-400 text-white rounded-full font-bold shadow-lg">
+                ✅ {upgradeStats.available}
               </span>
               {upgradeStats.locked > 0 && (
-                <span className="px-2 py-1 bg-red-100 text-red-700 rounded-full font-semibold">
-                  🔒 {upgradeStats.locked} bloqueados
+                <span className="px-3 py-1 bg-gradient-to-r from-red-400 to-pink-400 text-white rounded-full font-bold shadow-lg">
+                  🔒 {upgradeStats.locked}
                 </span>
               )}
             </div>
@@ -670,9 +674,9 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Área de Click */}
         <div className="lg:col-span-1">
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border-2 border-yellow-400">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-              Fazenda
+          <div className="glass-vibrant rounded-3xl p-8 shadow-2xl achievement-glow">
+            <h2 className="text-3xl font-black text-center mb-6 bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg">
+              ⛏️ Fazenda
             </h2>
             
             <div className="relative">
