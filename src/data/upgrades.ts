@@ -20,11 +20,11 @@ export const upgrades: Upgrade[] = [
   {
     id: 'land_agricultural',
     name: 'Fazenda Agrícola 🌾',
-    description: '🗺️ TERRENO: 500m² de terra fértil. Bônus: +12% em Plantação e Pomar',
+    description: '🗺️ TERRENO: 500m² de terra fértil. Bônus: +8% em Plantação e Pomar',
     category: 'Terrenos',
     baseCost: 500000,
     costMultiplier: 2.0,
-    baseIncome: 500,
+    baseIncome: 200,
     incomeMultiplier: 1.25,
     icon: '🌾',
     tier: calculateTier(500000)
