@@ -1,10 +1,5 @@
-import {
-  signInAnonymously,
-  signOut as firebaseSignOut,
-  User as FirebaseUser,
-} from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
-import { auth, db } from './config';
+import { db } from './config';
 import { UserRole, UserData, GameState, Upgrade } from '../types';
 import { createPasswordHash, generateSecureId } from '../utils/crypto';
 
@@ -60,9 +55,8 @@ export async function registerUser(
       throw new Error('Nome de usuário já está em uso');
     }
 
-    // Criar usuário anônimo no Firebase Auth
-    const userCredential = await signInAnonymously(auth);
-    const user = userCredential.user;
+    // Gerar UID único para o usuário
+    const uid = generateSecureId() + Date.now().toString();
 
     // Criar hash da senha com SHA-512
     const passwordHash = await createPasswordHash(password);
@@ -78,7 +72,7 @@ export async function registerUser(
 
     // Dados do usuário
     const userData: UserData = {
-      uid: user.uid,
+      uid,
       username,
       role: UserRole.USER,
       createdAt: new Date(),
@@ -88,12 +82,16 @@ export async function registerUser(
     };
 
     // Salvar no Firestore
-    await setDoc(doc(db, 'users', user.uid), {
+    await setDoc(doc(db, 'users', uid), {
       ...userData,
       passwordHash,
       createdAt: serverTimestamp(),
       lastLogin: serverTimestamp(),
     });
+
+    // Salvar sessão no localStorage
+    localStorage.setItem('farmcoin_user_id', uid);
+    localStorage.setItem('farmcoin_username', username);
 
     return userData;
   } catch (error: any) {
@@ -144,13 +142,14 @@ export async function loginUser(
       throw new Error('Senha incorreta');
     }
 
-    // Login anônimo no Firebase Auth (já que não usamos email)
-    await signInAnonymously(auth);
-
     // Atualizar último login
     await updateDoc(doc(db, 'users', userInfo.uid), {
       lastLogin: serverTimestamp(),
     });
+
+    // Salvar sessão no localStorage
+    localStorage.setItem('farmcoin_user_id', userInfo.uid);
+    localStorage.setItem('farmcoin_username', username);
 
     // Buscar dados do usuário
     const userData = await getUserData(userInfo.uid);
@@ -165,7 +164,9 @@ export async function loginUser(
  */
 export async function signOut(): Promise<void> {
   try {
-    await firebaseSignOut(auth);
+    // Limpar sessão do localStorage
+    localStorage.removeItem('farmcoin_user_id');
+    localStorage.removeItem('farmcoin_username');
   } catch (error: any) {
     throw new Error(`Erro ao fazer logout: ${error.message}`);
   }
@@ -201,6 +202,20 @@ export async function getUserData(uid: string): Promise<UserData> {
 /**
  * Obtém o usuário atual autenticado
  */
-export function getCurrentUser(): FirebaseUser | null {
-  return auth.currentUser;
+export function getCurrentUser(): { uid: string; username: string } | null {
+  const uid = localStorage.getItem('farmcoin_user_id');
+  const username = localStorage.getItem('farmcoin_username');
+  
+  if (uid && username) {
+    return { uid, username };
+  }
+  
+  return null;
+}
+
+/**
+ * Verifica se há um usuário logado
+ */
+export function isAuthenticated(): boolean {
+  return getCurrentUser() !== null;
 }
