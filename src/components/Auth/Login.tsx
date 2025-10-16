@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogIn, Mail, Lock, User } from 'lucide-react';
+import { LogIn, User, Lock } from 'lucide-react';
 import { loginUser } from '../../firebase/auth';
 
 interface LoginProps {
@@ -8,7 +8,7 @@ interface LoginProps {
 }
 
 export default function Login({ onSuccess, onSwitchToRegister }: LoginProps) {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -19,7 +19,7 @@ export default function Login({ onSuccess, onSwitchToRegister }: LoginProps) {
     setError('');
 
     try {
-      await loginUser(email, password);
+      await loginUser(username, password);
       onSuccess();
     } catch (err: any) {
       setError(err.message || 'Erro ao fazer login');
@@ -58,16 +58,17 @@ export default function Login({ onSuccess, onSwitchToRegister }: LoginProps) {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-green-100 text-sm font-semibold mb-2">
-                <Mail size={16} className="inline mr-2" />
-                Email
+                <User size={16} className="inline mr-2" />
+                Nome de Usuário
               </label>
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-green-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
-                placeholder="seu@email.com"
+                placeholder="seu_usuario"
                 required
+                minLength={3}
               />
             </div>
 
@@ -83,6 +84,7 @@ export default function Login({ onSuccess, onSwitchToRegister }: LoginProps) {
                 className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-green-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
                 placeholder="••••••••"
                 required
+                minLength={6}
               />
             </div>
 

@@ -1,13 +1,12 @@
 import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  signInAnonymously,
   signOut as firebaseSignOut,
   User as FirebaseUser,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from './config';
 import { UserRole, UserData, GameState, Upgrade } from '../types';
-import { createPasswordHash } from '../utils/crypto';
+import { createPasswordHash, generateSecureId } from '../utils/crypto';
 
 // Upgrades iniciais
 const initialUpgrades: Upgrade[] = [
@@ -33,16 +32,36 @@ const initialUpgrades: Upgrade[] = [
 ];
 
 /**
- * Registra um novo usuário
+ * Verifica se um nome de usuário já existe
+ */
+async function usernameExists(username: string): Promise<boolean> {
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, where('username', '==', username));
+  const querySnapshot = await getDocs(q);
+  return !querySnapshot.empty;
+}
+
+/**
+ * Registra um novo usuário (apenas com username e senha)
  */
 export async function registerUser(
-  email: string,
-  password: string,
-  username: string
+  username: string,
+  password: string
 ): Promise<UserData> {
   try {
-    // Criar usuário no Firebase Auth
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    // Validar nome de usuário
+    if (username.length < 3) {
+      throw new Error('Nome de usuário deve ter pelo menos 3 caracteres');
+    }
+
+    // Verificar se username já existe
+    const exists = await usernameExists(username);
+    if (exists) {
+      throw new Error('Nome de usuário já está em uso');
+    }
+
+    // Criar usuário anônimo no Firebase Auth
+    const userCredential = await signInAnonymously(auth);
     const user = userCredential.user;
 
     // Criar hash da senha com SHA-512
@@ -60,7 +79,6 @@ export async function registerUser(
     // Dados do usuário
     const userData: UserData = {
       uid: user.uid,
-      email: user.email!,
       username,
       role: UserRole.USER,
       createdAt: new Date(),
@@ -84,23 +102,58 @@ export async function registerUser(
 }
 
 /**
- * Faz login do usuário
+ * Busca usuário por username e verifica senha
+ */
+async function findUserByUsername(username: string): Promise<{ uid: string; passwordHash: string } | null> {
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, where('username', '==', username));
+  const querySnapshot = await getDocs(q);
+  
+  if (querySnapshot.empty) {
+    return null;
+  }
+  
+  const userDoc = querySnapshot.docs[0];
+  const data = userDoc.data();
+  return {
+    uid: userDoc.id,
+    passwordHash: data.passwordHash
+  };
+}
+
+/**
+ * Faz login do usuário (apenas com username e senha)
  */
 export async function loginUser(
-  email: string,
+  username: string,
   password: string
 ): Promise<UserData> {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+    // Buscar usuário pelo username
+    const userInfo = await findUserByUsername(username);
+    
+    if (!userInfo) {
+      throw new Error('Usuário não encontrado');
+    }
+
+    // Verificar senha
+    const { verifyPasswordHash } = await import('../utils/crypto');
+    const isValid = await verifyPasswordHash(password, userInfo.passwordHash);
+    
+    if (!isValid) {
+      throw new Error('Senha incorreta');
+    }
+
+    // Login anônimo no Firebase Auth (já que não usamos email)
+    await signInAnonymously(auth);
 
     // Atualizar último login
-    await updateDoc(doc(db, 'users', user.uid), {
+    await updateDoc(doc(db, 'users', userInfo.uid), {
       lastLogin: serverTimestamp(),
     });
 
     // Buscar dados do usuário
-    const userData = await getUserData(user.uid);
+    const userData = await getUserData(userInfo.uid);
     return userData;
   } catch (error: any) {
     throw new Error(`Erro ao fazer login: ${error.message}`);
@@ -130,7 +183,6 @@ export async function getUserData(uid: string): Promise<UserData> {
       const data = docSnap.data();
       return {
         uid: data.uid,
-        email: data.email,
         username: data.username,
         role: data.role,
         createdAt: data.createdAt?.toDate() || new Date(),

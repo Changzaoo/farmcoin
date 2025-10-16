@@ -98,7 +98,6 @@ export async function getAllUsers(): Promise<UserData[]> {
       const data = doc.data();
       users.push({
         uid: data.uid,
-        email: data.email,
         username: data.username,
         role: data.role,
         createdAt: (data.createdAt as Timestamp)?.toDate() || new Date(),

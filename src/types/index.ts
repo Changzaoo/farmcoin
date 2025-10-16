@@ -9,7 +9,6 @@ export enum UserRole {
 // Interface de usuário
 export interface User {
   uid: string;
-  email: string;
   username: string;
   role: UserRole;
   createdAt: Date;
@@ -77,7 +76,6 @@ export interface UserLog {
 // Dados do usuário no Firestore
 export interface UserData {
   uid: string;
-  email: string;
   username: string;
   role: UserRole;
   createdAt: Date;

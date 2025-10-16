@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserPlus, Mail, Lock, User, Shield } from 'lucide-react';
+import { UserPlus, Lock, User, Shield } from 'lucide-react';
 import { registerUser } from '../../firebase/auth';
 
 interface RegisterProps {
@@ -8,7 +8,6 @@ interface RegisterProps {
 }
 
 export default function Register({ onSuccess, onSwitchToLogin }: RegisterProps) {
-  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -19,6 +18,12 @@ export default function Register({ onSuccess, onSwitchToLogin }: RegisterProps) 
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    if (username.length < 3) {
+      setError('O nome de usuário deve ter pelo menos 3 caracteres');
+      setLoading(false);
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('As senhas não coincidem');
@@ -33,7 +38,7 @@ export default function Register({ onSuccess, onSwitchToLogin }: RegisterProps) 
     }
 
     try {
-      await registerUser(email, password, username);
+      await registerUser(username, password);
       onSuccess();
     } catch (err: any) {
       setError(err.message || 'Erro ao criar conta');
@@ -80,24 +85,11 @@ export default function Register({ onSuccess, onSwitchToLogin }: RegisterProps) 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-green-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
-                placeholder="Seu nome"
+                placeholder="seu_usuario"
                 required
+                minLength={3}
               />
-            </div>
-
-            <div>
-              <label className="block text-green-100 text-sm font-semibold mb-2">
-                <Mail size={16} className="inline mr-2" />
-                Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-green-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
-                placeholder="seu@email.com"
-                required
-              />
+              <p className="text-xs text-green-200 mt-1">Mínimo 3 caracteres</p>
             </div>
 
             <div>
@@ -114,6 +106,7 @@ export default function Register({ onSuccess, onSwitchToLogin }: RegisterProps) 
                 required
                 minLength={6}
               />
+              <p className="text-xs text-green-200 mt-1">Mínimo 6 caracteres</p>
             </div>
 
             <div>
