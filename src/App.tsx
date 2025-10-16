@@ -45,10 +45,16 @@ function App() {
 
   const canAccessAdmin = isAdmin || isModerator || isSupport;
 
+  // Adicionar username ao gameState se não existir
+  const gameStateWithUsername = {
+    ...userData.gameState,
+    username: userData.username
+  };
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<FarmCoinGame uid={user.uid} initialGameState={userData.gameState} initialUpgrades={userData.upgrades} />} />
+        <Route path="/" element={<FarmCoinGame uid={user.uid} initialGameState={gameStateWithUsername} initialUpgrades={userData.upgrades} />} />
         {canAccessAdmin && (
           <Route path="/admin" element={<AdminPanel />} />
         )}

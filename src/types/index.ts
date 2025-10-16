@@ -23,6 +23,7 @@ export interface GameState {
   perSecond: number;
   totalClicks: number;
   totalPurchases: number;
+  username?: string;
   upgrades?: Array<{ id: string; count: number }>;
 }
 

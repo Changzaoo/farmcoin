@@ -2,9 +2,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Coins, TrendingUp, ShoppingCart, Search, Lock, Package } from 'lucide-react';
 import { upgrades as upgradesData, categories } from '../../data/upgrades';
-import { GameState, Upgrade } from '../../types';
+import { GameState, Upgrade, UpgradeTier } from '../../types';
 import { saveGameState } from '../../firebase/firestore';
 import { getTierColor, getTierName, getTierGlow, canUnlockCompositeUpgrade, getMissingRequirements } from '../../utils/tierSystem';
+import Marketplace from './Marketplace';
 
 interface FloatingCoin {
   id: number;
@@ -27,6 +28,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
   const [floatingCoins, setFloatingCoins] = useState<FloatingCoin[]>([]);
   const [clickEffect, setClickEffect] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
+  const [showMarketplace, setShowMarketplace] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const coinIdRef = useRef(0);
 
@@ -196,6 +198,36 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
         return newState;
       });
     }
+  };
+
+  // Lidar com compra do marketplace
+  const handleMarketplacePurchase = (sellerId: string, totalPrice: number, upgradeId: string, quantity: number) => {
+    // Deduzir moedas
+    setGameState(prev => {
+      const newState = {
+        ...prev,
+        coins: prev.coins - totalPrice,
+      };
+      saveGame(newState);
+      return newState;
+    });
+
+    // Adicionar upgrades comprados
+    setUpgrades(prev => {
+      const updated = prev.map(u => {
+        if (u.id === upgradeId) {
+          const newCount = (u.count || 0) + quantity;
+          return {
+            ...u,
+            count: newCount,
+            cost: u.baseCost * Math.pow(u.costMultiplier, newCount),
+            income: u.baseIncome * Math.pow(u.incomeMultiplier, newCount)
+          };
+        }
+        return u;
+      });
+      return updated;
+    });
   };
 
   // Calcular estatísticas de upgrades
@@ -368,7 +400,10 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
 
             {/* Botão de Inventário */}
             <button
-              onClick={() => setShowInventory(!showInventory)}
+              onClick={() => {
+                setShowInventory(!showInventory);
+                setShowMarketplace(false);
+              }}
               className={`w-full mt-4 px-6 py-4 rounded-xl font-bold transition-all ${
                 showInventory
                   ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white'
@@ -383,11 +418,52 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                 </span>
               </div>
             </button>
+
+            {/* Botão de Marketplace */}
+            <button
+              onClick={() => {
+                setShowMarketplace(!showMarketplace);
+                setShowInventory(false);
+              }}
+              className={`w-full mt-3 px-6 py-4 rounded-xl font-bold transition-all ${
+                showMarketplace
+                  ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
+                  : 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:shadow-lg hover:scale-105'
+              } active:scale-95`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <ShoppingCart className="w-6 h-6" />
+                <span>{showMarketplace ? '🎮 Voltar ao Jogo' : '🏪 Marketplace'}</span>
+              </div>
+            </button>
           </div>
         </div>
 
-        {/* Inventário ou Lista de Upgrades */}
+        {/* Inventário, Marketplace ou Lista de Upgrades */}
         <div className="lg:col-span-2">
+          {showMarketplace ? (
+            /* ========== MARKETPLACE ========== */
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-orange-400">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                🏪 Marketplace
+              </h2>
+              <Marketplace
+                userId={uid}
+                username={gameState.username || 'Jogador'}
+                coins={gameState.coins}
+                ownedUpgrades={inventoryItems.map(u => ({
+                  id: u.id,
+                  name: u.name,
+                  icon: u.icon,
+                  tier: u.tier || UpgradeTier.COMUM,
+                  count: u.count || 0,
+                  baseIncome: u.baseIncome,
+                  baseCost: u.baseCost
+                }))}
+                onPurchaseComplete={handleMarketplacePurchase}
+              />
+            </div>
+          ) : (
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-green-400">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">
               {showInventory ? '📦 Inventário' : '🛒 Melhorias'}
@@ -590,6 +666,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
           </>
             )}
           </div>
+          )}
         </div>
       </div>
 
