@@ -1078,14 +1078,14 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                       .map(req => {
                         const reqUpgrade = upgradesData.find(u => u.id === req.upgradeId);
                         const userUpgrade = userUpgrades.find(u => u.id === req.upgradeId);
-                        const hasEnough = (userUpgrade?.count || 0) >= req.count;
+                        const hasEnough = (userUpgrade?.count || 0) >= req.minCount;
                         
                         if (!hasEnough && reqUpgrade) {
                           return {
                             ...reqUpgrade,
-                            requiredCount: req.count,
+                            requiredCount: req.minCount,
                             currentCount: userUpgrade?.count || 0,
-                            needToBuy: req.count - (userUpgrade?.count || 0)
+                            needToBuy: req.minCount - (userUpgrade?.count || 0)
                           };
                         }
                         return null;
