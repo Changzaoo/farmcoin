@@ -1060,12 +1060,33 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                   ? getMissingRequirements(upgrade.requirements, userUpgrades, upgradesData)
                   : [];
                 
+                // Pegar os upgrades que faltam (objetos completos)
+                const missingUpgrades = isLocked && upgrade.requirements
+                  ? upgrade.requirements
+                      .map(req => {
+                        const reqUpgrade = upgradesData.find(u => u.id === req.upgradeId);
+                        const userUpgrade = userUpgrades.find(u => u.id === req.upgradeId);
+                        const hasEnough = (userUpgrade?.count || 0) >= req.count;
+                        
+                        if (!hasEnough && reqUpgrade) {
+                          return {
+                            ...reqUpgrade,
+                            requiredCount: req.count,
+                            currentCount: userUpgrade?.count || 0,
+                            needToBuy: req.count - (userUpgrade?.count || 0)
+                          };
+                        }
+                        return null;
+                      })
+                      .filter(Boolean)
+                  : [];
+                
                 return (
                   <div
                     key={upgrade.id}
                     className={`glass-vibrant p-5 rounded-2xl border-2 transition-all duration-300 ${
                       isLocked
-                        ? 'opacity-50 grayscale'
+                        ? 'border-red-300/50'
                         : canBuy
                         ? 'achievement-glow dopamine-hover border-yellow-300/50 hover:scale-[1.02] hover:-translate-y-1'
                         : 'opacity-70 border-white/20'
@@ -1097,9 +1118,60 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                           {upgrade.description}
                         </p>
                         
-                        {isLocked && missingReqs.length > 0 ? (
-                          <div className="mt-2 text-sm font-bold text-red-200 bg-red-500/20 px-3 py-1 rounded-lg inline-block backdrop-blur-sm">
-                            🔒 Requisitos: {missingReqs.join(', ')}
+                        {isLocked && missingUpgrades.length > 0 ? (
+                          <div className="mt-3 space-y-2">
+                            <div className="text-sm font-bold text-red-700 flex items-center gap-2">
+                              <Lock className="w-4 h-4" />
+                              <span>🔒 Requisitos Faltantes:</span>
+                            </div>
+                            
+                            {/* Lista de itens faltantes com botões de compra */}
+                            <div className="space-y-2">
+                              {missingUpgrades.map((missingUpg: any) => {
+                                const canBuyReq = gameState.coins >= (missingUpg.baseCost || 0);
+                                const totalCost = (missingUpg.baseCost || 0) * missingUpg.needToBuy;
+                                
+                                return (
+                                  <div 
+                                    key={missingUpg.id}
+                                    className="glass-vibrant p-3 rounded-xl border border-orange-300 flex items-center justify-between gap-3"
+                                  >
+                                    <div className="flex items-center gap-2 flex-1">
+                                      <span className="text-2xl">{missingUpg.icon}</span>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="font-black text-sm text-gray-900">
+                                          {missingUpg.name}
+                                        </p>
+                                        <p className="text-xs text-gray-700">
+                                          Tem: {missingUpg.currentCount} | Precisa: {missingUpg.requiredCount}
+                                          {missingUpg.needToBuy > 1 && ` (Comprar ${missingUpg.needToBuy}x)`}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    
+                                    <button
+                                      onClick={() => {
+                                        // Comprar múltiplas unidades se necessário
+                                        for (let i = 0; i < missingUpg.needToBuy; i++) {
+                                          handleBuyUpgrade(missingUpg.id);
+                                        }
+                                      }}
+                                      disabled={gameState.coins < totalCost}
+                                      className={`px-4 py-2 rounded-xl font-black text-xs transition-all shadow-lg whitespace-nowrap ${
+                                        gameState.coins >= totalCost
+                                          ? 'bg-gradient-to-r from-blue-400 to-cyan-400 text-white hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:scale-105 active:scale-95'
+                                          : 'bg-gray-400/50 text-gray-300 cursor-not-allowed'
+                                      }`}
+                                    >
+                                      {gameState.coins >= totalCost 
+                                        ? `🛒 ${formatNumber(totalCost)}` 
+                                        : '💰 Sem Moedas'
+                                      }
+                                    </button>
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
                         ) : (
                           <div className="flex gap-4 mt-2 text-sm">
