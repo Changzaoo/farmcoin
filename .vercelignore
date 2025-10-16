@@ -1,0 +1,39 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Development files
+*.md
+!README.md
+.git
+.gitignore
+.vscode
+.idea
+
+# Environment files (já configurados no Vercel)
+.env.local
+.env.development
+.env.production
+
+# Build artifacts
+dist
+build
+.cache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Scripts de setup
+src/scripts
+*.sql
+
+# Documentação extra
+LANDS_README.md
+LANDS_SYSTEM.md
+MAPA_CORRECAO_MOBILE.md
+MAPA_FUNCIONALIDADES_V2.md
+SISTEMA_PRECOS_TERRENOS.md
+SISTEMA_PRODUCAO.md

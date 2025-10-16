@@ -219,9 +219,28 @@ npm run lint
 
 ## 🚀 Deploy
 
-### Firebase Hosting
+### Vercel (Recomendado) ⚡
 
-```powershell
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Changzaoo/farmcoin)
+
+```bash
+# Deploy rápido via CLI
+npm i -g vercel
+vercel --prod
+```
+
+📖 **[Guia Completo de Deploy →](./DEPLOY_VERCEL.md)**
+
+### Outras Opções
+
+#### Netlify
+```bash
+npm run build
+netlify deploy --prod --dir=dist
+```
+
+#### Firebase Hosting
+```bash
 # Build do projeto
 npm run build
 
@@ -238,10 +257,19 @@ firebase init hosting
 firebase deploy
 ```
 
-### Outras Opções
+### Variáveis de Ambiente
 
-- **Vercel**: `vercel --prod`
-- **Netlify**: `netlify deploy --prod`
+Antes de fazer deploy, configure as variáveis de ambiente no painel da plataforma:
+
+```env
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
+```
 
 ## 🤝 Contribuindo
 
