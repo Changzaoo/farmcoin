@@ -274,3 +274,27 @@ export interface MapConfig {
   }[];
 }
 
+// Membro da guilda
+export interface GuildMember {
+  uid: string;
+  username: string;
+  joinedAt: Date;
+  role: 'owner' | 'member';
+}
+
+// Guilda
+export interface Guild {
+  id: string;
+  name: string;
+  description: string;
+  emoji: string;
+  ownerId: string;
+  ownerUsername: string;
+  landId: string; // ID do terreno que permite a guilda
+  landTier: UpgradeTier; // Tier do terreno (determina limite de membros)
+  members: GuildMember[];
+  maxMembers: number; // Calculado baseado no tier do terreno
+  createdAt: Date;
+  updatedAt: Date;
+}
+

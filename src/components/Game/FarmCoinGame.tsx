@@ -9,6 +9,7 @@ import { antiBot } from '../../utils/antiBot';
 import { uniqueItems, UniqueItem } from '../../utils/uniqueItems';
 import Marketplace from './Marketplace';
 import Ranking from './Ranking';
+import Guild from './Guild';
 
 interface FloatingCoin {
   id: number;
@@ -41,7 +42,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
   const [showInventory, setShowInventory] = useState(false);
   const [showMarketplace, setShowMarketplace] = useState(false);
   const [showRanking, setShowRanking] = useState(false);
-  const [activeTab, setActiveTab] = useState<'melhorias' | 'inventario' | 'marketplace' | 'ranking'>('melhorias');
+  const [activeTab, setActiveTab] = useState<'melhorias' | 'inventario' | 'marketplace' | 'ranking' | 'guild'>('melhorias');
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [itemQuantities, setItemQuantities] = useState<Map<string, number>>(new Map());
   const [showBulkSellModal, setShowBulkSellModal] = useState(false);
@@ -816,6 +817,17 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
               </button>
               
               <button
+                onClick={() => setActiveTab('guild')}
+                className={`flex-1 px-6 py-4 font-bold text-lg transition-all ${
+                  activeTab === 'guild'
+                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-b-4 border-purple-700'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                🏰 Guildas
+              </button>
+              
+              <button
                 onClick={() => setActiveTab('marketplace')}
                 className={`flex-1 px-6 py-4 font-bold text-lg transition-all ${
                   activeTab === 'marketplace'
@@ -1230,6 +1242,16 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                       baseCost: u.baseCost
                     }))}
                     onPurchaseComplete={handleMarketplacePurchase}
+                  />
+                </>
+              )}
+              
+              {activeTab === 'guild' && (
+                <>
+                  <Guild
+                    user={{ uid } as any}
+                    username={gameState.username || 'Jogador'}
+                    userUpgrades={upgrades}
                   />
                 </>
               )}

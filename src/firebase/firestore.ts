@@ -12,6 +12,9 @@ import {
   serverTimestamp,
   Timestamp,
   writeBatch,
+  deleteDoc,
+  arrayUnion,
+  arrayRemove,
 } from 'firebase/firestore';
 import { db } from './config';
 import { 
@@ -26,7 +29,10 @@ import {
   Land,
   LandType,
   LandListing,
-  LandResident
+  LandResident,
+  Guild,
+  GuildMember,
+  UpgradeTier
 } from '../types';
 
 /**
@@ -1171,5 +1177,348 @@ export async function getUserLands(userId: string): Promise<Land[]> {
     return lands;
   } catch (error: any) {
     throw new Error(`Erro ao buscar terrenos do usuário: ${error.message}`);
+  }
+}
+
+// ============================================
+// FUNÇÕES DE GUILDA
+// ============================================
+
+/**
+ * Calcula o limite de membros baseado no tier do terreno
+ */
+function calculateGuildMaxMembers(tier: UpgradeTier): number {
+  const limits: Record<UpgradeTier, number> = {
+    [UpgradeTier.COMUM]: 5,
+    [UpgradeTier.INCOMUM]: 10,
+    [UpgradeTier.RARO]: 20,
+    [UpgradeTier.EPICO]: 35,
+    [UpgradeTier.LENDARIO]: 50,
+    [UpgradeTier.MITICO]: 100
+  };
+  
+  return limits[tier] || 5;
+}
+
+/**
+ * Cria uma nova guilda
+ * Requer que o usuário tenha um terreno
+ */
+export async function createGuild(
+  ownerId: string,
+  ownerUsername: string,
+  landId: string,
+  name: string,
+  description: string,
+  emoji: string
+): Promise<string> {
+  try {
+    // Verificar se o terreno existe e pertence ao usuário
+    const upgrades: Upgrade[] = await import('../data/upgrades').then(m => m.upgrades);
+    const land = upgrades.find(u => u.id === landId && u.category === 'Terrenos');
+    
+    if (!land) {
+      throw new Error('Terreno não encontrado');
+    }
+    
+    if (!land.tier) {
+      throw new Error('Tier do terreno não definido');
+    }
+    
+    // Verificar se o usuário já possui uma guilda
+    const existingGuildsQuery = query(
+      collection(db, 'guilds'),
+      where('ownerId', '==', ownerId)
+    );
+    const existingGuilds = await getDocs(existingGuildsQuery);
+    
+    if (!existingGuilds.empty) {
+      throw new Error('Você já possui uma guilda');
+    }
+    
+    // Calcular limite de membros baseado no tier do terreno
+    const maxMembers = calculateGuildMaxMembers(land.tier);
+    
+    const ownerMember: GuildMember = {
+      uid: ownerId,
+      username: ownerUsername,
+      joinedAt: new Date(),
+      role: 'owner'
+    };
+    
+    const guildData = {
+      name,
+      description,
+      emoji,
+      ownerId,
+      ownerUsername,
+      landId,
+      landTier: land.tier,
+      members: [ownerMember],
+      maxMembers,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+    
+    const docRef = await addDoc(collection(db, 'guilds'), guildData);
+    
+    console.log('✅ Guilda criada:', docRef.id);
+    return docRef.id;
+  } catch (error: any) {
+    throw new Error(`Erro ao criar guilda: ${error.message}`);
+  }
+}
+
+/**
+ * Busca uma guilda pelo ID
+ */
+export async function getGuild(guildId: string): Promise<Guild | null> {
+  try {
+    const guildRef = doc(db, 'guilds', guildId);
+    const guildDoc = await getDoc(guildRef);
+    
+    if (!guildDoc.exists()) {
+      return null;
+    }
+    
+    const data = guildDoc.data();
+    return {
+      id: guildDoc.id,
+      name: data.name,
+      description: data.description,
+      emoji: data.emoji,
+      ownerId: data.ownerId,
+      ownerUsername: data.ownerUsername,
+      landId: data.landId,
+      landTier: data.landTier,
+      members: data.members.map((m: any) => ({
+        ...m,
+        joinedAt: m.joinedAt?.toDate() || new Date()
+      })),
+      maxMembers: data.maxMembers,
+      createdAt: data.createdAt?.toDate() || new Date(),
+      updatedAt: data.updatedAt?.toDate() || new Date()
+    };
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar guilda: ${error.message}`);
+  }
+}
+
+/**
+ * Busca todas as guildas (com paginação opcional)
+ */
+export async function getAllGuilds(limitCount: number = 100): Promise<Guild[]> {
+  try {
+    const guildsQuery = query(
+      collection(db, 'guilds'),
+      orderBy('createdAt', 'desc'),
+      limit(limitCount)
+    );
+    
+    const snapshot = await getDocs(guildsQuery);
+    const guilds: Guild[] = [];
+    
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      guilds.push({
+        id: doc.id,
+        name: data.name,
+        description: data.description,
+        emoji: data.emoji,
+        ownerId: data.ownerId,
+        ownerUsername: data.ownerUsername,
+        landId: data.landId,
+        landTier: data.landTier,
+        members: data.members.map((m: any) => ({
+          ...m,
+          joinedAt: m.joinedAt?.toDate() || new Date()
+        })),
+        maxMembers: data.maxMembers,
+        createdAt: data.createdAt?.toDate() || new Date(),
+        updatedAt: data.updatedAt?.toDate() || new Date()
+      });
+    });
+    
+    return guilds;
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar guildas: ${error.message}`);
+  }
+}
+
+/**
+ * Busca a guilda de um usuário (como dono ou membro)
+ */
+export async function getUserGuild(userId: string): Promise<Guild | null> {
+  try {
+    // Buscar como dono
+    const ownerQuery = query(
+      collection(db, 'guilds'),
+      where('ownerId', '==', userId)
+    );
+    const ownerSnapshot = await getDocs(ownerQuery);
+    
+    if (!ownerSnapshot.empty) {
+      const doc = ownerSnapshot.docs[0];
+      const data = doc.data();
+      return {
+        id: doc.id,
+        name: data.name,
+        description: data.description,
+        emoji: data.emoji,
+        ownerId: data.ownerId,
+        ownerUsername: data.ownerUsername,
+        landId: data.landId,
+        landTier: data.landTier,
+        members: data.members.map((m: any) => ({
+          ...m,
+          joinedAt: m.joinedAt?.toDate() || new Date()
+        })),
+        maxMembers: data.maxMembers,
+        createdAt: data.createdAt?.toDate() || new Date(),
+        updatedAt: data.updatedAt?.toDate() || new Date()
+      };
+    }
+    
+    // Buscar como membro
+    const allGuilds = await getAllGuilds(1000);
+    const memberGuild = allGuilds.find(g => 
+      g.members.some(m => m.uid === userId)
+    );
+    
+    return memberGuild || null;
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar guilda do usuário: ${error.message}`);
+  }
+}
+
+/**
+ * Adiciona um membro à guilda
+ */
+export async function joinGuild(guildId: string, userId: string, username: string): Promise<void> {
+  try {
+    const guild = await getGuild(guildId);
+    
+    if (!guild) {
+      throw new Error('Guilda não encontrada');
+    }
+    
+    // Verificar se já é membro
+    if (guild.members.some(m => m.uid === userId)) {
+      throw new Error('Você já é membro desta guilda');
+    }
+    
+    // Verificar limite de membros
+    if (guild.members.length >= guild.maxMembers) {
+      throw new Error('Guilda está cheia');
+    }
+    
+    // Verificar se o usuário já está em outra guilda
+    const userCurrentGuild = await getUserGuild(userId);
+    if (userCurrentGuild) {
+      throw new Error('Você já está em uma guilda. Saia dela primeiro.');
+    }
+    
+    const newMember: GuildMember = {
+      uid: userId,
+      username,
+      joinedAt: new Date(),
+      role: 'member'
+    };
+    
+    const guildRef = doc(db, 'guilds', guildId);
+    await updateDoc(guildRef, {
+      members: arrayUnion(newMember),
+      updatedAt: serverTimestamp()
+    });
+    
+    console.log('✅ Membro adicionado à guilda');
+  } catch (error: any) {
+    throw new Error(`Erro ao entrar na guilda: ${error.message}`);
+  }
+}
+
+/**
+ * Remove um membro da guilda
+ */
+export async function leaveGuild(guildId: string, userId: string): Promise<void> {
+  try {
+    const guild = await getGuild(guildId);
+    
+    if (!guild) {
+      throw new Error('Guilda não encontrada');
+    }
+    
+    // Dono não pode sair, apenas deletar a guilda
+    if (guild.ownerId === userId) {
+      throw new Error('O dono não pode sair da guilda. Delete a guilda se desejar.');
+    }
+    
+    const member = guild.members.find(m => m.uid === userId);
+    if (!member) {
+      throw new Error('Você não é membro desta guilda');
+    }
+    
+    const guildRef = doc(db, 'guilds', guildId);
+    await updateDoc(guildRef, {
+      members: arrayRemove(member),
+      updatedAt: serverTimestamp()
+    });
+    
+    console.log('✅ Saiu da guilda');
+  } catch (error: any) {
+    throw new Error(`Erro ao sair da guilda: ${error.message}`);
+  }
+}
+
+/**
+ * Deleta uma guilda (apenas o dono pode)
+ */
+export async function deleteGuild(guildId: string, userId: string): Promise<void> {
+  try {
+    const guild = await getGuild(guildId);
+    
+    if (!guild) {
+      throw new Error('Guilda não encontrada');
+    }
+    
+    if (guild.ownerId !== userId) {
+      throw new Error('Apenas o dono pode deletar a guilda');
+    }
+    
+    await deleteDoc(doc(db, 'guilds', guildId));
+    console.log('✅ Guilda deletada');
+  } catch (error: any) {
+    throw new Error(`Erro ao deletar guilda: ${error.message}`);
+  }
+}
+
+/**
+ * Atualiza informações da guilda (apenas o dono pode)
+ */
+export async function updateGuild(
+  guildId: string,
+  userId: string,
+  updates: Partial<Pick<Guild, 'name' | 'description' | 'emoji'>>
+): Promise<void> {
+  try {
+    const guild = await getGuild(guildId);
+    
+    if (!guild) {
+      throw new Error('Guilda não encontrada');
+    }
+    
+    if (guild.ownerId !== userId) {
+      throw new Error('Apenas o dono pode atualizar a guilda');
+    }
+    
+    const guildRef = doc(db, 'guilds', guildId);
+    await updateDoc(guildRef, {
+      ...updates,
+      updatedAt: serverTimestamp()
+    });
+    
+    console.log('✅ Guilda atualizada');
+  } catch (error: any) {
+    throw new Error(`Erro ao atualizar guilda: ${error.message}`);
   }
 }
