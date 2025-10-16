@@ -26,6 +26,22 @@ export interface GameState {
   upgrades?: Array<{ id: string; count: number }>;
 }
 
+// Tier de upgrade (baseado no custo)
+export enum UpgradeTier {
+  COMUM = 'comum',           // 0 - 1K moedas
+  INCOMUM = 'incomum',       // 1K - 100K moedas
+  RARO = 'raro',             // 100K - 10M moedas
+  EPICO = 'epico',           // 10M - 1B moedas
+  LENDARIO = 'lendario',     // 1B - 100B moedas
+  MITICO = 'mitico'          // 100B+ moedas
+}
+
+// Requisito para upgrade composto
+export interface UpgradeRequirement {
+  upgradeId: string;
+  minCount: number;
+}
+
 // Upgrade
 export interface Upgrade {
   id: string;
@@ -37,6 +53,10 @@ export interface Upgrade {
   baseIncome: number;
   incomeMultiplier: number;
   icon: string;
+  tier?: UpgradeTier;
+  isComposite?: boolean;           // Se é upgrade composto
+  requirements?: UpgradeRequirement[];  // Requisitos para desbloquear
+  unlocked?: boolean;              // Se está desbloqueado
   count?: number;
   cost?: number;
   income?: number;

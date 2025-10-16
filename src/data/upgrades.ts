@@ -1,4 +1,5 @@
 import { Upgrade } from '../types';
+import { calculateTier } from '../utils/tierSystem';
 
 export const upgrades: Upgrade[] = [
   // 🌱 Plantação Básica (10 upgrades)
@@ -11,7 +12,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 0.1,
     incomeMultiplier: 1.1,
-    icon: '🌱'
+    icon: '🌱',
+    tier: calculateTier(15)
   },
   {
     id: 'plant_02',
@@ -22,7 +24,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 1,
     incomeMultiplier: 1.1,
-    icon: '🌾'
+    icon: '🌾',
+    tier: calculateTier(100)
   },
   {
     id: 'plant_03',
@@ -33,7 +36,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 5,
     incomeMultiplier: 1.1,
-    icon: '💧'
+    icon: '💧',
+    tier: calculateTier(500)
   },
   {
     id: 'plant_04',
@@ -44,7 +48,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 30,
     incomeMultiplier: 1.1,
-    icon: '🏠'
+    icon: '🏠',
+    tier: calculateTier(3000)
   },
   {
     id: 'plant_05',
@@ -55,7 +60,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 100,
     incomeMultiplier: 1.1,
-    icon: '🌿'
+    icon: '🌿',
+    tier: calculateTier(10000)
   },
   {
     id: 'plant_06',
@@ -66,7 +72,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 400,
     incomeMultiplier: 1.1,
-    icon: '🚜'
+    icon: '🚜',
+    tier: calculateTier(40000)
   },
   {
     id: 'plant_07',
@@ -77,7 +84,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 2000,
     incomeMultiplier: 1.1,
-    icon: '🌊'
+    icon: '🌊',
+    tier: calculateTier(200000)
   },
   {
     id: 'plant_08',
@@ -88,7 +96,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 10000,
     incomeMultiplier: 1.1,
-    icon: '🏭'
+    icon: '🏭',
+    tier: calculateTier(1000000)
   },
   {
     id: 'plant_09',
@@ -99,7 +108,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 50000,
     incomeMultiplier: 1.1,
-    icon: '🧬'
+    icon: '🧬',
+    tier: calculateTier(5000000)
   },
   {
     id: 'plant_10',
@@ -110,7 +120,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 250000,
     incomeMultiplier: 1.1,
-    icon: '🤖'
+    icon: '🤖',
+    tier: calculateTier(25000000)
   },
 
   // 🐄 Criação de Gado (11 upgrades)
@@ -123,7 +134,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 0.5,
     incomeMultiplier: 1.1,
-    icon: '🐔'
+    icon: '🐔',
+    tier: calculateTier(50)
   },
   {
     id: 'cattle_02',
@@ -134,7 +146,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 3,
     incomeMultiplier: 1.1,
-    icon: '🐷'
+    icon: '🐷',
+    tier: calculateTier(300)
   },
   {
     id: 'cattle_03',
@@ -145,7 +158,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 15,
     incomeMultiplier: 1.1,
-    icon: '🐄'
+    icon: '🐄',
+    tier: calculateTier(1500)
   },
   {
     id: 'cattle_04',
@@ -156,7 +170,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 80,
     incomeMultiplier: 1.1,
-    icon: '🐑'
+    icon: '🐑',
+    tier: calculateTier(8000)
   },
   {
     id: 'cattle_05',
@@ -167,7 +182,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 350,
     incomeMultiplier: 1.1,
-    icon: '🐐'
+    icon: '🐐',
+    tier: calculateTier(35000)
   },
   {
     id: 'cattle_06',
@@ -178,7 +194,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 1500,
     incomeMultiplier: 1.1,
-    icon: '🦆'
+    icon: '🦆',
+    tier: calculateTier(150000)
   },
   {
     id: 'cattle_07',
@@ -189,7 +206,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 7000,
     incomeMultiplier: 1.1,
-    icon: '🦃'
+    icon: '🦃',
+    tier: calculateTier(700000)
   },
   {
     id: 'cattle_08',
@@ -200,7 +218,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 35000,
     incomeMultiplier: 1.1,
-    icon: '🐴'
+    icon: '🐴',
+    tier: calculateTier(3500000)
   },
   {
     id: 'cattle_09',
@@ -211,7 +230,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 150000,
     incomeMultiplier: 1.1,
-    icon: '🦙'
+    icon: '🦙',
+    tier: calculateTier(15000000)
   },
   {
     id: 'cattle_10',
@@ -222,7 +242,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 750000,
     incomeMultiplier: 1.1,
-    icon: '🐃'
+    icon: '🐃',
+    tier: calculateTier(75000000)
   },
   {
     id: 'cattle_11',
@@ -233,7 +254,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 3500000,
     incomeMultiplier: 1.1,
-    icon: '🏭'
+    icon: '🏭',
+    tier: calculateTier(350000000)
   },
 
   // 🍎 Pomar (11 upgrades)
@@ -246,7 +268,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 2,
     incomeMultiplier: 1.1,
-    icon: '🍎'
+    icon: '🍎',
+    tier: calculateTier(200)
   },
   {
     id: 'orchard_02',
@@ -257,7 +280,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 10,
     incomeMultiplier: 1.1,
-    icon: '🍊'
+    icon: '🍊',
+    tier: calculateTier(1000)
   },
   {
     id: 'orchard_03',
@@ -268,7 +292,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 50,
     incomeMultiplier: 1.1,
-    icon: '🍌'
+    icon: '🍌',
+    tier: calculateTier(5000)
   },
   {
     id: 'orchard_04',
@@ -279,7 +304,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 250,
     incomeMultiplier: 1.1,
-    icon: '🥭'
+    icon: '🥭',
+    tier: calculateTier(25000)
   },
   {
     id: 'orchard_05',
@@ -290,7 +316,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 1200,
     incomeMultiplier: 1.1,
-    icon: '🥑'
+    icon: '🥑',
+    tier: calculateTier(120000)
   },
   {
     id: 'orchard_06',
@@ -301,7 +328,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 6000,
     incomeMultiplier: 1.1,
-    icon: '🍑'
+    icon: '🍑',
+    tier: calculateTier(600000)
   },
   {
     id: 'orchard_07',
@@ -312,7 +340,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 30000,
     incomeMultiplier: 1.1,
-    icon: '🍒'
+    icon: '🍒',
+    tier: calculateTier(3000000)
   },
   {
     id: 'orchard_08',
@@ -323,7 +352,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 150000,
     incomeMultiplier: 1.1,
-    icon: '🍋'
+    icon: '🍋',
+    tier: calculateTier(15000000)
   },
   {
     id: 'orchard_09',
@@ -334,7 +364,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 750000,
     incomeMultiplier: 1.1,
-    icon: '🥥'
+    icon: '🥥',
+    tier: calculateTier(75000000)
   },
   {
     id: 'orchard_10',
@@ -345,7 +376,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 4000000,
     incomeMultiplier: 1.1,
-    icon: '🍇'
+    icon: '🍇',
+    tier: calculateTier(400000000)
   },
   {
     id: 'orchard_11',
@@ -356,7 +388,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 20000000,
     incomeMultiplier: 1.1,
-    icon: '🌳'
+    icon: '🌳',
+    tier: calculateTier(2000000000)
   },
 
   // 🐝 Apicultura (11 upgrades)
@@ -369,7 +402,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 4,
     incomeMultiplier: 1.1,
-    icon: '🐝'
+    icon: '🐝',
+    tier: calculateTier(400)
   },
   {
     id: 'bee_02',
@@ -380,7 +414,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 20,
     incomeMultiplier: 1.1,
-    icon: '👑'
+    icon: '👑',
+    tier: calculateTier(2000)
   },
   {
     id: 'bee_03',
@@ -391,7 +426,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 100,
     incomeMultiplier: 1.1,
-    icon: '🍯'
+    icon: '🍯',
+    tier: calculateTier(10000)
   },
   {
     id: 'bee_04',
@@ -402,7 +438,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 500,
     incomeMultiplier: 1.1,
-    icon: '🌸'
+    icon: '🌸',
+    tier: calculateTier(50000)
   },
   {
     id: 'bee_05',
@@ -413,7 +450,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 2500,
     incomeMultiplier: 1.1,
-    icon: '📦'
+    icon: '📦',
+    tier: calculateTier(250000)
   },
   {
     id: 'bee_06',
@@ -424,7 +462,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 12000,
     incomeMultiplier: 1.1,
-    icon: '✨'
+    icon: '✨',
+    tier: calculateTier(1200000)
   },
   {
     id: 'bee_07',
@@ -435,7 +474,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 60000,
     incomeMultiplier: 1.1,
-    icon: '💊'
+    icon: '💊',
+    tier: calculateTier(6000000)
   },
   {
     id: 'bee_08',
@@ -446,7 +486,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 300000,
     incomeMultiplier: 1.1,
-    icon: '👑'
+    icon: '👑',
+    tier: calculateTier(30000000)
   },
   {
     id: 'bee_09',
@@ -457,7 +498,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 1500000,
     incomeMultiplier: 1.1,
-    icon: '🏭'
+    icon: '🏭',
+    tier: calculateTier(150000000)
   },
   {
     id: 'bee_10',
@@ -468,7 +510,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 7500000,
     incomeMultiplier: 1.1,
-    icon: '🧬'
+    icon: '🧬',
+    tier: calculateTier(750000000)
   },
   {
     id: 'bee_11',
@@ -479,7 +522,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 40000000,
     incomeMultiplier: 1.1,
-    icon: '🏰'
+    icon: '🏰',
+    tier: calculateTier(4000000000)
   },
 
   // 🎣 Piscicultura (11 upgrades)
@@ -492,7 +536,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 8,
     incomeMultiplier: 1.1,
-    icon: '🐠'
+    icon: '🐠',
+    tier: calculateTier(800)
   },
   {
     id: 'fish_02',
@@ -503,7 +548,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 40,
     incomeMultiplier: 1.1,
-    icon: '🐟'
+    icon: '🐟',
+    tier: calculateTier(4000)
   },
   {
     id: 'fish_03',
@@ -514,7 +560,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 200,
     incomeMultiplier: 1.1,
-    icon: '🎏'
+    icon: '🎏',
+    tier: calculateTier(20000)
   },
   {
     id: 'fish_04',
@@ -525,7 +572,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 1000,
     incomeMultiplier: 1.1,
-    icon: '🦐'
+    icon: '🦐',
+    tier: calculateTier(100000)
   },
   {
     id: 'fish_05',
@@ -536,7 +584,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 5000,
     incomeMultiplier: 1.1,
-    icon: '🐡'
+    icon: '🐡',
+    tier: calculateTier(500000)
   },
   {
     id: 'fish_06',
@@ -547,7 +596,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 25000,
     incomeMultiplier: 1.1,
-    icon: '🎣'
+    icon: '🎣',
+    tier: calculateTier(2500000)
   },
   {
     id: 'fish_07',
@@ -558,7 +608,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 120000,
     incomeMultiplier: 1.1,
-    icon: '🦪'
+    icon: '🦪',
+    tier: calculateTier(12000000)
   },
   {
     id: 'fish_08',
@@ -569,7 +620,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 600000,
     incomeMultiplier: 1.1,
-    icon: '🦞'
+    icon: '🦞',
+    tier: calculateTier(60000000)
   },
   {
     id: 'fish_09',
@@ -580,7 +632,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 3000000,
     incomeMultiplier: 1.1,
-    icon: '🌊'
+    icon: '🌊',
+    tier: calculateTier(300000000)
   },
   {
     id: 'fish_10',
@@ -591,7 +644,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 15000000,
     incomeMultiplier: 1.1,
-    icon: '⚫'
+    icon: '⚫',
+    tier: calculateTier(1500000000)
   },
   {
     id: 'fish_11',
@@ -602,7 +656,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 80000000,
     incomeMultiplier: 1.1,
-    icon: '🏛️'
+    icon: '🏛️',
+    tier: calculateTier(8000000000)
   },
 
   // 🍷 Vinicultura (11 upgrades)
@@ -615,7 +670,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 15,
     incomeMultiplier: 1.1,
-    icon: '🍇'
+    icon: '🍇',
+    tier: calculateTier(1500)
   },
   {
     id: 'wine_02',
@@ -626,7 +682,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 75,
     incomeMultiplier: 1.1,
-    icon: '🛢️'
+    icon: '🛢️',
+    tier: calculateTier(7500)
   },
   {
     id: 'wine_03',
@@ -637,7 +694,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 350,
     incomeMultiplier: 1.1,
-    icon: '🏚️'
+    icon: '🏚️',
+    tier: calculateTier(35000)
   },
   {
     id: 'wine_04',
@@ -648,7 +706,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 1750,
     incomeMultiplier: 1.1,
-    icon: '🍷'
+    icon: '🍷',
+    tier: calculateTier(175000)
   },
   {
     id: 'wine_05',
@@ -659,7 +718,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 8500,
     incomeMultiplier: 1.1,
-    icon: '🥂'
+    icon: '🥂',
+    tier: calculateTier(850000)
   },
   {
     id: 'wine_06',
@@ -670,7 +730,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 40000,
     incomeMultiplier: 1.1,
-    icon: '🍾'
+    icon: '🍾',
+    tier: calculateTier(4000000)
   },
   {
     id: 'wine_07',
@@ -681,7 +742,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 200000,
     incomeMultiplier: 1.1,
-    icon: '🌹'
+    icon: '🌹',
+    tier: calculateTier(20000000)
   },
   {
     id: 'wine_08',
@@ -692,7 +754,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 1000000,
     incomeMultiplier: 1.1,
-    icon: '⭐'
+    icon: '⭐',
+    tier: calculateTier(100000000)
   },
   {
     id: 'wine_09',
@@ -703,7 +766,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 5000000,
     incomeMultiplier: 1.1,
-    icon: '🏆'
+    icon: '🏆',
+    tier: calculateTier(500000000)
   },
   {
     id: 'wine_10',
@@ -714,7 +778,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 25000000,
     incomeMultiplier: 1.1,
-    icon: '💎'
+    icon: '💎',
+    tier: calculateTier(2500000000)
   },
   {
     id: 'wine_11',
@@ -725,7 +790,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 120000000,
     incomeMultiplier: 1.1,
-    icon: '👑'
+    icon: '👑',
+    tier: calculateTier(12000000000)
   },
 
   // 🧀 Laticínios (11 upgrades)
@@ -738,7 +804,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 6,
     incomeMultiplier: 1.1,
-    icon: '🥛'
+    icon: '🥛',
+    tier: calculateTier(600)
   },
   {
     id: 'dairy_02',
@@ -749,7 +816,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 30,
     incomeMultiplier: 1.1,
-    icon: '🧀'
+    icon: '🧀',
+    tier: calculateTier(3000)
   },
   {
     id: 'dairy_03',
@@ -760,7 +828,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 150,
     incomeMultiplier: 1.1,
-    icon: '🧈'
+    icon: '🧈',
+    tier: calculateTier(15000)
   },
   {
     id: 'dairy_04',
@@ -771,7 +840,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 750,
     incomeMultiplier: 1.1,
-    icon: '🥄'
+    icon: '🥄',
+    tier: calculateTier(75000)
   },
   {
     id: 'dairy_05',
@@ -782,7 +852,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 3750,
     incomeMultiplier: 1.1,
-    icon: '🧀'
+    icon: '🧀',
+    tier: calculateTier(375000)
   },
   {
     id: 'dairy_06',
@@ -793,7 +864,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 18000,
     incomeMultiplier: 1.1,
-    icon: '🍨'
+    icon: '🍨',
+    tier: calculateTier(1800000)
   },
   {
     id: 'dairy_07',
@@ -804,7 +876,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 90000,
     incomeMultiplier: 1.1,
-    icon: '🥣'
+    icon: '🥣',
+    tier: calculateTier(9000000)
   },
   {
     id: 'dairy_08',
@@ -815,7 +888,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 450000,
     incomeMultiplier: 1.1,
-    icon: '✨'
+    icon: '✨',
+    tier: calculateTier(45000000)
   },
   {
     id: 'dairy_09',
@@ -826,7 +900,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 2250000,
     incomeMultiplier: 1.1,
-    icon: '🏭'
+    icon: '🏭',
+    tier: calculateTier(225000000)
   },
   {
     id: 'dairy_10',
@@ -837,7 +912,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 11000000,
     incomeMultiplier: 1.1,
-    icon: '💎'
+    icon: '💎',
+    tier: calculateTier(1100000000)
   },
   {
     id: 'dairy_11',
@@ -848,7 +924,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 55000000,
     incomeMultiplier: 1.1,
-    icon: '🌍'
+    icon: '🌍',
+    tier: calculateTier(5500000000)
   },
 
   // 🌽 Agricultura Industrial (11 upgrades)
@@ -861,7 +938,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 50,
     incomeMultiplier: 1.1,
-    icon: '🚜'
+    icon: '🚜',
+    tier: calculateTier(5000)
   },
   {
     id: 'agro_02',
@@ -872,7 +950,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 250,
     incomeMultiplier: 1.1,
-    icon: '🌾'
+    icon: '🌾',
+    tier: calculateTier(25000)
   },
   {
     id: 'agro_03',
@@ -883,7 +962,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 1250,
     incomeMultiplier: 1.1,
-    icon: '💧'
+    icon: '💧',
+    tier: calculateTier(125000)
   },
   {
     id: 'agro_04',
@@ -894,7 +974,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 6250,
     incomeMultiplier: 1.1,
-    icon: '🛸'
+    icon: '🛸',
+    tier: calculateTier(625000)
   },
   {
     id: 'agro_05',
@@ -905,7 +986,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 30000,
     incomeMultiplier: 1.1,
-    icon: '📡'
+    icon: '📡',
+    tier: calculateTier(3000000)
   },
   {
     id: 'agro_06',
@@ -916,7 +998,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 150000,
     incomeMultiplier: 1.1,
-    icon: '🤖'
+    icon: '🤖',
+    tier: calculateTier(15000000)
   },
   {
     id: 'agro_07',
@@ -927,7 +1010,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 750000,
     incomeMultiplier: 1.1,
-    icon: '🛰️'
+    icon: '🛰️',
+    tier: calculateTier(75000000)
   },
   {
     id: 'agro_08',
@@ -938,7 +1022,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 3750000,
     incomeMultiplier: 1.1,
-    icon: '🏢'
+    icon: '🏢',
+    tier: calculateTier(375000000)
   },
   {
     id: 'agro_09',
@@ -949,7 +1034,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 18000000,
     incomeMultiplier: 1.1,
-    icon: '🧬'
+    icon: '🧬',
+    tier: calculateTier(1800000000)
   },
   {
     id: 'agro_10',
@@ -960,7 +1046,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 90000000,
     incomeMultiplier: 1.1,
-    icon: '🚀'
+    icon: '🚀',
+    tier: calculateTier(9000000000)
   },
   {
     id: 'agro_11',
@@ -971,7 +1058,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 450000000,
     incomeMultiplier: 1.1,
-    icon: '🌍'
+    icon: '🌍',
+    tier: calculateTier(45000000000)
   },
 
   // 🏭 Processamento (11 upgrades)
@@ -984,7 +1072,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 25,
     incomeMultiplier: 1.1,
-    icon: '⚙️'
+    icon: '⚙️',
+    tier: calculateTier(2500)
   },
   {
     id: 'process_02',
@@ -995,7 +1084,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 120,
     incomeMultiplier: 1.1,
-    icon: '🥫'
+    icon: '🥫',
+    tier: calculateTier(12000)
   },
   {
     id: 'process_03',
@@ -1006,7 +1096,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 600,
     incomeMultiplier: 1.1,
-    icon: '🏭'
+    icon: '🏭',
+    tier: calculateTier(60000)
   },
   {
     id: 'process_04',
@@ -1017,7 +1108,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 3000,
     incomeMultiplier: 1.1,
-    icon: '📦'
+    icon: '📦',
+    tier: calculateTier(300000)
   },
   {
     id: 'process_05',
@@ -1028,7 +1120,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 15000,
     incomeMultiplier: 1.1,
-    icon: '❄️'
+    icon: '❄️',
+    tier: calculateTier(1500000)
   },
   {
     id: 'process_06',
@@ -1039,7 +1132,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 75000,
     incomeMultiplier: 1.1,
-    icon: '🧃'
+    icon: '🧃',
+    tier: calculateTier(7500000)
   },
   {
     id: 'process_07',
@@ -1050,7 +1144,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 375000,
     incomeMultiplier: 1.1,
-    icon: '🍦'
+    icon: '🍦',
+    tier: calculateTier(37500000)
   },
   {
     id: 'process_08',
@@ -1061,7 +1156,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 1875000,
     incomeMultiplier: 1.1,
-    icon: '🍬'
+    icon: '🍬',
+    tier: calculateTier(187500000)
   },
   {
     id: 'process_09',
@@ -1072,7 +1168,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 9375000,
     incomeMultiplier: 1.1,
-    icon: '🏗️'
+    icon: '🏗️',
+    tier: calculateTier(937500000)
   },
   {
     id: 'process_10',
@@ -1083,7 +1180,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 46875000,
     incomeMultiplier: 1.1,
-    icon: '⚛️'
+    icon: '⚛️',
+    tier: calculateTier(4687500000)
   },
   {
     id: 'process_11',
@@ -1094,7 +1192,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 230000000,
     incomeMultiplier: 1.1,
-    icon: '🔬'
+    icon: '🔬',
+    tier: calculateTier(23000000000)
   },
 
   // 🌟 Tecnologia Futurista (11 upgrades)
@@ -1107,7 +1206,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 100,
     incomeMultiplier: 1.1,
-    icon: '☀️'
+    icon: '☀️',
+    tier: calculateTier(10000)
   },
   {
     id: 'future_02',
@@ -1118,7 +1218,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 500,
     incomeMultiplier: 1.1,
-    icon: '💨'
+    icon: '💨',
+    tier: calculateTier(50000)
   },
   {
     id: 'future_03',
@@ -1129,7 +1230,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 2500,
     incomeMultiplier: 1.1,
-    icon: '🏠'
+    icon: '🏠',
+    tier: calculateTier(250000)
   },
   {
     id: 'future_04',
@@ -1140,7 +1242,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 12500,
     incomeMultiplier: 1.1,
-    icon: '🤖'
+    icon: '🤖',
+    tier: calculateTier(1250000)
   },
   {
     id: 'future_05',
@@ -1151,7 +1254,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 62500,
     incomeMultiplier: 1.1,
-    icon: '🧬'
+    icon: '🧬',
+    tier: calculateTier(6250000)
   },
   {
     id: 'future_06',
@@ -1162,7 +1266,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 312500,
     incomeMultiplier: 1.1,
-    icon: '🖨️'
+    icon: '🖨️',
+    tier: calculateTier(31250000)
   },
   {
     id: 'future_07',
@@ -1173,7 +1278,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 1562500,
     incomeMultiplier: 1.1,
-    icon: '🌊'
+    icon: '🌊',
+    tier: calculateTier(156250000)
   },
   {
     id: 'future_08',
@@ -1184,7 +1290,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 7812500,
     incomeMultiplier: 1.1,
-    icon: '🛸'
+    icon: '🛸',
+    tier: calculateTier(781250000)
   },
   {
     id: 'future_09',
@@ -1195,7 +1302,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 39062500,
     incomeMultiplier: 1.1,
-    icon: '⚛️'
+    icon: '⚛️',
+    tier: calculateTier(3906250000)
   },
   {
     id: 'future_10',
@@ -1206,7 +1314,8 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 195312500,
     incomeMultiplier: 1.1,
-    icon: '✨'
+    icon: '✨',
+    tier: calculateTier(19531250000)
   },
   {
     id: 'future_11',
@@ -1217,7 +1326,203 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 1000000000,
     incomeMultiplier: 1.1,
-    icon: '🌌'
+    icon: '🌌',
+    tier: calculateTier(100000000000)
+  },
+
+  // 🏆 UPGRADES COMPOSTOS (Necessitam de requisitos)
+  // Estes upgrades são muito poderosos mas exigem outros upgrades primeiro
+
+  // Combo Plantação Avançada
+  {
+    id: 'composite_01',
+    name: 'Fazenda Superintensiva',
+    description: '🏆 COMPOSTO: Combina múltiplas tecnologias agrícolas para produção massiva',
+    category: 'Upgrades Compostos',
+    baseCost: 50000000,
+    costMultiplier: 1.2,
+    baseIncome: 500000,
+    incomeMultiplier: 1.15,
+    icon: '🌟',
+    isComposite: true,
+    requirements: [
+      { upgradeId: 'plant_06', minCount: 5 },  // 5x Trator Pequeno
+      { upgradeId: 'plant_08', minCount: 3 },  // 3x Estufa Climatizada
+      { upgradeId: 'plant_09', minCount: 2 }   // 2x Sementes Híbridas
+    ]
+  },
+
+  // Combo Criação Animal
+  {
+    id: 'composite_02',
+    name: 'Complexo Pecuário Premium',
+    description: '🏆 COMPOSTO: Criação de elite com genética superior',
+    category: 'Upgrades Compostos',
+    baseCost: 150000000,
+    costMultiplier: 1.2,
+    baseIncome: 1500000,
+    incomeMultiplier: 1.15,
+    icon: '🎖️',
+    isComposite: true,
+    requirements: [
+      { upgradeId: 'cattle_03', minCount: 10 }, // 10x Vaca Leiteira
+      { upgradeId: 'cattle_08', minCount: 5 },  // 5x Cavalo
+      { upgradeId: 'cattle_11', minCount: 1 }   // 1x Granja Industrial
+    ]
+  },
+
+  // Combo Frutas
+  {
+    id: 'composite_03',
+    name: 'Pomar Celestial',
+    description: '🏆 COMPOSTO: Pomar mágico que produz frutas perfeitas',
+    category: 'Upgrades Compostos',
+    baseCost: 300000000,
+    costMultiplier: 1.2,
+    baseIncome: 3000000,
+    incomeMultiplier: 1.15,
+    icon: '🍃',
+    isComposite: true,
+    requirements: [
+      { upgradeId: 'orchard_03', minCount: 5 }, // 5x Bananeira
+      { upgradeId: 'orchard_07', minCount: 3 }, // 3x Cerejeira
+      { upgradeId: 'orchard_11', minCount: 1 }  // 1x Pomar Hidropônico
+    ]
+  },
+
+  // Combo Mel + Frutas
+  {
+    id: 'composite_04',
+    name: 'Simbiose Natural',
+    description: '🏆 COMPOSTO: Abelhas polinizam o pomar criando sinergia perfeita',
+    category: 'Upgrades Compostos',
+    baseCost: 500000000,
+    costMultiplier: 1.2,
+    baseIncome: 5000000,
+    incomeMultiplier: 1.15,
+    icon: '🌺',
+    isComposite: true,
+    requirements: [
+      { upgradeId: 'bee_09', minCount: 2 },     // 2x Apiário Industrial
+      { upgradeId: 'orchard_08', minCount: 5 }, // 5x Limoeiro
+      { upgradeId: 'bee_04', minCount: 10 }     // 10x Flores Silvestres
+    ]
+  },
+
+  // Combo Aquático
+  {
+    id: 'composite_05',
+    name: 'Império Aquático Total',
+    description: '🏆 COMPOSTO: Domínio completo sobre os mares e rios',
+    category: 'Upgrades Compostos',
+    baseCost: 1000000000,
+    costMultiplier: 1.2,
+    baseIncome: 10000000,
+    incomeMultiplier: 1.15,
+    icon: '🔱',
+    isComposite: true,
+    requirements: [
+      { upgradeId: 'fish_09', minCount: 2 },  // 2x Aquicultura Marinha
+      { upgradeId: 'fish_10', minCount: 1 },  // 1x Caviar de Esturjão
+      { upgradeId: 'fish_07', minCount: 5 }   // 5x Fazenda de Ostras
+    ]
+  },
+
+  // Combo Vinhos + Queijos
+  {
+    id: 'composite_06',
+    name: 'Gastronomia de Elite',
+    description: '🏆 COMPOSTO: Combinação perfeita de vinhos e queijos gourmet',
+    category: 'Upgrades Compostos',
+    baseCost: 2000000000,
+    costMultiplier: 1.2,
+    baseIncome: 20000000,
+    incomeMultiplier: 1.15,
+    icon: '👑',
+    isComposite: true,
+    requirements: [
+      { upgradeId: 'wine_08', minCount: 3 },  // 3x Safra Especial
+      { upgradeId: 'dairy_10', minCount: 2 }, // 2x Queijo Trufado
+      { upgradeId: 'wine_06', minCount: 10 }  // 10x Champagne
+    ]
+  },
+
+  // Combo Tecnologia
+  {
+    id: 'composite_07',
+    name: 'Singularidade Agrícola',
+    description: '🏆 COMPOSTO: IA superinteligente controla toda a produção',
+    category: 'Upgrades Compostos',
+    baseCost: 5000000000,
+    costMultiplier: 1.2,
+    baseIncome: 50000000,
+    incomeMultiplier: 1.15,
+    icon: '🤖',
+    isComposite: true,
+    requirements: [
+      { upgradeId: 'agro_06', minCount: 5 },    // 5x IA para Agricultura
+      { upgradeId: 'agro_09', minCount: 2 },    // 2x Biotecnologia Avançada
+      { upgradeId: 'future_04', minCount: 10 }  // 10x Robô Agricultor
+    ]
+  },
+
+  // Combo Processamento
+  {
+    id: 'composite_08',
+    name: 'Fábrica Quantum',
+    description: '🏆 COMPOSTO: Processamento em nível molecular e quântico',
+    category: 'Upgrades Compostos',
+    baseCost: 10000000000,
+    costMultiplier: 1.2,
+    baseIncome: 100000000,
+    incomeMultiplier: 1.15,
+    icon: '⚛️',
+    isComposite: true,
+    requirements: [
+      { upgradeId: 'process_10', minCount: 3 }, // 3x Nanotecnologia Alimentar
+      { upgradeId: 'process_11', minCount: 2 }, // 2x Síntese de Alimentos
+      { upgradeId: 'future_09', minCount: 1 }   // 1x Fusão Nuclear
+    ]
+  },
+
+  // Combo Espacial
+  {
+    id: 'composite_09',
+    name: 'Colônia Intergaláctica',
+    description: '🏆 COMPOSTO: Fazendas em múltiplas galáxias',
+    category: 'Upgrades Compostos',
+    baseCost: 25000000000,
+    costMultiplier: 1.2,
+    baseIncome: 250000000,
+    incomeMultiplier: 1.15,
+    icon: '🌌',
+    isComposite: true,
+    requirements: [
+      { upgradeId: 'agro_10', minCount: 2 },    // 2x Agricultura Espacial
+      { upgradeId: 'future_08', minCount: 5 },  // 5x Estação Orbital
+      { upgradeId: 'agro_11', minCount: 1 }     // 1x Terraformação
+    ]
+  },
+
+  // Combo Final - Deus da Fazenda
+  {
+    id: 'composite_10',
+    name: 'Deus da Agricultura',
+    description: '🏆 LENDÁRIO: Controle divino sobre toda a produção universal',
+    category: 'Upgrades Compostos',
+    baseCost: 100000000000,
+    costMultiplier: 1.3,
+    baseIncome: 1000000000,
+    incomeMultiplier: 1.2,
+    icon: '✨',
+    isComposite: true,
+    requirements: [
+      { upgradeId: 'composite_01', minCount: 1 },
+      { upgradeId: 'composite_05', minCount: 1 },
+      { upgradeId: 'composite_07', minCount: 1 },
+      { upgradeId: 'composite_09', minCount: 1 },
+      { upgradeId: 'future_11', minCount: 1 }   // 1x Multiverso Agrícola
+    ]
   },
 ];
 
@@ -1232,5 +1537,6 @@ export const categories = [
   'Laticínios',
   'Agricultura Industrial',
   'Processamento',
-  'Tecnologia Futurista'
+  'Tecnologia Futurista',
+  'Upgrades Compostos'
 ];

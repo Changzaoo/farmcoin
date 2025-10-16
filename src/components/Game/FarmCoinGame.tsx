@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Coins, TrendingUp, ShoppingCart, Search } from 'lucide-react';
+import { Coins, TrendingUp, ShoppingCart, Search, Lock, Package } from 'lucide-react';
 import { upgrades as upgradesData, categories } from '../../data/upgrades';
 import { GameState, Upgrade } from '../../types';
 import { saveGameState } from '../../firebase/firestore';
+import { getTierColor, getTierName, getTierGlow, canUnlockCompositeUpgrade, getMissingRequirements } from '../../utils/tierSystem';
 
 interface FloatingCoin {
   id: number;
@@ -23,6 +24,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
   const [lastSave, setLastSave] = useState(Date.now());
   const [floatingCoins, setFloatingCoins] = useState<FloatingCoin[]>([]);
   const [clickEffect, setClickEffect] = useState(false);
+  const [showInventory, setShowInventory] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const coinIdRef = useRef(0);
 
@@ -32,9 +34,20 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
       const existingUpgrade = initialGameState.upgrades?.find(u => u.id === upgrade.id);
       const count = existingUpgrade?.count || 0;
       
+      // Verificar se upgrade composto está desbloqueado
+      let unlocked = true;
+      if (upgrade.isComposite && upgrade.requirements) {
+        const userUpgrades = upgradesData.map(u => {
+          const existing = initialGameState.upgrades?.find(ex => ex.id === u.id);
+          return { ...u, count: existing?.count || 0 };
+        });
+        unlocked = canUnlockCompositeUpgrade(upgrade.requirements, userUpgrades);
+      }
+      
       return {
         ...upgrade,
         count,
+        unlocked,
         cost: upgrade.baseCost * Math.pow(upgrade.costMultiplier, count),
         income: upgrade.baseIncome * Math.pow(upgrade.incomeMultiplier, count)
       };
@@ -136,18 +149,32 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
     const upgrade = upgrades.find(u => u.id === upgradeId);
     if (!upgrade || !upgrade.cost) return;
 
+    // Verificar se upgrade composto está desbloqueado
+    if (upgrade.isComposite && !upgrade.unlocked) return;
+
     if (gameState.coins >= upgrade.cost) {
       const newCount = (upgrade.count || 0) + 1;
       const newCost = upgrade.baseCost * Math.pow(upgrade.costMultiplier, newCount);
       const newIncome = upgrade.baseIncome * Math.pow(upgrade.incomeMultiplier, newCount);
 
-      setUpgrades(prev =>
-        prev.map(u =>
+      // Atualizar upgrades e recalcular desbloqueios
+      setUpgrades(prev => {
+        const updated = prev.map(u =>
           u.id === upgradeId
             ? { ...u, count: newCount, cost: newCost, income: newIncome }
             : u
-        )
-      );
+        );
+
+        // Recalcular quais upgrades compostos estão desbloqueados
+        const userUpgradesForCheck = updated.map(u => ({ id: u.id, count: u.count || 0 }));
+        return updated.map(u => {
+          if (u.isComposite && u.requirements) {
+            const unlocked = canUnlockCompositeUpgrade(u.requirements, userUpgradesForCheck);
+            return { ...u, unlocked };
+          }
+          return u;
+        });
+      });
 
       setGameState(prev => {
         const newState = {
@@ -164,6 +191,18 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
     }
   };
 
+  // Calcular estatísticas de upgrades
+  const upgradeStats = {
+    total: upgrades.length,
+    owned: upgrades.filter(u => (u.count || 0) > 0).length,
+    available: upgrades.filter(u => {
+      const canAfford = gameState.coins >= (u.cost || 0);
+      const isUnlocked = !u.isComposite || u.unlocked;
+      return canAfford && isUnlocked;
+    }).length,
+    locked: upgrades.filter(u => u.isComposite && !u.unlocked).length
+  };
+
   // Filtrar upgrades
   const filteredUpgrades = upgrades.filter(upgrade => {
     const matchesCategory = selectedCategory === 'Todos' || upgrade.category === selectedCategory;
@@ -171,6 +210,11 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                          upgrade.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  // Itens do inventário (upgrades com count > 0)
+  const inventoryItems = upgrades
+    .filter(u => (u.count || 0) > 0)
+    .sort((a, b) => (b.count || 0) - (a.count || 0));
 
   // Formatar número
   const formatNumber = (num: number): string => {
@@ -212,16 +256,26 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
             </div>
           </div>
 
-          {/* Total de Compras */}
+          {/* Upgrades Info */}
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-blue-400">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-3">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Upgrades</p>
                 <p className="text-3xl font-bold text-blue-600">
-                  {gameState.totalPurchases}
+                  {upgradeStats.owned}/{upgradeStats.total}
                 </p>
               </div>
               <ShoppingCart className="w-12 h-12 text-blue-500" />
+            </div>
+            <div className="flex gap-2 text-xs">
+              <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full font-semibold">
+                ✅ {upgradeStats.available} disponíveis
+              </span>
+              {upgradeStats.locked > 0 && (
+                <span className="px-2 py-1 bg-red-100 text-red-700 rounded-full font-semibold">
+                  🔒 {upgradeStats.locked} bloqueados
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -287,45 +341,123 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
             <p className="text-center mt-6 text-gray-600 text-base font-medium">
               Clique para ganhar <span className="font-bold text-yellow-600 text-lg">+0.1</span> moedas
             </p>
+
+            {/* Botão de Inventário */}
+            <button
+              onClick={() => setShowInventory(!showInventory)}
+              className={`w-full mt-4 px-6 py-4 rounded-xl font-bold transition-all ${
+                showInventory
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white'
+                  : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:shadow-lg hover:scale-105'
+              } active:scale-95`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Package className="w-6 h-6" />
+                <span>{showInventory ? '🛒 Ver Loja' : '📦 Ver Inventário'}</span>
+                <span className="ml-2 px-2 py-1 bg-white/20 rounded-full text-sm">
+                  {upgradeStats.owned}
+                </span>
+              </div>
+            </button>
           </div>
         </div>
 
-        {/* Lista de Upgrades */}
+        {/* Inventário ou Lista de Upgrades */}
         <div className="lg:col-span-2">
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-green-400">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">
-              Melhorias
+              {showInventory ? '📦 Inventário' : '🛒 Melhorias'}
             </h2>
 
-            {/* Filtros */}
-            <div className="mb-6 space-y-4">
-              {/* Busca */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Buscar melhorias..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-400 focus:ring-2 focus:ring-green-200 outline-none transition-all"
-                />
-              </div>
+            {showInventory ? (
+              /* ========== INVENTÁRIO ========== */
+              <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                {inventoryItems.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">
+                    <Package className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-semibold">Inventário Vazio</p>
+                    <p className="text-sm mt-2">Compre upgrades para vê-los aqui!</p>
+                  </div>
+                ) : (
+                  inventoryItems.map(item => {
+                    const tierColors = item.tier ? getTierColor(item.tier) : null;
+                    const tierGlow = item.tier ? getTierGlow(item.tier) : '';
+                    const totalIncome = (item.income || 0) * (item.count || 0);
 
-              {/* Categorias */}
-              <div className="flex flex-wrap gap-2">
-                {categories.map(category => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-xl font-medium transition-all ${
-                      selectedCategory === category
-                        ? 'bg-green-500 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
+                    return (
+                      <div
+                        key={item.id}
+                        className={`p-4 rounded-xl border-2 bg-gradient-to-r from-blue-50 to-purple-50 transition-all ${tierGlow} ${
+                          tierColors ? tierColors.border : 'border-blue-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="text-4xl">{item.icon}</div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-gray-800">
+                                {item.name}
+                              </h3>
+                              {item.tier && tierColors && (
+                                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${tierColors.bg} ${tierColors.text}`}>
+                                  {getTierName(item.tier)}
+                                </span>
+                              )}
+                              <span className="px-3 py-1 bg-blue-500 text-white rounded-full text-sm font-bold">
+                                x{item.count}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {item.description}
+                            </p>
+                            <div className="flex gap-4 mt-2 text-sm">
+                              <span className="text-green-600 font-semibold">
+                                📈 +{formatNumber(item.income || 0)}/s cada
+                              </span>
+                              <span className="text-green-700 font-bold">
+                                💰 Total: +{formatNumber(totalIncome)}/s
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            ) : (
+              /* ========== LOJA DE UPGRADES ========== */
+              <>
+                {/* Filtros */}
+                <div className="mb-6 space-y-4">
+                  {/* Busca */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="text"
+                      placeholder="Buscar melhorias..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-400 focus:ring-2 focus:ring-green-200 outline-none transition-all"
+                    />
+                  </div>
+
+                  {/* Categorias */}
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map(category => (
+                      <button
+                        key={category}
+                        onClick={() => setSelectedCategory(category)}
+                        className={`px-4 py-2 rounded-xl font-medium transition-all ${
+                          selectedCategory === category
+                            ? 'bg-green-500 text-white shadow-lg'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
               </div>
             </div>
 
@@ -333,47 +465,79 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
             <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
               {filteredUpgrades.map(upgrade => {
                 const canBuy = gameState.coins >= (upgrade.cost || 0);
+                const isLocked = upgrade.isComposite && !upgrade.unlocked;
+                const tierColors = upgrade.tier ? getTierColor(upgrade.tier) : null;
+                const tierGlow = upgrade.tier ? getTierGlow(upgrade.tier) : '';
+                const userUpgrades = upgrades.map(u => ({ id: u.id, count: u.count || 0 }));
+                const missingReqs = isLocked && upgrade.requirements 
+                  ? getMissingRequirements(upgrade.requirements, userUpgrades, upgradesData)
+                  : [];
                 
                 return (
                   <div
                     key={upgrade.id}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      canBuy
+                    className={`p-4 rounded-xl border-2 transition-all ${tierGlow} ${
+                      isLocked
+                        ? 'bg-gray-100 border-gray-300 opacity-50'
+                        : canBuy
                         ? 'bg-gradient-to-r from-green-50 to-yellow-50 border-green-300 hover:shadow-lg'
                         : 'bg-gray-50 border-gray-200 opacity-60'
-                    }`}
+                    } ${tierColors ? tierColors.border : ''}`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="text-4xl">{upgrade.icon}</div>
+                      <div className="text-4xl relative">
+                        {upgrade.icon}
+                        {isLocked && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg">
+                            <Lock className="w-6 h-6 text-white" />
+                          </div>
+                        )}
+                      </div>
                       
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-gray-800 truncate">
-                          {upgrade.name}
-                          {upgrade.count ? ` (${upgrade.count})` : ''}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-gray-800 truncate">
+                            {upgrade.name}
+                            {upgrade.count ? ` (${upgrade.count})` : ''}
+                          </h3>
+                          {upgrade.tier && tierColors && (
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${tierColors.bg} ${tierColors.text}`}>
+                              {getTierName(upgrade.tier)}
+                            </span>
+                          )}
+                        </div>
                         <p className="text-sm text-gray-600 truncate">
                           {upgrade.description}
                         </p>
-                        <div className="flex gap-4 mt-1 text-sm">
-                          <span className="text-yellow-600 font-semibold">
-                            💰 {formatNumber(upgrade.cost || 0)}
-                          </span>
-                          <span className="text-green-600 font-semibold">
-                            📈 +{formatNumber(upgrade.income || 0)}/s
-                          </span>
-                        </div>
+                        
+                        {isLocked && missingReqs.length > 0 ? (
+                          <div className="mt-1 text-xs text-red-600">
+                            🔒 Requisitos: {missingReqs.join(', ')}
+                          </div>
+                        ) : (
+                          <div className="flex gap-4 mt-1 text-sm">
+                            <span className="text-yellow-600 font-semibold">
+                              💰 {formatNumber(upgrade.cost || 0)}
+                            </span>
+                            <span className="text-green-600 font-semibold">
+                              📈 +{formatNumber(upgrade.income || 0)}/s
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <button
                         onClick={() => handleBuyUpgrade(upgrade.id)}
-                        disabled={!canBuy}
+                        disabled={!canBuy || isLocked}
                         className={`px-6 py-3 rounded-xl font-bold transition-all ${
-                          canBuy
+                          isLocked
+                            ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                            : canBuy
                             ? 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:shadow-lg hover:scale-105 active:scale-95'
                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         }`}
                       >
-                        Comprar
+                        {isLocked ? '🔒 Bloqueado' : 'Comprar'}
                       </button>
                     </div>
                   </div>
@@ -387,6 +551,8 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                 </div>
               )}
             </div>
+          </>
+            )}
           </div>
         </div>
       </div>
@@ -475,6 +641,32 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
 
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: #059669;
+        }
+
+        @keyframes pulse-slow {
+          0%, 100% {
+            box-shadow: 0 0 10px rgba(147, 51, 234, 0.3);
+          }
+          50% {
+            box-shadow: 0 0 20px rgba(147, 51, 234, 0.6);
+          }
+        }
+
+        @keyframes glow {
+          0%, 100% {
+            box-shadow: 0 0 15px rgba(251, 146, 60, 0.4), 0 0 30px rgba(251, 146, 60, 0.2);
+          }
+          50% {
+            box-shadow: 0 0 25px rgba(251, 146, 60, 0.6), 0 0 50px rgba(251, 146, 60, 0.3);
+          }
+        }
+
+        .animate-pulse-slow {
+          animation: pulse-slow 2s ease-in-out infinite;
+        }
+
+        .animate-glow {
+          animation: glow 2s ease-in-out infinite;
         }
       `}</style>
     </div>
