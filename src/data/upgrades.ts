@@ -32,11 +32,11 @@ export const upgrades: Upgrade[] = [
   {
     id: 'land_livestock',
     name: 'Campo de Criação 🐄',
-    description: '🗺️ TERRENO: 1.000m² com pastos. Bônus: +20% em Gado, Apicultura e Piscicultura',
+    description: '🗺️ TERRENO: 1.000m² com pastos. Bônus: +8% em Gado, Apicultura e Piscicultura',
     category: 'Terrenos',
     baseCost: 2500000,
     costMultiplier: 2.0,
-    baseIncome: 2500,
+    baseIncome: 400,
     incomeMultiplier: 1.4,
     icon: '🐄',
     tier: calculateTier(2500000)
@@ -44,11 +44,11 @@ export const upgrades: Upgrade[] = [
   {
     id: 'land_industrial',
     name: 'Complexo Industrial 🏭',
-    description: '🗺️ TERRENO: 5.000m² com infraestrutura. Bônus: +30% em Processamento e Laticínios',
+    description: '🗺️ TERRENO: 5.000m² com infraestrutura. Bônus: +12% em Processamento e Laticínios',
     category: 'Terrenos',
     baseCost: 15000000,
     costMultiplier: 2.0,
-    baseIncome: 15000,
+    baseIncome: 1500,
     incomeMultiplier: 1.6,
     icon: '🏭',
     tier: calculateTier(15000000)
@@ -56,11 +56,11 @@ export const upgrades: Upgrade[] = [
   {
     id: 'land_mega_farm',
     name: 'Mega Fazenda 🏰',
-    description: '🗺️ TERRENO: 10 hectares de terra premium. Bônus: +50% em TODAS as categorias básicas',
+    description: '🗺️ TERRENO: 10 hectares de terra premium. Bônus: +15% em TODAS as categorias básicas',
     category: 'Terrenos',
     baseCost: 100000000,
     costMultiplier: 2.5,
-    baseIncome: 100000,
+    baseIncome: 8000,
     incomeMultiplier: 2.0,
     icon: '🏰',
     tier: calculateTier(100000000)
@@ -68,11 +68,11 @@ export const upgrades: Upgrade[] = [
   {
     id: 'land_technological',
     name: 'Campus Tecnológico 🏙️',
-    description: '🗺️ TERRENO: Complexo futurista de 50 hectares. Bônus: +75% em Tecnologia e Industrial',
+    description: '🗺️ TERRENO: Complexo futurista de 50 hectares. Bônus: +20% em Tecnologia e Industrial',
     category: 'Terrenos',
     baseCost: 750000000,
     costMultiplier: 3.0,
-    baseIncome: 750000,
+    baseIncome: 25000,
     incomeMultiplier: 2.5,
     icon: '🏙️',
     tier: calculateTier(750000000)
@@ -80,11 +80,11 @@ export const upgrades: Upgrade[] = [
   {
     id: 'land_divine',
     name: 'Reino Divino 🌈',
-    description: '🗺️ TERRENO LENDÁRIO: Terra abençoada infinita. Bônus: +150% em TODAS as categorias',
+    description: '🗺️ TERRENO LENDÁRIO: Terra abençoada infinita. Bônus: +35% em TODAS as categorias',
     category: 'Terrenos',
     baseCost: 5000000000,
     costMultiplier: 4.0,
-    baseIncome: 5000000,
+    baseIncome: 80000,
     incomeMultiplier: 4.0,
     icon: '🌈',
     tier: calculateTier(5000000000)

@@ -1213,7 +1213,7 @@ export async function createGuild(
   emoji: string
 ): Promise<string> {
   try {
-    // Verificar se o terreno existe e pertence ao usuário
+    // Verificar se o terreno existe na lista de upgrades
     const upgrades: Upgrade[] = await import('../data/upgrades').then(m => m.upgrades);
     const land = upgrades.find(u => u.id === landId && u.category === 'Terrenos');
     
@@ -1223,6 +1223,22 @@ export async function createGuild(
     
     if (!land.tier) {
       throw new Error('Tier do terreno não definido');
+    }
+    
+    // ✅ VALIDAÇÃO CRÍTICA: Verificar se o usuário POSSUI o terreno
+    const userRef = doc(db, 'users', ownerId);
+    const userDoc = await getDoc(userRef);
+    
+    if (!userDoc.exists()) {
+      throw new Error('Usuário não encontrado');
+    }
+    
+    const userData = userDoc.data();
+    const userUpgrades = userData.upgrades || [];
+    const ownedLand = userUpgrades.find((u: any) => u.id === landId);
+    
+    if (!ownedLand || (ownedLand.count || 0) <= 0) {
+      throw new Error('Você não possui este terreno no inventário');
     }
     
     // Verificar se o usuário já possui uma guilda
