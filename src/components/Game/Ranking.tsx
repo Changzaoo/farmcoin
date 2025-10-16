@@ -164,7 +164,7 @@ export default function Ranking({
             </div>
             <div className="text-right">
               <p className="text-sm text-white/80 font-semibold mb-1">{tabInfo.label}</p>
-              <p className="text-3xl font-black bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg">
+              <p className="text-3xl font-black bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">
                 {tabInfo.icon} {formatNumber(tabInfo.value)}
               </p>
             </div>
@@ -225,7 +225,7 @@ export default function Ranking({
                         {isCurrentUser && <span className="ml-2 text-xs bg-gradient-to-r from-blue-400 to-cyan-400 text-white px-3 py-1 rounded-full font-black shadow-lg animate-pulse">VOCÊ</span>}
                       </h3>
                     </div>
-                    <p className="font-black text-lg mt-1 bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg">
+                    <p className="font-black text-lg mt-1 bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">
                       {tabInfo.icon} {formatNumber(displayValue)} {activeTab === 'perSecond' && '/s'}
                     </p>
                   </div>

@@ -572,7 +572,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-mobile-xs sm:text-sm text-white/80 mb-1 font-semibold">💰 Moedas</p>
-                <p className="text-mobile-lg sm:text-4xl font-black bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg">
+                <p className="text-mobile-lg sm:text-4xl font-black bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">
                   {formatNumber(gameState.coins)}
                 </p>
               </div>
@@ -587,7 +587,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-mobile-xs sm:text-sm text-white/80 mb-1 font-semibold">📈 Por Segundo</p>
-                <p className="text-mobile-lg sm:text-4xl font-black bg-gradient-to-r from-green-200 via-emerald-200 to-teal-200 bg-clip-text text-transparent drop-shadow-lg">
+                <p className="text-mobile-lg sm:text-4xl font-black bg-gradient-to-r from-green-500 via-emerald-600 to-teal-600 bg-clip-text text-transparent gradient-text-readable">
                   {formatNumber(gameState.perSecond)}
                 </p>
                 
@@ -649,7 +649,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
             <div className="flex items-center justify-between mb-3">
               <div>
                 <p className="text-sm text-white/80 mb-1 font-semibold">🎁 Upgrades</p>
-                <p className="text-4xl font-black bg-gradient-to-r from-blue-200 via-cyan-200 to-purple-200 bg-clip-text text-transparent drop-shadow-lg">
+                <p className="text-4xl font-black bg-gradient-to-r from-blue-500 via-cyan-600 to-purple-600 bg-clip-text text-transparent gradient-text-readable">
                   {upgradeStats.owned}/{upgradeStats.total}
                 </p>
               </div>
@@ -675,7 +675,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
         {/* Área de Click */}
         <div className="lg:col-span-1">
           <div className="glass-vibrant rounded-3xl p-8 shadow-2xl achievement-glow">
-            <h2 className="text-3xl font-black text-center mb-6 bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg">
+            <h2 className="text-3xl font-black text-center mb-6 bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">
               ⛏️ Fazenda
             </h2>
             
@@ -891,7 +891,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                     </div>
 
                     <div className="flex items-center justify-between glass-vibrant p-4 rounded-2xl border border-white/30">
-                      <span className="text-lg font-black bg-gradient-to-r from-purple-200 via-pink-200 to-purple-200 bg-clip-text text-transparent drop-shadow-lg">
+                      <span className="text-lg font-black bg-gradient-to-r from-purple-500 via-pink-600 to-purple-600 bg-clip-text text-transparent gradient-text-readable">
                         ✨ {selectedItems.size} item(ns) selecionado(s)
                       </span>
                       <button
@@ -982,10 +982,10 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                               {item.description}
                             </p>
                             <div className="flex gap-4 mt-2 text-sm">
-                              <span className="font-black bg-gradient-to-r from-green-200 via-emerald-200 to-teal-200 bg-clip-text text-transparent drop-shadow-lg">
+                              <span className="font-black bg-gradient-to-r from-green-500 via-emerald-600 to-teal-600 bg-clip-text text-transparent gradient-text-readable">
                                 📈 +{formatNumber(item.income || 0)}/s cada
                               </span>
-                              <span className="font-black text-lg bg-gradient-to-r from-green-300 via-emerald-300 to-teal-300 bg-clip-text text-transparent drop-shadow-lg">
+                              <span className="font-black text-lg bg-gradient-to-r from-green-600 via-emerald-700 to-teal-700 bg-clip-text text-transparent gradient-text-readable">
                                 💰 Total: +{formatNumber(totalIncome)}/s
                               </span>
                             </div>
@@ -1103,10 +1103,10 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                           </div>
                         ) : (
                           <div className="flex gap-4 mt-2 text-sm">
-                            <span className="font-black text-lg bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg">
+                            <span className="font-black text-lg bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">
                               💰 {formatNumber(upgrade.cost || 0)}
                             </span>
-                            <span className="font-black text-lg bg-gradient-to-r from-green-200 via-emerald-200 to-teal-200 bg-clip-text text-transparent drop-shadow-lg">
+                            <span className="font-black text-lg bg-gradient-to-r from-green-500 via-emerald-600 to-teal-600 bg-clip-text text-transparent gradient-text-readable">
                               📈 +{formatNumber(upgrade.income || 0)}/s
                             </span>
                           </div>

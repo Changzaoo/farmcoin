@@ -448,7 +448,7 @@ export default function Marketplace({
                 🔤 Nome
               </button>
             </div>
-            <div className="ml-auto text-sm font-black bg-gradient-to-r from-blue-200 via-cyan-200 to-purple-200 bg-clip-text text-transparent drop-shadow-lg">
+            <div className="ml-auto text-sm font-black bg-gradient-to-r from-blue-500 via-cyan-600 to-purple-600 bg-clip-text text-transparent gradient-text-readable">
               ✨ {listings.length} {listings.length === 1 ? 'item encontrado' : 'itens encontrados'}
             </div>
           </div>
@@ -501,15 +501,15 @@ export default function Marketplace({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-white/80 font-semibold">Preço/Unidade:</span>
-                  <span className="font-black text-lg bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg">{formatNumber(listing.pricePerUnit)} 🪙</span>
+                  <span className="font-black text-lg bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">{formatNumber(listing.pricePerUnit)} 🪙</span>
                 </div>
                 <div className="flex justify-between border-t border-white/20 pt-2">
                   <span className="text-white/80 font-semibold">Renda/Unidade:</span>
-                  <span className="font-black bg-gradient-to-r from-green-200 via-emerald-200 to-teal-200 bg-clip-text text-transparent drop-shadow-lg">{formatNumber(listing.incomePerUnit)}/s</span>
+                  <span className="font-black bg-gradient-to-r from-green-500 via-emerald-600 to-teal-600 bg-clip-text text-transparent gradient-text-readable">{formatNumber(listing.incomePerUnit)}/s</span>
                 </div>
                 <div className="flex justify-between text-base border-t-2 border-white/30 pt-3 mt-2">
                   <span className="text-white font-black">💎 Total:</span>
-                  <span className="font-black text-xl bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg animate-pulse">{formatNumber(listing.totalPrice)} 🪙</span>
+                  <span className="font-black text-xl bg-gradient-to-r from-yellow-600 via-amber-700 to-orange-700 bg-clip-text text-transparent gradient-text-readable animate-pulse">{formatNumber(listing.totalPrice)} 🪙</span>
                 </div>
               </div>
 
