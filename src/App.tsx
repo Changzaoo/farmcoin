@@ -3,10 +3,10 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import { FarmCoinGame } from './components/Game/FarmCoinGame';
 import { UserRole } from './types';
 
 // Placeholder components - precisam ser implementados
-const FarmCoinGame = () => <div>Game Component - To be implemented</div>;
 const AdminPanel = () => <div>Admin Panel - To be implemented</div>;
 
 function App() {
@@ -47,7 +47,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<FarmCoinGame />} />
+        <Route path="/" element={<FarmCoinGame uid={user.uid} initialGameState={userData.gameState} />} />
         {canAccessAdmin && (
           <Route path="/admin" element={<AdminPanel />} />
         )}

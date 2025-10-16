@@ -23,17 +23,23 @@ export interface GameState {
   perSecond: number;
   totalClicks: number;
   totalPurchases: number;
+  upgrades?: Array<{ id: string; count: number }>;
 }
 
 // Upgrade
 export interface Upgrade {
   id: string;
   name: string;
-  cost: number;
-  income: number;
-  count: number;
-  icon: string;
+  description: string;
   category: string;
+  baseCost: number;
+  costMultiplier: number;
+  baseIncome: number;
+  incomeMultiplier: number;
+  icon: string;
+  count?: number;
+  cost?: number;
+  income?: number;
 }
 
 // Pacote de moedas
