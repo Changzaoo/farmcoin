@@ -3,9 +3,10 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Coins, TrendingUp, ShoppingCart, Search, Lock, Package } from 'lucide-react';
 import { upgrades as upgradesData, categories } from '../../data/upgrades';
 import { GameState, Upgrade, UpgradeTier } from '../../types';
-import { saveGameState } from '../../firebase/firestore';
+import { saveGameState, createMarketplaceListing } from '../../firebase/firestore';
 import { getTierColor, getTierName, getTierGlow, canUnlockCompositeUpgrade, getMissingRequirements } from '../../utils/tierSystem';
 import Marketplace from './Marketplace';
+import Ranking from './Ranking';
 
 interface FloatingCoin {
   id: number;
@@ -20,6 +21,13 @@ interface FarmCoinGameProps {
 }
 
 export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameState, initialUpgrades }) => {
+  console.log('🎮 FarmCoinGame iniciado com:', {
+    uid,
+    initialCoins: initialGameState.coins,
+    initialUpgrades: initialUpgrades?.length || 0,
+    initialPerSecond: initialGameState.perSecond
+  });
+  
   const [gameState, setGameState] = useState<GameState>(initialGameState);
   const [upgrades, setUpgrades] = useState<Upgrade[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('Todos');
@@ -27,17 +35,31 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
   const [lastSave, setLastSave] = useState(Date.now());
   const [floatingCoins, setFloatingCoins] = useState<FloatingCoin[]>([]);
   const [clickEffect, setClickEffect] = useState(false);
+  const [isMining, setIsMining] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
   const [showMarketplace, setShowMarketplace] = useState(false);
+  const [showRanking, setShowRanking] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [itemQuantities, setItemQuantities] = useState<Map<string, number>>(new Map());
+  const [showBulkSellModal, setShowBulkSellModal] = useState(false);
+  const [bulkSellPrice, setBulkSellPrice] = useState<'floor' | 'custom'>('floor');
+  const [customPrice, setCustomPrice] = useState(0);
+  const [showAllIncomeItems, setShowAllIncomeItems] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const coinIdRef = useRef(0);
 
   // Inicializar upgrades
   useEffect(() => {
+    console.log('🔧 Inicializando upgrades com dados salvos:', initialUpgrades?.length || 0);
+    
     const initializedUpgrades = upgradesData.map(upgrade => {
       // Buscar dados salvos do usuário primeiro
       const savedUpgrade = initialUpgrades?.find(u => u.id === upgrade.id);
       const count = savedUpgrade?.count || 0;
+      
+      if (count > 0) {
+        console.log(`  ✅ ${upgrade.name}: ${count} unidades`);
+      }
       
       // Verificar se upgrade composto está desbloqueado
       let unlocked = true;
@@ -58,6 +80,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
       };
     });
     
+    console.log('✨ Upgrades inicializados:', initializedUpgrades.filter(u => u.count > 0).length, 'itens possuídos');
     setUpgrades(initializedUpgrades);
   }, [initialUpgrades]);
 
@@ -92,13 +115,19 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
   // Salvar no banco de dados periodicamente (a cada 3 segundos)
   useEffect(() => {
     const saveInterval = setInterval(() => {
-      if (calculatePassiveIncome() > 0) {
-        saveGame(gameState);
-      }
+      // Usar uma função para pegar os valores mais recentes
+      setGameState(currentState => {
+        setUpgrades(currentUpgrades => {
+          // Salvar com os valores atuais
+          saveGameState(uid, currentState, currentUpgrades).catch(console.error);
+          return currentUpgrades;
+        });
+        return currentState;
+      });
     }, 3000); // Salva a cada 3 segundos
 
     return () => clearInterval(saveInterval);
-  }, [gameState, calculatePassiveIncome]);
+  }, [uid]); // Apenas uid como dependência
 
   // Salvar jogo (pode receber estado opcional)
   const saveGame = async (stateToSave?: GameState) => {
@@ -116,6 +145,10 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
     // Efeito de click no botão
     setClickEffect(true);
     setTimeout(() => setClickEffect(false), 150);
+
+    // Animação de mineração
+    setIsMining(true);
+    setTimeout(() => setIsMining(false), 600);
 
     // Criar moeda flutuante
     if (buttonRef.current) {
@@ -166,6 +199,8 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
       const newCost = upgrade.baseCost * Math.pow(upgrade.costMultiplier, newCount);
       const newIncome = upgrade.baseIncome * Math.pow(upgrade.incomeMultiplier, newCount);
 
+      let updatedUpgrades: Upgrade[] = [];
+
       // Atualizar upgrades e recalcular desbloqueios
       setUpgrades(prev => {
         const updated = prev.map(u =>
@@ -176,15 +211,17 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
 
         // Recalcular quais upgrades compostos estão desbloqueados
         const userUpgradesForCheck = updated.map(u => ({ id: u.id, count: u.count || 0 }));
-        return updated.map(u => {
+        updatedUpgrades = updated.map(u => {
           if (u.isComposite && u.requirements) {
             const unlocked = canUnlockCompositeUpgrade(u.requirements, userUpgradesForCheck);
             return { ...u, unlocked };
           }
           return u;
         });
+        return updatedUpgrades;
       });
 
+      // Atualizar estado e salvar COM os upgrades atualizados
       setGameState(prev => {
         const newState = {
           ...prev,
@@ -192,8 +229,8 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
           totalPurchases: prev.totalPurchases + 1
         };
         
-        // Salvar após cada compra
-        saveGame(newState);
+        // Salvar após cada compra com os upgrades atualizados
+        setTimeout(() => saveGameState(uid, newState, updatedUpgrades), 0);
         
         return newState;
       });
@@ -202,19 +239,11 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
 
   // Lidar com compra do marketplace
   const handleMarketplacePurchase = (sellerId: string, totalPrice: number, upgradeId: string, quantity: number) => {
-    // Deduzir moedas
-    setGameState(prev => {
-      const newState = {
-        ...prev,
-        coins: prev.coins - totalPrice,
-      };
-      saveGame(newState);
-      return newState;
-    });
+    let updatedUpgrades: Upgrade[] = [];
 
     // Adicionar upgrades comprados
     setUpgrades(prev => {
-      const updated = prev.map(u => {
+      updatedUpgrades = prev.map(u => {
         if (u.id === upgradeId) {
           const newCount = (u.count || 0) + quantity;
           return {
@@ -226,8 +255,150 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
         }
         return u;
       });
-      return updated;
+      return updatedUpgrades;
     });
+
+    // Deduzir moedas e salvar COM os upgrades atualizados
+    setGameState(prev => {
+      const newState = {
+        ...prev,
+        coins: prev.coins - totalPrice,
+      };
+      // Salvar com os upgrades atualizados
+      setTimeout(() => saveGameState(uid, newState, updatedUpgrades), 0);
+      return newState;
+    });
+  };
+
+  // Toggles de seleção
+  const toggleItemSelection = (itemId: string) => {
+    setSelectedItems(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId);
+        // Remove quantidade quando desmarcar
+        setItemQuantities(prevQty => {
+          const newQty = new Map(prevQty);
+          newQty.delete(itemId);
+          return newQty;
+        });
+      } else {
+        newSet.add(itemId);
+        // Inicializa quantidade como 1 quando marcar
+        const item = inventoryItems.find(i => i.id === itemId);
+        setItemQuantities(prevQty => {
+          const newQty = new Map(prevQty);
+          newQty.set(itemId, 1);
+          return newQty;
+        });
+      }
+      return newSet;
+    });
+  };
+
+  const updateItemQuantity = (itemId: string, quantity: number) => {
+    const item = inventoryItems.find(i => i.id === itemId);
+    if (!item) return;
+    
+    // Limita quantidade entre 1 e o total disponível
+    const validQuantity = Math.max(1, Math.min(quantity, item.count || 1));
+    
+    setItemQuantities(prev => {
+      const newMap = new Map(prev);
+      newMap.set(itemId, validQuantity);
+      return newMap;
+    });
+  };
+
+  const selectAll = () => {
+    const allIds = new Set(inventoryItems.map(item => item.id));
+    setSelectedItems(allIds);
+    // Inicializa quantidades como 1 para cada item
+    const quantities = new Map(inventoryItems.map(item => [item.id, 1]));
+    setItemQuantities(quantities);
+  };
+
+  const deselectAll = () => {
+    setSelectedItems(new Set());
+    setItemQuantities(new Map());
+  };
+
+  const selectByCategory = (category: string) => {
+    const filteredItems = inventoryItems.filter(item => item.category === category);
+    const categoryIds = new Set(filteredItems.map(item => item.id));
+    setSelectedItems(categoryIds);
+    // Inicializa quantidades como 1 para cada item da categoria
+    const quantities = new Map(filteredItems.map(item => [item.id, 1]));
+    setItemQuantities(quantities);
+  };
+
+  const selectByTier = (tier: UpgradeTier) => {
+    const filteredItems = inventoryItems.filter(item => item.tier === tier);
+    const tierIds = new Set(filteredItems.map(item => item.id));
+    setSelectedItems(tierIds);
+    // Inicializa quantidades como 1 para cada item do tier
+    const quantities = new Map(filteredItems.map(item => [item.id, 1]));
+    setItemQuantities(quantities);
+  };
+
+  // Calcular floor price (90% do custo base médio)
+  const calculateFloorPrice = (upgrade: Upgrade) => {
+    return Math.floor(upgrade.baseCost * 0.9);
+  };
+
+  // Calcular preço sugerido baseado em eficiência
+  const calculateSuggestedPrice = (upgrade: Upgrade) => {
+    const efficiency = upgrade.baseIncome / upgrade.baseCost;
+    return Math.floor(upgrade.baseCost * (0.8 + efficiency * 0.1));
+  };
+
+  // Listar itens selecionados
+  const handleBulkSell = async () => {
+    if (selectedItems.size === 0) {
+      alert('Selecione pelo menos um item para vender!');
+      return;
+    }
+
+    const itemsToList = inventoryItems.filter(item => selectedItems.has(item.id));
+    
+    for (const item of itemsToList) {
+      const pricePerUnit = bulkSellPrice === 'floor' 
+        ? calculateFloorPrice(item)
+        : customPrice;
+
+      if (pricePerUnit <= 0) {
+        continue;
+      }
+
+      // Pega a quantidade selecionada do Map, ou 1 como padrão
+      const quantityToSell = itemQuantities.get(item.id) || 1;
+
+      try {
+        await createMarketplaceListing({
+          sellerId: uid,
+          sellerUsername: gameState.username || 'Jogador',
+          upgradeId: item.id,
+          upgradeName: item.name,
+          upgradeIcon: item.icon,
+          upgradeTier: item.tier,
+          quantity: quantityToSell,
+          pricePerUnit,
+          totalPrice: pricePerUnit * quantityToSell,
+          incomePerUnit: item.baseIncome,
+          totalIncome: item.baseIncome * quantityToSell,
+          originalCost: item.baseCost,
+          acceptOffers: false,
+          status: 'active',
+        });
+      } catch (error) {
+        console.error('Erro ao listar item:', error);
+      }
+    }
+
+    alert(`${itemsToList.length} itens listados com sucesso!`);
+    setShowBulkSellModal(false);
+    setSelectedItems(new Set());
+    setItemQuantities(new Map());
   };
 
   // Calcular estatísticas de upgrades
@@ -255,6 +426,16 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
     .filter(u => (u.count || 0) > 0)
     .sort((a, b) => (b.count || 0) - (a.count || 0));
 
+  // Itens que geram moedas (com income > 0 e count > 0)
+  const incomeGeneratingItems = upgrades
+    .filter(u => (u.count || 0) > 0 && (u.income || 0) > 0)
+    .sort((a, b) => {
+      // Ordenar por total de income gerado (income * count)
+      const totalIncomeA = (a.income || 0) * (a.count || 0);
+      const totalIncomeB = (b.income || 0) * (b.count || 0);
+      return totalIncomeB - totalIncomeA;
+    });
+
   // Calcular quantidade de itens por categoria
   const getCategoryCount = (category: string) => {
     if (category === 'Todos') {
@@ -272,14 +453,36 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
     }).length;
   };
 
-  // Formatar número
-  const formatNumber = (num: number): string => {
-    if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
-    if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
-    if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
-    if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
-    return num.toFixed(2);
+  // Obter emoji para categoria
+  const getCategoryEmoji = (category: string): string => {
+    const emojiMap: { [key: string]: string } = {
+      'Todos': '🌟',
+      'Terrenos': '🗺️',
+      'Plantação Básica': '🌱',
+      'Criação de Gado': '🐄',
+      'Pomar': '🍎',
+      'Apicultura': '🐝',
+      'Piscicultura': '🐟',
+      'Vinicultura': '🍇',
+      'Laticínios': '🥛',
+      'Agricultura Industrial': '🏭',
+      'Processamento': '⚙️',
+      'Tecnologia Futurista': '🚀',
+      'Upgrades Compostos': '⭐',
+      'Produção em Cadeia': '⚙️'
+    };
+    return emojiMap[category] || '📦';
   };
+
+  // Formatar número (mostra número completo sem abreviação)
+  const formatNumber = (num: number): string => {
+    return num.toLocaleString('pt-BR', { 
+      minimumFractionDigits: 2, 
+      maximumFractionDigits: 2 
+    });
+  };
+
+  console.log('🎨 FarmCoinGame: Pronto para renderizar UI');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-yellow-50 to-green-100 p-4">
@@ -302,11 +505,60 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
           {/* Renda Passiva */}
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-green-400">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="flex-1">
                 <p className="text-sm text-gray-600 mb-1">Por Segundo</p>
                 <p className="text-3xl font-bold text-green-600">
                   {formatNumber(gameState.perSecond)}
                 </p>
+                
+                {/* Display de itens geradores de moeda */}
+                {incomeGeneratingItems.length > 0 && (
+                  <div className="mt-3">
+                    <div className="flex items-center flex-wrap gap-1">
+                      {/* Mostrar até 20 itens ou todos se expandido */}
+                      {(showAllIncomeItems ? incomeGeneratingItems : incomeGeneratingItems.slice(0, 20)).map((item, index) => (
+                        <div
+                          key={item.id}
+                          className="relative group cursor-pointer transition-transform hover:scale-110 hover:z-10"
+                          style={{
+                            marginLeft: index > 0 ? '-12px' : '0',
+                            zIndex: incomeGeneratingItems.length - index
+                          }}
+                          title={`${item.name} - ${item.count}x (+${formatNumber((item.income || 0) * (item.count || 0))}/s)`}
+                        >
+                          <div className="text-2xl bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md border-2 border-green-200 group-hover:border-green-400 transition-all">
+                            {item.icon}
+                          </div>
+                          
+                          {/* Tooltip no hover */}
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                            {item.name} x{item.count}
+                            <br />
+                            +{formatNumber((item.income || 0) * (item.count || 0))}/s
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {/* Botão de expandir se houver mais de 20 itens */}
+                      {incomeGeneratingItems.length > 20 && (
+                        <button
+                          onClick={() => setShowAllIncomeItems(!showAllIncomeItems)}
+                          className="relative group cursor-pointer transition-all hover:scale-110 hover:z-10 ml-1"
+                          style={{ zIndex: 0 }}
+                        >
+                          <div className="text-xl bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-md border-2 border-purple-300 hover:border-purple-400 font-bold transition-all">
+                            {showAllIncomeItems ? '−' : `+${incomeGeneratingItems.length - 20}`}
+                          </div>
+                          
+                          {/* Tooltip */}
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                            {showAllIncomeItems ? 'Mostrar menos' : `Ver todos (${incomeGeneratingItems.length})`}
+                          </div>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
               <TrendingUp className="w-12 h-12 text-green-500" />
             </div>
@@ -373,7 +625,11 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                 </div>
                 
                 {/* Ícone da picareta */}
-                <div className="relative z-10 text-8xl drop-shadow-2xl transform group-hover:rotate-12 transition-transform duration-300">
+                <div className={`relative z-10 text-8xl drop-shadow-2xl transition-transform duration-300 ${
+                  isMining 
+                    ? 'animate-mining' 
+                    : 'group-hover:rotate-12'
+                }`}>
                   ⛏️
                 </div>
                 
@@ -403,6 +659,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
               onClick={() => {
                 setShowInventory(!showInventory);
                 setShowMarketplace(false);
+                setShowRanking(false);
               }}
               className={`w-full mt-4 px-6 py-4 rounded-xl font-bold transition-all ${
                 showInventory
@@ -411,7 +668,6 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
               } active:scale-95`}
             >
               <div className="flex items-center justify-center gap-2">
-                <Package className="w-6 h-6" />
                 <span>{showInventory ? '🛒 Ver Loja' : '📦 Ver Inventário'}</span>
                 <span className="ml-2 px-2 py-1 bg-white/20 rounded-full text-sm">
                   {upgradeStats.owned}
@@ -424,6 +680,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
               onClick={() => {
                 setShowMarketplace(!showMarketplace);
                 setShowInventory(false);
+                setShowRanking(false);
               }}
               className={`w-full mt-3 px-6 py-4 rounded-xl font-bold transition-all ${
                 showMarketplace
@@ -432,16 +689,47 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
               } active:scale-95`}
             >
               <div className="flex items-center justify-center gap-2">
-                <ShoppingCart className="w-6 h-6" />
                 <span>{showMarketplace ? '🎮 Voltar ao Jogo' : '🏪 Marketplace'}</span>
+              </div>
+            </button>
+
+            {/* Botão de Ranking */}
+            <button
+              onClick={() => {
+                setShowRanking(!showRanking);
+                setShowInventory(false);
+                setShowMarketplace(false);
+              }}
+              className={`w-full mt-3 px-6 py-4 rounded-xl font-bold transition-all ${
+                showRanking
+                  ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white'
+                  : 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white hover:shadow-lg hover:scale-105'
+              } active:scale-95`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <span>{showRanking ? '🎮 Voltar ao Jogo' : '🏆 Ranking'}</span>
               </div>
             </button>
           </div>
         </div>
 
-        {/* Inventário, Marketplace ou Lista de Upgrades */}
+        {/* Inventário, Marketplace, Ranking ou Lista de Upgrades */}
         <div className="lg:col-span-2">
-          {showMarketplace ? (
+          {showRanking ? (
+            /* ========== RANKING ========== */
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-yellow-400">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                🏆 Ranking Global
+              </h2>
+              <Ranking
+                currentUserId={uid}
+                currentUsername={gameState.username || 'Jogador'}
+                currentCoins={gameState.coins}
+                currentPerSecond={gameState.perSecond}
+                currentUpgradesOwned={upgradeStats.owned}
+              />
+            </div>
+          ) : showMarketplace ? (
             /* ========== MARKETPLACE ========== */
             <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-orange-400">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">
@@ -471,7 +759,74 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
 
             {showInventory ? (
               /* ========== INVENTÁRIO ========== */
-              <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+              <>
+                {/* Controles de Seleção e Venda em Massa */}
+                {inventoryItems.length > 0 && (
+                  <div className="mb-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border-2 border-purple-300">
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <button
+                        onClick={selectAll}
+                        className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-semibold transition-all"
+                      >
+                        ✅ Selecionar Todos
+                      </button>
+                      <button
+                        onClick={deselectAll}
+                        className="px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-sm font-semibold transition-all"
+                      >
+                        ❌ Desmarcar Todos
+                      </button>
+                      
+                      {/* Seleção por Tier */}
+                      <select
+                        onChange={(e) => e.target.value && selectByTier(e.target.value as UpgradeTier)}
+                        className="px-3 py-1.5 bg-white border-2 border-purple-300 rounded-lg text-sm font-semibold"
+                        defaultValue=""
+                      >
+                        <option value="">🎨 Por Raridade</option>
+                        <option value={UpgradeTier.COMUM}>⚪ Comum</option>
+                        <option value={UpgradeTier.INCOMUM}>🟢 Incomum</option>
+                        <option value={UpgradeTier.RARO}>🔵 Raro</option>
+                        <option value={UpgradeTier.EPICO}>🟣 Épico</option>
+                        <option value={UpgradeTier.LENDARIO}>🔴 Lendário</option>
+                        <option value={UpgradeTier.MITICO}>⭐ Mítico</option>
+                      </select>
+
+                      {/* Seleção por Categoria */}
+                      <select
+                        onChange={(e) => e.target.value && selectByCategory(e.target.value)}
+                        className="px-3 py-1.5 bg-white border-2 border-purple-300 rounded-lg text-sm font-semibold"
+                        defaultValue=""
+                      >
+                        <option value="">📁 Por Categoria</option>
+                        {categories.map(cat => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.icon} {cat.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold text-purple-700">
+                        {selectedItems.size} item(ns) selecionado(s)
+                      </span>
+                      <button
+                        onClick={() => setShowBulkSellModal(true)}
+                        disabled={selectedItems.size === 0}
+                        className={`px-4 py-2 rounded-lg font-bold transition-all ${
+                          selectedItems.size > 0
+                            ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg hover:scale-105'
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        }`}
+                      >
+                        🏷️ Listar Selecionados
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                 {inventoryItems.length === 0 ? (
                   <div className="text-center py-12 text-gray-500">
                     <Package className="w-16 h-16 mx-auto mb-4 opacity-50" />
@@ -483,15 +838,47 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                     const tierColors = item.tier ? getTierColor(item.tier) : null;
                     const tierGlow = item.tier ? getTierGlow(item.tier) : '';
                     const totalIncome = (item.income || 0) * (item.count || 0);
+                    const isSelected = selectedItems.has(item.id);
 
                     return (
                       <div
                         key={item.id}
-                        className={`p-4 rounded-xl border-2 bg-gradient-to-r from-blue-50 to-purple-50 transition-all ${tierGlow} ${
-                          tierColors ? tierColors.border : 'border-blue-300'
+                        className={`p-4 rounded-xl border-2 transition-all ${
+                          isSelected 
+                            ? 'bg-gradient-to-r from-purple-100 to-pink-100 border-purple-500 shadow-lg' 
+                            : `bg-gradient-to-r from-blue-50 to-purple-50 ${tierGlow} ${tierColors ? tierColors.border : 'border-blue-300'}`
                         }`}
                       >
                         <div className="flex items-center gap-4">
+                          {/* Checkbox de seleção */}
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleItemSelection(item.id)}
+                            className="w-5 h-5 cursor-pointer"
+                          />
+                          
+                          {/* Input de quantidade (só aparece quando selecionado) */}
+                          {isSelected && (
+                            <div className="flex flex-col items-center">
+                              <label className="text-xs text-gray-600 font-semibold mb-1">
+                                Qtd:
+                              </label>
+                              <input
+                                type="number"
+                                min="1"
+                                max={item.count || 1}
+                                value={itemQuantities.get(item.id) || 1}
+                                onChange={(e) => updateItemQuantity(item.id, Number(e.target.value))}
+                                onClick={(e) => e.stopPropagation()}
+                                className="w-16 px-2 py-1 border-2 border-purple-400 rounded-lg text-center font-bold focus:ring-2 focus:ring-purple-500 outline-none"
+                              />
+                              <span className="text-xs text-gray-500 mt-1">
+                                de {item.count}
+                              </span>
+                            </div>
+                          )}
+                          
                           <div className="text-4xl">{item.icon}</div>
                           
                           <div className="flex-1 min-w-0">
@@ -526,6 +913,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                   })
                 )}
               </div>
+              </>
             ) : (
               /* ========== LOJA DE UPGRADES ========== */
               <>
@@ -547,6 +935,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                   <div className="flex flex-wrap gap-2">
                     {categories.map(category => {
                       const availableCount = getCategoryCount(category);
+                      const emoji = getCategoryEmoji(category);
                       return (
                         <button
                           key={category}
@@ -557,7 +946,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                           }`}
                         >
-                          <span>{category}</span>
+                          <span>{emoji} {category}</span>
                           {availableCount > 0 && (
                             <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
                               selectedCategory === category
@@ -670,6 +1059,160 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
         </div>
       </div>
 
+      {/* Modal de Venda em Massa */}
+      {showBulkSellModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full space-y-4">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              � Listagem em Massa
+            </h2>
+
+            <div className="bg-purple-50 rounded-lg p-4 mb-4">
+              <p className="text-sm text-gray-700 mb-2">
+                Você está listando <span className="font-bold text-purple-600">{selectedItems.size}</span> tipo(s) de item.
+              </p>
+              <div className="text-xs text-gray-600 space-y-1">
+                {inventoryItems
+                  .filter(item => selectedItems.has(item.id))
+                  .map(item => {
+                    const quantity = itemQuantities.get(item.id) || 1;
+                    return (
+                      <div key={item.id} className="flex justify-between">
+                        <span>{item.icon} {item.name}</span>
+                        <span className="font-semibold">
+                          x{quantity} <span className="text-gray-400">(de {item.count})</span>
+                        </span>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label className="block text-sm font-semibold text-gray-700">
+                Tipo de Preço:
+              </label>
+              
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-all">
+                  <input
+                    type="radio"
+                    name="priceType"
+                    value="floor"
+                    checked={bulkSellPrice === 'floor'}
+                    onChange={() => setBulkSellPrice('floor')}
+                    className="w-4 h-4"
+                  />
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-800">
+                      📊 Floor Price (Preço de Piso)
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      90% do custo base - Venda rápida garantida
+                    </div>
+                  </div>
+                </label>
+
+                <label className="flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-all">
+                  <input
+                    type="radio"
+                    name="priceType"
+                    value="custom"
+                    checked={bulkSellPrice === 'custom'}
+                    onChange={() => setBulkSellPrice('custom')}
+                    className="w-4 h-4"
+                  />
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-800">
+                      ✏️ Preço Personalizado
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      Defina seu próprio preço por unidade
+                    </div>
+                  </div>
+                </label>
+              </div>
+
+              {bulkSellPrice === 'custom' && (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Preço por Unidade:
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={customPrice}
+                    onChange={(e) => setCustomPrice(Number(e.target.value))}
+                    placeholder="Digite o preço..."
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none"
+                  />
+                </div>
+              )}
+
+              {bulkSellPrice === 'floor' && (
+                <div className="bg-green-50 border-2 border-green-300 rounded-lg p-3">
+                  <p className="text-sm font-semibold text-green-800 mb-2">
+                    💡 Previsão de Ganhos:
+                  </p>
+                  <div className="text-xs text-green-700 space-y-1">
+                    {inventoryItems
+                      .filter(item => selectedItems.has(item.id))
+                      .map(item => {
+                        const floorPrice = calculateFloorPrice(item);
+                        const quantity = itemQuantities.get(item.id) || 1;
+                        const totalValue = floorPrice * quantity;
+                        return (
+                          <div key={item.id} className="flex justify-between">
+                            <span>{item.icon} {item.name} x{quantity}</span>
+                            <span className="font-bold">{formatNumber(totalValue)} 🪙</span>
+                          </div>
+                        );
+                      })}
+                    <div className="border-t-2 border-green-400 pt-1 mt-1 flex justify-between font-bold">
+                      <span>TOTAL:</span>
+                      <span className="text-green-600">
+                        {formatNumber(
+                          inventoryItems
+                            .filter(item => selectedItems.has(item.id))
+                            .reduce((sum, item) => {
+                              const quantity = itemQuantities.get(item.id) || 1;
+                              return sum + (calculateFloorPrice(item) * quantity);
+                            }, 0)
+                        )} 🪙
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2 pt-4">
+              <button
+                onClick={() => {
+                  setShowBulkSellModal(false);
+                  setBulkSellPrice('floor');
+                  setCustomPrice(0);
+                }}
+                className="flex-1 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-bold transition-all"
+              >
+                ❌ Cancelar
+              </button>
+              <button
+                onClick={handleBulkSell}
+                disabled={bulkSellPrice === 'custom' && customPrice <= 0}
+                className={`flex-1 py-3 rounded-lg font-bold transition-all ${
+                  bulkSellPrice === 'custom' && customPrice <= 0
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg hover:scale-105'
+                }`}
+              >
+                ✅ Confirmar Venda
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style>{`
         @keyframes float-up {
           0% {
@@ -679,6 +1222,30 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
           100% {
             transform: translateY(-150px) scale(1.5);
             opacity: 0;
+          }
+        }
+
+        @keyframes mining {
+          0% {
+            transform: rotate(-15deg) translateY(0);
+          }
+          15% {
+            transform: rotate(-25deg) translateY(-10px);
+          }
+          30% {
+            transform: rotate(-15deg) translateY(0);
+          }
+          45% {
+            transform: rotate(-25deg) translateY(-10px);
+          }
+          60% {
+            transform: rotate(-15deg) translateY(0);
+          }
+          75% {
+            transform: rotate(-25deg) translateY(-10px);
+          }
+          100% {
+            transform: rotate(-15deg) translateY(0);
           }
         }
 
@@ -716,6 +1283,10 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
           50% {
             transform: scale(0.95);
           }
+        }
+
+        .animate-mining {
+          animation: mining 0.6s ease-in-out;
         }
 
         .animate-float-up {

@@ -11,10 +11,14 @@ import { UserRole } from './types';
 const AdminPanel = () => <div>Admin Panel - To be implemented</div>;
 
 function App() {
-  const { user, userData, loading } = useAuth();
+  console.log('🚀 App: Componente iniciando...');
+  const { user, userData, loading, refresh } = useAuth();
   const [showLogin, setShowLogin] = useState(true);
 
+  console.log('🚀 App: Estado atual -', { user, userData, loading, showLogin });
+
   if (loading) {
+    console.log('⏳ App: Mostrando tela de carregamento...');
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 flex items-center justify-center">
         <div className="text-center">
@@ -26,14 +30,15 @@ function App() {
   }
 
   if (!user || !userData) {
+    console.log('🔐 App: Mostrando tela de', showLogin ? 'login' : 'registro');
     return showLogin ? (
       <Login
-        onSuccess={() => {}}
+        onSuccess={refresh}
         onSwitchToRegister={() => setShowLogin(false)}
       />
     ) : (
       <Register
-        onSuccess={() => {}}
+        onSuccess={refresh}
         onSwitchToLogin={() => setShowLogin(true)}
       />
     );
@@ -50,6 +55,13 @@ function App() {
     ...userData.gameState,
     username: userData.username
   };
+
+  console.log('🎮 App: Renderizando FarmCoinGame com:', {
+    uid: user.uid,
+    username: userData.username,
+    coins: gameStateWithUsername.coins,
+    upgrades: userData.upgrades?.length
+  });
 
   return (
     <BrowserRouter>

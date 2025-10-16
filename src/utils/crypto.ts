@@ -8,7 +8,8 @@
  */
 async function stringToArrayBuffer(str: string): Promise<ArrayBuffer> {
   const encoder = new TextEncoder();
-  return encoder.encode(str);
+  const uint8Array = encoder.encode(str);
+  return uint8Array.buffer;
 }
 
 /**
@@ -30,7 +31,7 @@ function arrayBufferToHex(buffer: ArrayBuffer): string {
 export function generateSalt(length: number = 32): string {
   const array = new Uint8Array(length);
   crypto.getRandomValues(array);
-  return arrayBufferToHex(array);
+  return arrayBufferToHex(array.buffer as ArrayBuffer);
 }
 
 /**

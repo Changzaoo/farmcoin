@@ -108,7 +108,7 @@ export interface UserData {
   createdAt: Date;
   lastLogin: Date;
   gameState: GameState;
-  upgrades: Upgrade[];
+  upgrades?: Array<{ id: string; count: number }>;
 }
 
 // Estatísticas do usuário para admin
@@ -181,3 +181,96 @@ export interface ShopFilters {
   sortBy: 'name' | 'price' | 'income' | 'tier';
   sortOrder: 'asc' | 'desc';
 }
+
+// ============= SISTEMA DE TERRENOS =============
+
+// Tipo de terreno
+export enum LandType {
+  PLAINS = 'plains',         // Planície - comum
+  FOREST = 'forest',         // Floresta - incomum
+  HILLS = 'hills',           // Colinas - incomum
+  MOUNTAINS = 'mountains',   // Montanhas - raro
+  DESERT = 'desert',         // Deserto - raro
+  SWAMP = 'swamp',          // Pântano - raro
+  BEACH = 'beach',          // Praia - épico
+  VOLCANO = 'volcano',      // Vulcão - lendário
+  GLACIER = 'glacier',      // Geleira - lendário
+  PARADISE = 'paradise'     // Paraíso - mítico
+}
+
+// Morador de um terreno
+export interface LandResident {
+  userId: string;
+  username: string;
+  addedAt: Date;
+  permissions: {
+    canBuild: boolean;
+    canInvite: boolean;
+  };
+}
+
+// Coordenadas do terreno
+export interface LandCoordinates {
+  x: number;
+  y: number;
+  region: string; // Ex: "north", "south", "east", "west", "center"
+}
+
+// Terreno
+export interface Land {
+  id: string;
+  coordinates: LandCoordinates;
+  type: LandType;
+  name?: string;
+  description?: string;
+  
+  // Propriedade
+  ownerId: string | null;
+  ownerUsername: string | null;
+  purchasedAt?: Date;
+  purchasePrice?: number;
+  
+  // Moradores (máximo 100)
+  residents: LandResident[];
+  maxResidents: number; // Padrão: 100
+  
+  // Características do terreno
+  size: number; // Tamanho em unidades (1-10)
+  bonusIncome: number; // Bônus de renda passiva (%)
+  
+  // Marketplace
+  forSale: boolean;
+  salePrice?: number;
+  listedAt?: Date;
+  
+  // Metadados
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Listagem de terreno no Marketplace
+export interface LandListing {
+  id: string;
+  landId: string;
+  land: Land;
+  sellerId: string;
+  sellerUsername: string;
+  price: number;
+  description?: string;
+  status: 'active' | 'sold' | 'cancelled';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Configuração do mapa
+export interface MapConfig {
+  width: number;  // Largura em terrenos
+  height: number; // Altura em terrenos
+  totalLands: number;
+  regions: {
+    name: string;
+    bounds: { minX: number; maxX: number; minY: number; maxY: number };
+    landTypes: LandType[];
+  }[];
+}
+

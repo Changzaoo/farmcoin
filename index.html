@@ -6,9 +6,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="FarmCoin - Construa seu império agrícola!" />
     <title>🌾 FarmCoin - Construa seu Império</title>
+    <style>
+      /* Loading inicial enquanto o React não carrega */
+      #root:empty::before {
+        content: "🌾 Carregando FarmCoin...";
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        font-size: 24px;
+        font-family: sans-serif;
+        background: linear-gradient(to bottom right, #064e3b, #065f46, #047857);
+        color: white;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+      
+      /* Caso o JavaScript falhe, mostrar mensagem */
+      .js-error {
+        display: none;
+        padding: 40px;
+        text-align: center;
+        background: #fee;
+        color: #c00;
+        font-family: sans-serif;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <div class="js-error">
+      <h1>⚠️ Erro ao carregar aplicação</h1>
+      <p>JavaScript não está sendo executado corretamente.</p>
+      <button onclick="location.reload()">Recarregar Página</button>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Timeout para mostrar erro se a aplicação não carregar em 10 segundos
+      setTimeout(() => {
+        if (document.getElementById('root').children.length === 0) {
+          document.querySelector('.js-error').style.display = 'block';
+        }
+      }, 10000);
+    </script>
   </body>
 </html>

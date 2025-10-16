@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { LogIn, User, Lock } from 'lucide-react';
 import { loginUser } from '../../firebase/auth';
@@ -15,13 +16,18 @@ export default function Login({ onSuccess, onSwitchToRegister }: LoginProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('🔑 Login: Iniciando login para:', username);
     setLoading(true);
     setError('');
 
     try {
+      console.log('🔑 Login: Chamando loginUser...');
       await loginUser(username, password);
+      console.log('✅ Login: Login bem-sucedido! Chamando onSuccess...');
       onSuccess();
+      console.log('✅ Login: onSuccess chamado');
     } catch (err: any) {
+      console.error('❌ Login: Erro no login:', err);
       setError(err.message || 'Erro ao fazer login');
     } finally {
       setLoading(false);

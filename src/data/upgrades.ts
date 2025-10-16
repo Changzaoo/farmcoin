@@ -2,15 +2,103 @@ import { Upgrade } from '../types';
 import { calculateTier } from '../utils/tierSystem';
 
 export const upgrades: Upgrade[] = [
+  // 🗺️ TERRENOS - OS ITENS MAIS CAROS E VALIOSOS DO JOGO
+  // Terrenos dão bônus multiplicadores permanentes para categorias específicas
+  
+  {
+    id: 'land_starter',
+    name: 'Terreno Iniciante 🟢',
+    description: '🗺️ TERRENO: Lote básico de 100m². Bônus: +10% em Plantação Básica',
+    category: 'Terrenos',
+    baseCost: 50000,
+    costMultiplier: 2.0,
+    baseIncome: 500,
+    incomeMultiplier: 1.1,
+    icon: '🟢',
+    tier: calculateTier(50000)
+  },
+  {
+    id: 'land_agricultural',
+    name: 'Fazenda Agrícola 🔵',
+    description: '🗺️ TERRENO: 500m² de terra fértil. Bônus: +25% em Plantação e Pomar',
+    category: 'Terrenos',
+    baseCost: 500000,
+    costMultiplier: 2.0,
+    baseIncome: 5000,
+    incomeMultiplier: 1.25,
+    icon: '🔵',
+    tier: calculateTier(500000)
+  },
+  {
+    id: 'land_livestock',
+    name: 'Campo de Criação 🟣',
+    description: '🗺️ TERRENO: 1.000m² com pastos. Bônus: +40% em Gado, Apicultura e Piscicultura',
+    category: 'Terrenos',
+    baseCost: 2500000,
+    costMultiplier: 2.0,
+    baseIncome: 25000,
+    incomeMultiplier: 1.4,
+    icon: '🟣',
+    tier: calculateTier(2500000)
+  },
+  {
+    id: 'land_industrial',
+    name: 'Complexo Industrial 🟠',
+    description: '🗺️ TERRENO: 5.000m² com infraestrutura. Bônus: +60% em Processamento e Laticínios',
+    category: 'Terrenos',
+    baseCost: 15000000,
+    costMultiplier: 2.0,
+    baseIncome: 150000,
+    incomeMultiplier: 1.6,
+    icon: '�',
+    tier: calculateTier(15000000)
+  },
+  {
+    id: 'land_mega_farm',
+    name: 'Mega Fazenda �',
+    description: '🗺️ TERRENO: 10 hectares de terra premium. Bônus: +100% em TODAS as categorias básicas',
+    category: 'Terrenos',
+    baseCost: 100000000,
+    costMultiplier: 2.5,
+    baseIncome: 1000000,
+    incomeMultiplier: 2.0,
+    icon: '🔴',
+    tier: calculateTier(100000000)
+  },
+  {
+    id: 'land_technological',
+    name: 'Campus Tecnológico 💎',
+    description: '🗺️ TERRENO: Complexo futurista de 50 hectares. Bônus: +150% em Tecnologia e Industrial',
+    category: 'Terrenos',
+    baseCost: 750000000,
+    costMultiplier: 3.0,
+    baseIncome: 7500000,
+    incomeMultiplier: 2.5,
+    icon: '�',
+    tier: calculateTier(750000000)
+  },
+  {
+    id: 'land_divine',
+    name: 'Reino Divino ✨',
+    description: '🗺️ TERRENO LENDÁRIO: Terra abençoada infinita. Bônus: +300% em TODAS as categorias',
+    category: 'Terrenos',
+    baseCost: 5000000000,
+    costMultiplier: 4.0,
+    baseIncome: 50000000,
+    incomeMultiplier: 4.0,
+    icon: '✨',
+    tier: calculateTier(5000000000)
+  },
+
   // 🌱 Plantação Básica (10 upgrades)
   {
     id: 'plant_01',
     name: 'Enxada Manual',
     description: 'Uma enxada simples para cultivar a terra',
     category: 'Plantação Básica',
-    baseCost: 15,
+    baseCost: 0.75,
     costMultiplier: 1.15,
-    baseIncome: 0.1,
+    baseIncome: 0.005,
     incomeMultiplier: 1.1,
     icon: '🌱',
     tier: calculateTier(15)
@@ -20,9 +108,9 @@ export const upgrades: Upgrade[] = [
     name: 'Sementes de Trigo',
     description: 'Sementes básicas de trigo',
     category: 'Plantação Básica',
-    baseCost: 100,
+    baseCost: 5.0,
     costMultiplier: 1.15,
-    baseIncome: 1,
+    baseIncome: 0.05,
     incomeMultiplier: 1.1,
     icon: '🌾',
     tier: calculateTier(100)
@@ -32,9 +120,9 @@ export const upgrades: Upgrade[] = [
     name: 'Regador Automático',
     description: 'Sistema básico de irrigação',
     category: 'Plantação Básica',
-    baseCost: 500,
+    baseCost: 25.0,
     costMultiplier: 1.15,
-    baseIncome: 5,
+    baseIncome: 0.25,
     incomeMultiplier: 1.1,
     icon: '💧',
     tier: calculateTier(500)
@@ -44,9 +132,9 @@ export const upgrades: Upgrade[] = [
     name: 'Estufa Pequena',
     description: 'Protege as plantas do clima',
     category: 'Plantação Básica',
-    baseCost: 3000,
+    baseCost: 150,
     costMultiplier: 1.15,
-    baseIncome: 30,
+    baseIncome: 1.5,
     incomeMultiplier: 1.1,
     icon: '🏠',
     tier: calculateTier(3000)
@@ -56,9 +144,9 @@ export const upgrades: Upgrade[] = [
     name: 'Fertilizante Orgânico',
     description: 'Aumenta a produtividade',
     category: 'Plantação Básica',
-    baseCost: 10000,
+    baseCost: 500,
     costMultiplier: 1.15,
-    baseIncome: 100,
+    baseIncome: 5.0,
     incomeMultiplier: 1.1,
     icon: '🌿',
     tier: calculateTier(10000)
@@ -68,9 +156,9 @@ export const upgrades: Upgrade[] = [
     name: 'Trator Pequeno',
     description: 'Acelera o cultivo',
     category: 'Plantação Básica',
-    baseCost: 40000,
+    baseCost: 2000,
     costMultiplier: 1.15,
-    baseIncome: 400,
+    baseIncome: 20.0,
     incomeMultiplier: 1.1,
     icon: '🚜',
     tier: calculateTier(40000)
@@ -80,9 +168,9 @@ export const upgrades: Upgrade[] = [
     name: 'Sistema de Drenagem',
     description: 'Evita alagamentos',
     category: 'Plantação Básica',
-    baseCost: 200000,
+    baseCost: 10000,
     costMultiplier: 1.15,
-    baseIncome: 2000,
+    baseIncome: 100,
     incomeMultiplier: 1.1,
     icon: '🌊',
     tier: calculateTier(200000)
@@ -92,9 +180,9 @@ export const upgrades: Upgrade[] = [
     name: 'Estufa Climatizada',
     description: 'Controle total do ambiente',
     category: 'Plantação Básica',
-    baseCost: 1000000,
+    baseCost: 50000,
     costMultiplier: 1.15,
-    baseIncome: 10000,
+    baseIncome: 500,
     incomeMultiplier: 1.1,
     icon: '🏭',
     tier: calculateTier(1000000)
@@ -104,9 +192,9 @@ export const upgrades: Upgrade[] = [
     name: 'Sementes Híbridas',
     description: 'Maior rendimento por hectare',
     category: 'Plantação Básica',
-    baseCost: 5000000,
+    baseCost: 250000,
     costMultiplier: 1.15,
-    baseIncome: 50000,
+    baseIncome: 2500,
     incomeMultiplier: 1.1,
     icon: '🧬',
     tier: calculateTier(5000000)
@@ -116,9 +204,9 @@ export const upgrades: Upgrade[] = [
     name: 'Fazenda Automatizada',
     description: 'Produção em larga escala',
     category: 'Plantação Básica',
-    baseCost: 25000000,
+    baseCost: 1250000,
     costMultiplier: 1.15,
-    baseIncome: 250000,
+    baseIncome: 12500,
     incomeMultiplier: 1.1,
     icon: '🤖',
     tier: calculateTier(25000000)
@@ -130,9 +218,9 @@ export const upgrades: Upgrade[] = [
     name: 'Galinha Caipira',
     description: 'Põe ovos frescos',
     category: 'Criação de Gado',
-    baseCost: 50,
+    baseCost: 2.5,
     costMultiplier: 1.15,
-    baseIncome: 0.5,
+    baseIncome: 0.025,
     incomeMultiplier: 1.1,
     icon: '🐔',
     tier: calculateTier(50)
@@ -142,9 +230,9 @@ export const upgrades: Upgrade[] = [
     name: 'Porco',
     description: 'Fonte de carne',
     category: 'Criação de Gado',
-    baseCost: 300,
+    baseCost: 15.0,
     costMultiplier: 1.15,
-    baseIncome: 3,
+    baseIncome: 0.15,
     incomeMultiplier: 1.1,
     icon: '🐷',
     tier: calculateTier(300)
@@ -154,9 +242,9 @@ export const upgrades: Upgrade[] = [
     name: 'Vaca Leiteira',
     description: 'Produz leite diariamente',
     category: 'Criação de Gado',
-    baseCost: 1500,
+    baseCost: 75.0,
     costMultiplier: 1.15,
-    baseIncome: 15,
+    baseIncome: 0.75,
     incomeMultiplier: 1.1,
     icon: '🐄',
     tier: calculateTier(1500)
@@ -166,9 +254,9 @@ export const upgrades: Upgrade[] = [
     name: 'Ovelha',
     description: 'Fornece lã',
     category: 'Criação de Gado',
-    baseCost: 8000,
+    baseCost: 400,
     costMultiplier: 1.15,
-    baseIncome: 80,
+    baseIncome: 4.0,
     incomeMultiplier: 1.1,
     icon: '🐑',
     tier: calculateTier(8000)
@@ -178,9 +266,9 @@ export const upgrades: Upgrade[] = [
     name: 'Cabra',
     description: 'Leite de cabra premium',
     category: 'Criação de Gado',
-    baseCost: 35000,
+    baseCost: 1750,
     costMultiplier: 1.15,
-    baseIncome: 350,
+    baseIncome: 17.5,
     incomeMultiplier: 1.1,
     icon: '🐐',
     tier: calculateTier(35000)
@@ -190,9 +278,9 @@ export const upgrades: Upgrade[] = [
     name: 'Pato',
     description: 'Ovos maiores',
     category: 'Criação de Gado',
-    baseCost: 150000,
+    baseCost: 7500,
     costMultiplier: 1.15,
-    baseIncome: 1500,
+    baseIncome: 75.0,
     incomeMultiplier: 1.1,
     icon: '🦆',
     tier: calculateTier(150000)
@@ -202,9 +290,9 @@ export const upgrades: Upgrade[] = [
     name: 'Peru',
     description: 'Carne especial',
     category: 'Criação de Gado',
-    baseCost: 700000,
+    baseCost: 35000,
     costMultiplier: 1.15,
-    baseIncome: 7000,
+    baseIncome: 350,
     incomeMultiplier: 1.1,
     icon: '🦃',
     tier: calculateTier(700000)
@@ -214,9 +302,9 @@ export const upgrades: Upgrade[] = [
     name: 'Cavalo',
     description: 'Ajuda no transporte',
     category: 'Criação de Gado',
-    baseCost: 3500000,
+    baseCost: 175000,
     costMultiplier: 1.15,
-    baseIncome: 35000,
+    baseIncome: 1750,
     incomeMultiplier: 1.1,
     icon: '🐴',
     tier: calculateTier(3500000)
@@ -226,9 +314,9 @@ export const upgrades: Upgrade[] = [
     name: 'Alpaca',
     description: 'Lã premium',
     category: 'Criação de Gado',
-    baseCost: 15000000,
+    baseCost: 750000,
     costMultiplier: 1.15,
-    baseIncome: 150000,
+    baseIncome: 7500,
     incomeMultiplier: 1.1,
     icon: '🦙',
     tier: calculateTier(15000000)
@@ -238,9 +326,9 @@ export const upgrades: Upgrade[] = [
     name: 'Búfalo',
     description: 'Leite e carne de búfalo',
     category: 'Criação de Gado',
-    baseCost: 75000000,
+    baseCost: 3750000,
     costMultiplier: 1.15,
-    baseIncome: 750000,
+    baseIncome: 37500,
     incomeMultiplier: 1.1,
     icon: '🐃',
     tier: calculateTier(75000000)
@@ -250,9 +338,9 @@ export const upgrades: Upgrade[] = [
     name: 'Granja Industrial',
     description: 'Produção em massa',
     category: 'Criação de Gado',
-    baseCost: 350000000,
+    baseCost: 17500000,
     costMultiplier: 1.15,
-    baseIncome: 3500000,
+    baseIncome: 175000,
     incomeMultiplier: 1.1,
     icon: '🏭',
     tier: calculateTier(350000000)
@@ -264,9 +352,9 @@ export const upgrades: Upgrade[] = [
     name: 'Pé de Maçã',
     description: 'Maçãs frescas',
     category: 'Pomar',
-    baseCost: 200,
+    baseCost: 10.0,
     costMultiplier: 1.15,
-    baseIncome: 2,
+    baseIncome: 0.1,
     incomeMultiplier: 1.1,
     icon: '🍎',
     tier: calculateTier(200)
@@ -276,9 +364,9 @@ export const upgrades: Upgrade[] = [
     name: 'Laranjeira',
     description: 'Laranjas suculentas',
     category: 'Pomar',
-    baseCost: 1000,
+    baseCost: 50.0,
     costMultiplier: 1.15,
-    baseIncome: 10,
+    baseIncome: 0.5,
     incomeMultiplier: 1.1,
     icon: '🍊',
     tier: calculateTier(1000)
@@ -288,9 +376,9 @@ export const upgrades: Upgrade[] = [
     name: 'Bananeira',
     description: 'Cachos de banana',
     category: 'Pomar',
-    baseCost: 5000,
+    baseCost: 250,
     costMultiplier: 1.15,
-    baseIncome: 50,
+    baseIncome: 2.5,
     incomeMultiplier: 1.1,
     icon: '🍌',
     tier: calculateTier(5000)
@@ -300,9 +388,9 @@ export const upgrades: Upgrade[] = [
     name: 'Mangueira',
     description: 'Mangas doces',
     category: 'Pomar',
-    baseCost: 25000,
+    baseCost: 1250,
     costMultiplier: 1.15,
-    baseIncome: 250,
+    baseIncome: 12.5,
     incomeMultiplier: 1.1,
     icon: '🥭',
     tier: calculateTier(25000)
@@ -312,9 +400,9 @@ export const upgrades: Upgrade[] = [
     name: 'Abacateiro',
     description: 'Abacates cremosos',
     category: 'Pomar',
-    baseCost: 120000,
+    baseCost: 6000,
     costMultiplier: 1.15,
-    baseIncome: 1200,
+    baseIncome: 60.0,
     incomeMultiplier: 1.1,
     icon: '🥑',
     tier: calculateTier(120000)
@@ -324,9 +412,9 @@ export const upgrades: Upgrade[] = [
     name: 'Pessegueiro',
     description: 'Pêssegos suaves',
     category: 'Pomar',
-    baseCost: 600000,
+    baseCost: 30000,
     costMultiplier: 1.15,
-    baseIncome: 6000,
+    baseIncome: 300,
     incomeMultiplier: 1.1,
     icon: '🍑',
     tier: calculateTier(600000)
@@ -336,9 +424,9 @@ export const upgrades: Upgrade[] = [
     name: 'Cerejeira',
     description: 'Cerejas raras',
     category: 'Pomar',
-    baseCost: 3000000,
+    baseCost: 150000,
     costMultiplier: 1.15,
-    baseIncome: 30000,
+    baseIncome: 1500,
     incomeMultiplier: 1.1,
     icon: '🍒',
     tier: calculateTier(3000000)
@@ -348,9 +436,9 @@ export const upgrades: Upgrade[] = [
     name: 'Limoeiro',
     description: 'Limões azedos',
     category: 'Pomar',
-    baseCost: 15000000,
+    baseCost: 750000,
     costMultiplier: 1.15,
-    baseIncome: 150000,
+    baseIncome: 7500,
     incomeMultiplier: 1.1,
     icon: '🍋',
     tier: calculateTier(15000000)
@@ -360,9 +448,9 @@ export const upgrades: Upgrade[] = [
     name: 'Coqueiro',
     description: 'Cocos tropicais',
     category: 'Pomar',
-    baseCost: 75000000,
+    baseCost: 3750000,
     costMultiplier: 1.15,
-    baseIncome: 750000,
+    baseIncome: 37500,
     incomeMultiplier: 1.1,
     icon: '🥥',
     tier: calculateTier(75000000)
@@ -372,9 +460,9 @@ export const upgrades: Upgrade[] = [
     name: 'Jabuticabeira',
     description: 'Jabuticabas exóticas',
     category: 'Pomar',
-    baseCost: 400000000,
+    baseCost: 20000000,
     costMultiplier: 1.15,
-    baseIncome: 4000000,
+    baseIncome: 200000,
     incomeMultiplier: 1.1,
     icon: '🍇',
     tier: calculateTier(400000000)
@@ -384,9 +472,9 @@ export const upgrades: Upgrade[] = [
     name: 'Pomar Hidropônico',
     description: 'Frutas o ano todo',
     category: 'Pomar',
-    baseCost: 2000000000,
+    baseCost: 100000000,
     costMultiplier: 1.15,
-    baseIncome: 20000000,
+    baseIncome: 1000000,
     incomeMultiplier: 1.1,
     icon: '🌳',
     tier: calculateTier(2000000000)
@@ -398,9 +486,9 @@ export const upgrades: Upgrade[] = [
     name: 'Colmeia Simples',
     description: 'Primeira produção de mel',
     category: 'Apicultura',
-    baseCost: 400,
+    baseCost: 20.0,
     costMultiplier: 1.15,
-    baseIncome: 4,
+    baseIncome: 0.2,
     incomeMultiplier: 1.1,
     icon: '🐝',
     tier: calculateTier(400)
@@ -410,9 +498,9 @@ export const upgrades: Upgrade[] = [
     name: 'Abelha Rainha',
     description: 'Aumenta a colônia',
     category: 'Apicultura',
-    baseCost: 2000,
+    baseCost: 100,
     costMultiplier: 1.15,
-    baseIncome: 20,
+    baseIncome: 1.0,
     incomeMultiplier: 1.1,
     icon: '👑',
     tier: calculateTier(2000)
@@ -422,9 +510,9 @@ export const upgrades: Upgrade[] = [
     name: 'Extrator de Mel',
     description: 'Coleta eficiente',
     category: 'Apicultura',
-    baseCost: 10000,
+    baseCost: 500,
     costMultiplier: 1.15,
-    baseIncome: 100,
+    baseIncome: 5.0,
     incomeMultiplier: 1.1,
     icon: '🍯',
     tier: calculateTier(10000)
@@ -434,9 +522,9 @@ export const upgrades: Upgrade[] = [
     name: 'Flores Silvestres',
     description: 'Néctar abundante',
     category: 'Apicultura',
-    baseCost: 50000,
+    baseCost: 2500,
     costMultiplier: 1.15,
-    baseIncome: 500,
+    baseIncome: 25.0,
     incomeMultiplier: 1.1,
     icon: '🌸',
     tier: calculateTier(50000)
@@ -446,9 +534,9 @@ export const upgrades: Upgrade[] = [
     name: 'Colmeia Profissional',
     description: 'Maior produção',
     category: 'Apicultura',
-    baseCost: 250000,
+    baseCost: 12500,
     costMultiplier: 1.15,
-    baseIncome: 2500,
+    baseIncome: 125,
     incomeMultiplier: 1.1,
     icon: '📦',
     tier: calculateTier(250000)
@@ -458,9 +546,9 @@ export const upgrades: Upgrade[] = [
     name: 'Mel Orgânico',
     description: 'Produto premium',
     category: 'Apicultura',
-    baseCost: 1200000,
+    baseCost: 60000,
     costMultiplier: 1.15,
-    baseIncome: 12000,
+    baseIncome: 600,
     incomeMultiplier: 1.1,
     icon: '✨',
     tier: calculateTier(1200000)
@@ -470,9 +558,9 @@ export const upgrades: Upgrade[] = [
     name: 'Própolis',
     description: 'Subproduto valioso',
     category: 'Apicultura',
-    baseCost: 6000000,
+    baseCost: 300000,
     costMultiplier: 1.15,
-    baseIncome: 60000,
+    baseIncome: 3000,
     incomeMultiplier: 1.1,
     icon: '💊',
     tier: calculateTier(6000000)
@@ -482,9 +570,9 @@ export const upgrades: Upgrade[] = [
     name: 'Geleia Real',
     description: 'Produto raro',
     category: 'Apicultura',
-    baseCost: 30000000,
+    baseCost: 1500000,
     costMultiplier: 1.15,
-    baseIncome: 300000,
+    baseIncome: 15000,
     incomeMultiplier: 1.1,
     icon: '👑',
     tier: calculateTier(30000000)
@@ -494,9 +582,9 @@ export const upgrades: Upgrade[] = [
     name: 'Apiário Industrial',
     description: 'Centenas de colmeias',
     category: 'Apicultura',
-    baseCost: 150000000,
+    baseCost: 7500000,
     costMultiplier: 1.15,
-    baseIncome: 1500000,
+    baseIncome: 75000,
     incomeMultiplier: 1.1,
     icon: '🏭',
     tier: calculateTier(150000000)
@@ -506,9 +594,9 @@ export const upgrades: Upgrade[] = [
     name: 'Abelha Geneticamente Melhorada',
     description: 'Produção dobrada',
     category: 'Apicultura',
-    baseCost: 750000000,
+    baseCost: 37500000,
     costMultiplier: 1.15,
-    baseIncome: 7500000,
+    baseIncome: 375000,
     incomeMultiplier: 1.1,
     icon: '🧬',
     tier: calculateTier(750000000)
@@ -518,9 +606,9 @@ export const upgrades: Upgrade[] = [
     name: 'Império do Mel',
     description: 'Monopoliza o mercado',
     category: 'Apicultura',
-    baseCost: 4000000000,
+    baseCost: 200000000,
     costMultiplier: 1.15,
-    baseIncome: 40000000,
+    baseIncome: 2000000,
     incomeMultiplier: 1.1,
     icon: '🏰',
     tier: calculateTier(4000000000)
@@ -532,9 +620,9 @@ export const upgrades: Upgrade[] = [
     name: 'Aquário Pequeno',
     description: 'Primeiros peixes',
     category: 'Piscicultura',
-    baseCost: 800,
+    baseCost: 40.0,
     costMultiplier: 1.15,
-    baseIncome: 8,
+    baseIncome: 0.4,
     incomeMultiplier: 1.1,
     icon: '🐠',
     tier: calculateTier(800)
@@ -544,9 +632,9 @@ export const upgrades: Upgrade[] = [
     name: 'Tanque de Tilápia',
     description: 'Criação básica',
     category: 'Piscicultura',
-    baseCost: 4000,
+    baseCost: 200,
     costMultiplier: 1.15,
-    baseIncome: 40,
+    baseIncome: 2.0,
     incomeMultiplier: 1.1,
     icon: '🐟',
     tier: calculateTier(4000)
@@ -556,9 +644,9 @@ export const upgrades: Upgrade[] = [
     name: 'Lagoa de Carpa',
     description: 'Peixes ornamentais',
     category: 'Piscicultura',
-    baseCost: 20000,
+    baseCost: 1000,
     costMultiplier: 1.15,
-    baseIncome: 200,
+    baseIncome: 10.0,
     incomeMultiplier: 1.1,
     icon: '🎏',
     tier: calculateTier(20000)
@@ -568,9 +656,9 @@ export const upgrades: Upgrade[] = [
     name: 'Viveiro de Camarões',
     description: 'Crustáceos premium',
     category: 'Piscicultura',
-    baseCost: 100000,
+    baseCost: 5000,
     costMultiplier: 1.15,
-    baseIncome: 1000,
+    baseIncome: 50.0,
     incomeMultiplier: 1.1,
     icon: '🦐',
     tier: calculateTier(100000)
@@ -580,9 +668,9 @@ export const upgrades: Upgrade[] = [
     name: 'Tanque de Salmão',
     description: 'Peixe nobre',
     category: 'Piscicultura',
-    baseCost: 500000,
+    baseCost: 25000,
     costMultiplier: 1.15,
-    baseIncome: 5000,
+    baseIncome: 250,
     incomeMultiplier: 1.1,
     icon: '🐡',
     tier: calculateTier(500000)
@@ -592,9 +680,9 @@ export const upgrades: Upgrade[] = [
     name: 'Criação de Trutas',
     description: 'Água fria',
     category: 'Piscicultura',
-    baseCost: 2500000,
+    baseCost: 125000,
     costMultiplier: 1.15,
-    baseIncome: 25000,
+    baseIncome: 1250,
     incomeMultiplier: 1.1,
     icon: '🎣',
     tier: calculateTier(2500000)
@@ -604,9 +692,9 @@ export const upgrades: Upgrade[] = [
     name: 'Fazenda de Ostras',
     description: 'Pérolas ocasionais',
     category: 'Piscicultura',
-    baseCost: 12000000,
+    baseCost: 600000,
     costMultiplier: 1.15,
-    baseIncome: 120000,
+    baseIncome: 6000,
     incomeMultiplier: 1.1,
     icon: '🦪',
     tier: calculateTier(12000000)
@@ -616,9 +704,9 @@ export const upgrades: Upgrade[] = [
     name: 'Lagosta Premium',
     description: 'Frutos do mar de luxo',
     category: 'Piscicultura',
-    baseCost: 60000000,
+    baseCost: 3000000,
     costMultiplier: 1.15,
-    baseIncome: 600000,
+    baseIncome: 30000,
     incomeMultiplier: 1.1,
     icon: '🦞',
     tier: calculateTier(60000000)
@@ -628,9 +716,9 @@ export const upgrades: Upgrade[] = [
     name: 'Aquicultura Marinha',
     description: 'Produção oceânica',
     category: 'Piscicultura',
-    baseCost: 300000000,
+    baseCost: 15000000,
     costMultiplier: 1.15,
-    baseIncome: 3000000,
+    baseIncome: 150000,
     incomeMultiplier: 1.1,
     icon: '🌊',
     tier: calculateTier(300000000)
@@ -640,9 +728,9 @@ export const upgrades: Upgrade[] = [
     name: 'Caviar de Esturjão',
     description: 'Iguaria rara',
     category: 'Piscicultura',
-    baseCost: 1500000000,
+    baseCost: 75000000,
     costMultiplier: 1.15,
-    baseIncome: 15000000,
+    baseIncome: 750000,
     incomeMultiplier: 1.1,
     icon: '⚫',
     tier: calculateTier(1500000000)
@@ -652,9 +740,9 @@ export const upgrades: Upgrade[] = [
     name: 'Império Aquático',
     description: 'Domínio dos mares',
     category: 'Piscicultura',
-    baseCost: 8000000000,
+    baseCost: 400000000,
     costMultiplier: 1.15,
-    baseIncome: 80000000,
+    baseIncome: 4000000,
     incomeMultiplier: 1.1,
     icon: '🏛️',
     tier: calculateTier(8000000000)
@@ -666,9 +754,9 @@ export const upgrades: Upgrade[] = [
     name: 'Videira Jovem',
     description: 'Primeiras uvas',
     category: 'Vinicultura',
-    baseCost: 1500,
+    baseCost: 75.0,
     costMultiplier: 1.15,
-    baseIncome: 15,
+    baseIncome: 0.75,
     incomeMultiplier: 1.1,
     icon: '🍇',
     tier: calculateTier(1500)
@@ -678,9 +766,9 @@ export const upgrades: Upgrade[] = [
     name: 'Barril de Carvalho',
     description: 'Envelhecimento básico',
     category: 'Vinicultura',
-    baseCost: 7500,
+    baseCost: 375,
     costMultiplier: 1.15,
-    baseIncome: 75,
+    baseIncome: 3.75,
     incomeMultiplier: 1.1,
     icon: '🛢️',
     tier: calculateTier(7500)
@@ -690,9 +778,9 @@ export const upgrades: Upgrade[] = [
     name: 'Adega Pequena',
     description: 'Armazenamento adequado',
     category: 'Vinicultura',
-    baseCost: 35000,
+    baseCost: 1750,
     costMultiplier: 1.15,
-    baseIncome: 350,
+    baseIncome: 17.5,
     incomeMultiplier: 1.1,
     icon: '🏚️',
     tier: calculateTier(35000)
@@ -702,9 +790,9 @@ export const upgrades: Upgrade[] = [
     name: 'Vinho Tinto',
     description: 'Clássico atemporal',
     category: 'Vinicultura',
-    baseCost: 175000,
+    baseCost: 8750,
     costMultiplier: 1.15,
-    baseIncome: 1750,
+    baseIncome: 87.5,
     incomeMultiplier: 1.1,
     icon: '🍷',
     tier: calculateTier(175000)
@@ -714,9 +802,9 @@ export const upgrades: Upgrade[] = [
     name: 'Vinho Branco',
     description: 'Refrescante',
     category: 'Vinicultura',
-    baseCost: 850000,
+    baseCost: 42500,
     costMultiplier: 1.15,
-    baseIncome: 8500,
+    baseIncome: 425,
     incomeMultiplier: 1.1,
     icon: '🥂',
     tier: calculateTier(850000)
@@ -726,9 +814,9 @@ export const upgrades: Upgrade[] = [
     name: 'Champagne',
     description: 'Celebração em garrafa',
     category: 'Vinicultura',
-    baseCost: 4000000,
+    baseCost: 200000,
     costMultiplier: 1.15,
-    baseIncome: 40000,
+    baseIncome: 2000,
     incomeMultiplier: 1.1,
     icon: '🍾',
     tier: calculateTier(4000000)
@@ -738,9 +826,9 @@ export const upgrades: Upgrade[] = [
     name: 'Vinho Rosé',
     description: 'Elegância sutil',
     category: 'Vinicultura',
-    baseCost: 20000000,
+    baseCost: 1000000,
     costMultiplier: 1.15,
-    baseIncome: 200000,
+    baseIncome: 10000,
     incomeMultiplier: 1.1,
     icon: '🌹',
     tier: calculateTier(20000000)
@@ -750,9 +838,9 @@ export const upgrades: Upgrade[] = [
     name: 'Safra Especial',
     description: 'Ano excepcional',
     category: 'Vinicultura',
-    baseCost: 100000000,
+    baseCost: 5000000,
     costMultiplier: 1.15,
-    baseIncome: 1000000,
+    baseIncome: 50000,
     incomeMultiplier: 1.1,
     icon: '⭐',
     tier: calculateTier(100000000)
@@ -762,9 +850,9 @@ export const upgrades: Upgrade[] = [
     name: 'Vinícola Premiada',
     description: 'Reconhecimento mundial',
     category: 'Vinicultura',
-    baseCost: 500000000,
+    baseCost: 25000000,
     costMultiplier: 1.15,
-    baseIncome: 5000000,
+    baseIncome: 250000,
     incomeMultiplier: 1.1,
     icon: '🏆',
     tier: calculateTier(500000000)
@@ -774,9 +862,9 @@ export const upgrades: Upgrade[] = [
     name: 'Vinho Centenário',
     description: 'Raridade absoluta',
     category: 'Vinicultura',
-    baseCost: 2500000000,
+    baseCost: 125000000,
     costMultiplier: 1.15,
-    baseIncome: 25000000,
+    baseIncome: 1250000,
     incomeMultiplier: 1.1,
     icon: '💎',
     tier: calculateTier(2500000000)
@@ -786,9 +874,9 @@ export const upgrades: Upgrade[] = [
     name: 'Império Vinícola',
     description: 'Domínio global',
     category: 'Vinicultura',
-    baseCost: 12000000000,
+    baseCost: 600000000,
     costMultiplier: 1.15,
-    baseIncome: 120000000,
+    baseIncome: 6000000,
     incomeMultiplier: 1.1,
     icon: '👑',
     tier: calculateTier(12000000000)
@@ -800,9 +888,9 @@ export const upgrades: Upgrade[] = [
     name: 'Balde de Leite',
     description: 'Coleta manual',
     category: 'Laticínios',
-    baseCost: 600,
+    baseCost: 30.0,
     costMultiplier: 1.15,
-    baseIncome: 6,
+    baseIncome: 0.3,
     incomeMultiplier: 1.1,
     icon: '🥛',
     tier: calculateTier(600)
@@ -812,9 +900,9 @@ export const upgrades: Upgrade[] = [
     name: 'Queijo Fresco',
     description: 'Primeira produção',
     category: 'Laticínios',
-    baseCost: 3000,
+    baseCost: 150,
     costMultiplier: 1.15,
-    baseIncome: 30,
+    baseIncome: 1.5,
     incomeMultiplier: 1.1,
     icon: '🧀',
     tier: calculateTier(3000)
@@ -824,9 +912,9 @@ export const upgrades: Upgrade[] = [
     name: 'Manteiga Caseira',
     description: 'Tradicional',
     category: 'Laticínios',
-    baseCost: 15000,
+    baseCost: 750,
     costMultiplier: 1.15,
-    baseIncome: 150,
+    baseIncome: 7.5,
     incomeMultiplier: 1.1,
     icon: '🧈',
     tier: calculateTier(15000)
@@ -836,9 +924,9 @@ export const upgrades: Upgrade[] = [
     name: 'Iogurte Natural',
     description: 'Probióticos',
     category: 'Laticínios',
-    baseCost: 75000,
+    baseCost: 3750,
     costMultiplier: 1.15,
-    baseIncome: 750,
+    baseIncome: 37.5,
     incomeMultiplier: 1.1,
     icon: '🥄',
     tier: calculateTier(75000)
@@ -848,9 +936,9 @@ export const upgrades: Upgrade[] = [
     name: 'Queijo Maturado',
     description: 'Sabor intenso',
     category: 'Laticínios',
-    baseCost: 375000,
+    baseCost: 18750,
     costMultiplier: 1.15,
-    baseIncome: 3750,
+    baseIncome: 188,
     incomeMultiplier: 1.1,
     icon: '🧀',
     tier: calculateTier(375000)
@@ -860,9 +948,9 @@ export const upgrades: Upgrade[] = [
     name: 'Creme de Leite',
     description: 'Consistência perfeita',
     category: 'Laticínios',
-    baseCost: 1800000,
+    baseCost: 90000,
     costMultiplier: 1.15,
-    baseIncome: 18000,
+    baseIncome: 900,
     incomeMultiplier: 1.1,
     icon: '🍨',
     tier: calculateTier(1800000)
@@ -872,9 +960,9 @@ export const upgrades: Upgrade[] = [
     name: 'Requeijão Cremoso',
     description: 'Especialidade',
     category: 'Laticínios',
-    baseCost: 9000000,
+    baseCost: 450000,
     costMultiplier: 1.15,
-    baseIncome: 90000,
+    baseIncome: 4500,
     incomeMultiplier: 1.1,
     icon: '🥣',
     tier: calculateTier(9000000)
@@ -884,9 +972,9 @@ export const upgrades: Upgrade[] = [
     name: 'Queijo Gourmet',
     description: 'Alta gastronomia',
     category: 'Laticínios',
-    baseCost: 45000000,
+    baseCost: 2250000,
     costMultiplier: 1.15,
-    baseIncome: 450000,
+    baseIncome: 22500,
     incomeMultiplier: 1.1,
     icon: '✨',
     tier: calculateTier(45000000)
@@ -896,9 +984,9 @@ export const upgrades: Upgrade[] = [
     name: 'Laticínio Industrial',
     description: 'Produção em massa',
     category: 'Laticínios',
-    baseCost: 225000000,
+    baseCost: 11250000,
     costMultiplier: 1.15,
-    baseIncome: 2250000,
+    baseIncome: 112500,
     incomeMultiplier: 1.1,
     icon: '🏭',
     tier: calculateTier(225000000)
@@ -908,9 +996,9 @@ export const upgrades: Upgrade[] = [
     name: 'Queijo Trufado',
     description: 'Iguaria premium',
     category: 'Laticínios',
-    baseCost: 1100000000,
+    baseCost: 55000000,
     costMultiplier: 1.15,
-    baseIncome: 11000000,
+    baseIncome: 550000,
     incomeMultiplier: 1.1,
     icon: '💎',
     tier: calculateTier(1100000000)
@@ -920,9 +1008,9 @@ export const upgrades: Upgrade[] = [
     name: 'Império dos Laticínios',
     description: 'Marca mundial',
     category: 'Laticínios',
-    baseCost: 5500000000,
+    baseCost: 275000000,
     costMultiplier: 1.15,
-    baseIncome: 55000000,
+    baseIncome: 2750000,
     incomeMultiplier: 1.1,
     icon: '🌍',
     tier: calculateTier(5500000000)
@@ -934,9 +1022,9 @@ export const upgrades: Upgrade[] = [
     name: 'Plantadeira Mecânica',
     description: 'Automatização inicial',
     category: 'Agricultura Industrial',
-    baseCost: 5000,
+    baseCost: 250,
     costMultiplier: 1.15,
-    baseIncome: 50,
+    baseIncome: 2.5,
     incomeMultiplier: 1.1,
     icon: '🚜',
     tier: calculateTier(5000)
@@ -946,9 +1034,9 @@ export const upgrades: Upgrade[] = [
     name: 'Colheitadeira',
     description: 'Colheita rápida',
     category: 'Agricultura Industrial',
-    baseCost: 25000,
+    baseCost: 1250,
     costMultiplier: 1.15,
-    baseIncome: 250,
+    baseIncome: 12.5,
     incomeMultiplier: 1.1,
     icon: '🌾',
     tier: calculateTier(25000)
@@ -958,9 +1046,9 @@ export const upgrades: Upgrade[] = [
     name: 'Sistema de Irrigação',
     description: 'Água otimizada',
     category: 'Agricultura Industrial',
-    baseCost: 125000,
+    baseCost: 6250,
     costMultiplier: 1.15,
-    baseIncome: 1250,
+    baseIncome: 62.5,
     incomeMultiplier: 1.1,
     icon: '💧',
     tier: calculateTier(125000)
@@ -970,9 +1058,9 @@ export const upgrades: Upgrade[] = [
     name: 'Drone Agrícola',
     description: 'Monitoramento aéreo',
     category: 'Agricultura Industrial',
-    baseCost: 625000,
+    baseCost: 31250,
     costMultiplier: 1.15,
-    baseIncome: 6250,
+    baseIncome: 312,
     incomeMultiplier: 1.1,
     icon: '🛸',
     tier: calculateTier(625000)
@@ -982,9 +1070,9 @@ export const upgrades: Upgrade[] = [
     name: 'Sensor IoT',
     description: 'Dados em tempo real',
     category: 'Agricultura Industrial',
-    baseCost: 3000000,
+    baseCost: 150000,
     costMultiplier: 1.15,
-    baseIncome: 30000,
+    baseIncome: 1500,
     incomeMultiplier: 1.1,
     icon: '📡',
     tier: calculateTier(3000000)
@@ -994,9 +1082,9 @@ export const upgrades: Upgrade[] = [
     name: 'IA para Agricultura',
     description: 'Decisões inteligentes',
     category: 'Agricultura Industrial',
-    baseCost: 15000000,
+    baseCost: 750000,
     costMultiplier: 1.15,
-    baseIncome: 150000,
+    baseIncome: 7500,
     incomeMultiplier: 1.1,
     icon: '🤖',
     tier: calculateTier(15000000)
@@ -1006,9 +1094,9 @@ export const upgrades: Upgrade[] = [
     name: 'Satélite de Observação',
     description: 'Visão global',
     category: 'Agricultura Industrial',
-    baseCost: 75000000,
+    baseCost: 3750000,
     costMultiplier: 1.15,
-    baseIncome: 750000,
+    baseIncome: 37500,
     incomeMultiplier: 1.1,
     icon: '🛰️',
     tier: calculateTier(75000000)
@@ -1018,9 +1106,9 @@ export const upgrades: Upgrade[] = [
     name: 'Fazenda Vertical',
     description: 'Espaço otimizado',
     category: 'Agricultura Industrial',
-    baseCost: 375000000,
+    baseCost: 18750000,
     costMultiplier: 1.15,
-    baseIncome: 3750000,
+    baseIncome: 187500,
     incomeMultiplier: 1.1,
     icon: '🏢',
     tier: calculateTier(375000000)
@@ -1030,9 +1118,9 @@ export const upgrades: Upgrade[] = [
     name: 'Biotecnologia Avançada',
     description: 'Modificação genética',
     category: 'Agricultura Industrial',
-    baseCost: 1800000000,
+    baseCost: 90000000,
     costMultiplier: 1.15,
-    baseIncome: 18000000,
+    baseIncome: 900000,
     incomeMultiplier: 1.1,
     icon: '🧬',
     tier: calculateTier(1800000000)
@@ -1042,9 +1130,9 @@ export const upgrades: Upgrade[] = [
     name: 'Agricultura Espacial',
     description: 'Além da Terra',
     category: 'Agricultura Industrial',
-    baseCost: 9000000000,
+    baseCost: 450000000,
     costMultiplier: 1.15,
-    baseIncome: 90000000,
+    baseIncome: 4500000,
     incomeMultiplier: 1.1,
     icon: '🚀',
     tier: calculateTier(9000000000)
@@ -1054,9 +1142,9 @@ export const upgrades: Upgrade[] = [
     name: 'Terraformação',
     description: 'Novos mundos cultiváveis',
     category: 'Agricultura Industrial',
-    baseCost: 45000000000,
+    baseCost: 2250000000,
     costMultiplier: 1.15,
-    baseIncome: 450000000,
+    baseIncome: 22500000,
     incomeMultiplier: 1.1,
     icon: '🌍',
     tier: calculateTier(45000000000)
@@ -1068,9 +1156,9 @@ export const upgrades: Upgrade[] = [
     name: 'Moinho de Grãos',
     description: 'Farinha fresca',
     category: 'Processamento',
-    baseCost: 2500,
+    baseCost: 125,
     costMultiplier: 1.15,
-    baseIncome: 25,
+    baseIncome: 1.25,
     incomeMultiplier: 1.1,
     icon: '⚙️',
     tier: calculateTier(2500)
@@ -1080,9 +1168,9 @@ export const upgrades: Upgrade[] = [
     name: 'Fábrica de Ração',
     description: 'Alimento animal',
     category: 'Processamento',
-    baseCost: 12000,
+    baseCost: 600,
     costMultiplier: 1.15,
-    baseIncome: 120,
+    baseIncome: 6.0,
     incomeMultiplier: 1.1,
     icon: '🥫',
     tier: calculateTier(12000)
@@ -1092,9 +1180,9 @@ export const upgrades: Upgrade[] = [
     name: 'Enlatadora',
     description: 'Conservação de alimentos',
     category: 'Processamento',
-    baseCost: 60000,
+    baseCost: 3000,
     costMultiplier: 1.15,
-    baseIncome: 600,
+    baseIncome: 30.0,
     incomeMultiplier: 1.1,
     icon: '🏭',
     tier: calculateTier(60000)
@@ -1104,9 +1192,9 @@ export const upgrades: Upgrade[] = [
     name: 'Linha de Embalagem',
     description: 'Produtos prontos',
     category: 'Processamento',
-    baseCost: 300000,
+    baseCost: 15000,
     costMultiplier: 1.15,
-    baseIncome: 3000,
+    baseIncome: 150,
     incomeMultiplier: 1.1,
     icon: '📦',
     tier: calculateTier(300000)
@@ -1116,9 +1204,9 @@ export const upgrades: Upgrade[] = [
     name: 'Câmara Fria',
     description: 'Preservação ideal',
     category: 'Processamento',
-    baseCost: 1500000,
+    baseCost: 75000,
     costMultiplier: 1.15,
-    baseIncome: 15000,
+    baseIncome: 750,
     incomeMultiplier: 1.1,
     icon: '❄️',
     tier: calculateTier(1500000)
@@ -1128,9 +1216,9 @@ export const upgrades: Upgrade[] = [
     name: 'Fábrica de Suco',
     description: 'Bebidas naturais',
     category: 'Processamento',
-    baseCost: 7500000,
+    baseCost: 375000,
     costMultiplier: 1.15,
-    baseIncome: 75000,
+    baseIncome: 3750,
     incomeMultiplier: 1.1,
     icon: '🧃',
     tier: calculateTier(7500000)
@@ -1140,9 +1228,9 @@ export const upgrades: Upgrade[] = [
     name: 'Indústria de Sorvetes',
     description: 'Sobremesas geladas',
     category: 'Processamento',
-    baseCost: 37500000,
+    baseCost: 1875000,
     costMultiplier: 1.15,
-    baseIncome: 375000,
+    baseIncome: 18750,
     incomeMultiplier: 1.1,
     icon: '🍦',
     tier: calculateTier(37500000)
@@ -1152,9 +1240,9 @@ export const upgrades: Upgrade[] = [
     name: 'Refino de Açúcar',
     description: 'Adoçante puro',
     category: 'Processamento',
-    baseCost: 187500000,
+    baseCost: 9375000,
     costMultiplier: 1.15,
-    baseIncome: 1875000,
+    baseIncome: 93750,
     incomeMultiplier: 1.1,
     icon: '🍬',
     tier: calculateTier(187500000)
@@ -1164,9 +1252,9 @@ export const upgrades: Upgrade[] = [
     name: 'Complexo Industrial',
     description: 'Múltiplos produtos',
     category: 'Processamento',
-    baseCost: 937500000,
+    baseCost: 46875000,
     costMultiplier: 1.15,
-    baseIncome: 9375000,
+    baseIncome: 468750,
     incomeMultiplier: 1.1,
     icon: '🏗️',
     tier: calculateTier(937500000)
@@ -1176,9 +1264,9 @@ export const upgrades: Upgrade[] = [
     name: 'Nanotecnologia Alimentar',
     description: 'Processamento molecular',
     category: 'Processamento',
-    baseCost: 4687500000,
+    baseCost: 234375000,
     costMultiplier: 1.15,
-    baseIncome: 46875000,
+    baseIncome: 2343750,
     incomeMultiplier: 1.1,
     icon: '⚛️',
     tier: calculateTier(4687500000)
@@ -1188,9 +1276,9 @@ export const upgrades: Upgrade[] = [
     name: 'Síntese de Alimentos',
     description: 'Comida do futuro',
     category: 'Processamento',
-    baseCost: 23000000000,
+    baseCost: 1150000000,
     costMultiplier: 1.15,
-    baseIncome: 230000000,
+    baseIncome: 11500000,
     incomeMultiplier: 1.1,
     icon: '🔬',
     tier: calculateTier(23000000000)
@@ -1202,9 +1290,9 @@ export const upgrades: Upgrade[] = [
     name: 'Painel Solar',
     description: 'Energia limpa',
     category: 'Tecnologia Futurista',
-    baseCost: 10000,
+    baseCost: 500,
     costMultiplier: 1.15,
-    baseIncome: 100,
+    baseIncome: 5.0,
     incomeMultiplier: 1.1,
     icon: '☀️',
     tier: calculateTier(10000)
@@ -1214,9 +1302,9 @@ export const upgrades: Upgrade[] = [
     name: 'Turbina Eólica',
     description: 'Energia dos ventos',
     category: 'Tecnologia Futurista',
-    baseCost: 50000,
+    baseCost: 2500,
     costMultiplier: 1.15,
-    baseIncome: 500,
+    baseIncome: 25.0,
     incomeMultiplier: 1.1,
     icon: '💨',
     tier: calculateTier(50000)
@@ -1226,9 +1314,9 @@ export const upgrades: Upgrade[] = [
     name: 'Estufa Inteligente',
     description: 'Clima controlado por IA',
     category: 'Tecnologia Futurista',
-    baseCost: 250000,
+    baseCost: 12500,
     costMultiplier: 1.15,
-    baseIncome: 2500,
+    baseIncome: 125,
     incomeMultiplier: 1.1,
     icon: '🏠',
     tier: calculateTier(250000)
@@ -1238,9 +1326,9 @@ export const upgrades: Upgrade[] = [
     name: 'Robô Agricultor',
     description: 'Trabalho 24/7',
     category: 'Tecnologia Futurista',
-    baseCost: 1250000,
+    baseCost: 62500,
     costMultiplier: 1.15,
-    baseIncome: 12500,
+    baseIncome: 625,
     incomeMultiplier: 1.1,
     icon: '🤖',
     tier: calculateTier(1250000)
@@ -1250,9 +1338,9 @@ export const upgrades: Upgrade[] = [
     name: 'Clonagem de Plantas',
     description: 'Reprodução perfeita',
     category: 'Tecnologia Futurista',
-    baseCost: 6250000,
+    baseCost: 312500,
     costMultiplier: 1.15,
-    baseIncome: 62500,
+    baseIncome: 3125,
     incomeMultiplier: 1.1,
     icon: '🧬',
     tier: calculateTier(6250000)
@@ -1262,9 +1350,9 @@ export const upgrades: Upgrade[] = [
     name: 'Impressora 3D de Alimentos',
     description: 'Criação instantânea',
     category: 'Tecnologia Futurista',
-    baseCost: 31250000,
+    baseCost: 1562500,
     costMultiplier: 1.15,
-    baseIncome: 312500,
+    baseIncome: 15625,
     incomeMultiplier: 1.1,
     icon: '🖨️',
     tier: calculateTier(31250000)
@@ -1274,9 +1362,9 @@ export const upgrades: Upgrade[] = [
     name: 'Fazenda Submarina',
     description: 'Cultivo oceânico',
     category: 'Tecnologia Futurista',
-    baseCost: 156250000,
+    baseCost: 7812500,
     costMultiplier: 1.15,
-    baseIncome: 1562500,
+    baseIncome: 78125,
     incomeMultiplier: 1.1,
     icon: '🌊',
     tier: calculateTier(156250000)
@@ -1286,9 +1374,9 @@ export const upgrades: Upgrade[] = [
     name: 'Estação Orbital',
     description: 'Agricultura no espaço',
     category: 'Tecnologia Futurista',
-    baseCost: 781250000,
+    baseCost: 39062500,
     costMultiplier: 1.15,
-    baseIncome: 7812500,
+    baseIncome: 390625,
     incomeMultiplier: 1.1,
     icon: '🛸',
     tier: calculateTier(781250000)
@@ -1298,9 +1386,9 @@ export const upgrades: Upgrade[] = [
     name: 'Fusão Nuclear',
     description: 'Energia ilimitada',
     category: 'Tecnologia Futurista',
-    baseCost: 3906250000,
+    baseCost: 195312500,
     costMultiplier: 1.15,
-    baseIncome: 39062500,
+    baseIncome: 1953125,
     incomeMultiplier: 1.1,
     icon: '⚛️',
     tier: calculateTier(3906250000)
@@ -1310,9 +1398,9 @@ export const upgrades: Upgrade[] = [
     name: 'Teletransporte Quântico',
     description: 'Entrega instantânea',
     category: 'Tecnologia Futurista',
-    baseCost: 19531250000,
+    baseCost: 976562500,
     costMultiplier: 1.15,
-    baseIncome: 195312500,
+    baseIncome: 9765625,
     incomeMultiplier: 1.1,
     icon: '✨',
     tier: calculateTier(19531250000)
@@ -1322,9 +1410,9 @@ export const upgrades: Upgrade[] = [
     name: 'Multiverso Agrícola',
     description: 'Fazendas em realidades alternativas',
     category: 'Tecnologia Futurista',
-    baseCost: 100000000000,
+    baseCost: 5000000000,
     costMultiplier: 1.15,
-    baseIncome: 1000000000,
+    baseIncome: 50000000,
     incomeMultiplier: 1.1,
     icon: '🌌',
     tier: calculateTier(100000000000)
@@ -1339,9 +1427,9 @@ export const upgrades: Upgrade[] = [
     name: 'Fazenda Superintensiva',
     description: '🏆 COMPOSTO: Combina múltiplas tecnologias agrícolas para produção massiva',
     category: 'Upgrades Compostos',
-    baseCost: 50000000,
+    baseCost: 2500000,
     costMultiplier: 1.2,
-    baseIncome: 500000,
+    baseIncome: 25000,
     incomeMultiplier: 1.15,
     icon: '🌟',
     isComposite: true,
@@ -1358,9 +1446,9 @@ export const upgrades: Upgrade[] = [
     name: 'Complexo Pecuário Premium',
     description: '🏆 COMPOSTO: Criação de elite com genética superior',
     category: 'Upgrades Compostos',
-    baseCost: 150000000,
+    baseCost: 7500000,
     costMultiplier: 1.2,
-    baseIncome: 1500000,
+    baseIncome: 75000,
     incomeMultiplier: 1.15,
     icon: '🎖️',
     isComposite: true,
@@ -1377,9 +1465,9 @@ export const upgrades: Upgrade[] = [
     name: 'Pomar Celestial',
     description: '🏆 COMPOSTO: Pomar mágico que produz frutas perfeitas',
     category: 'Upgrades Compostos',
-    baseCost: 300000000,
+    baseCost: 15000000,
     costMultiplier: 1.2,
-    baseIncome: 3000000,
+    baseIncome: 150000,
     incomeMultiplier: 1.15,
     icon: '🍃',
     isComposite: true,
@@ -1396,9 +1484,9 @@ export const upgrades: Upgrade[] = [
     name: 'Simbiose Natural',
     description: '🏆 COMPOSTO: Abelhas polinizam o pomar criando sinergia perfeita',
     category: 'Upgrades Compostos',
-    baseCost: 500000000,
+    baseCost: 25000000,
     costMultiplier: 1.2,
-    baseIncome: 5000000,
+    baseIncome: 250000,
     incomeMultiplier: 1.15,
     icon: '🌺',
     isComposite: true,
@@ -1415,9 +1503,9 @@ export const upgrades: Upgrade[] = [
     name: 'Império Aquático Total',
     description: '🏆 COMPOSTO: Domínio completo sobre os mares e rios',
     category: 'Upgrades Compostos',
-    baseCost: 1000000000,
+    baseCost: 50000000,
     costMultiplier: 1.2,
-    baseIncome: 10000000,
+    baseIncome: 500000,
     incomeMultiplier: 1.15,
     icon: '🔱',
     isComposite: true,
@@ -1434,9 +1522,9 @@ export const upgrades: Upgrade[] = [
     name: 'Gastronomia de Elite',
     description: '🏆 COMPOSTO: Combinação perfeita de vinhos e queijos gourmet',
     category: 'Upgrades Compostos',
-    baseCost: 2000000000,
+    baseCost: 100000000,
     costMultiplier: 1.2,
-    baseIncome: 20000000,
+    baseIncome: 1000000,
     incomeMultiplier: 1.15,
     icon: '👑',
     isComposite: true,
@@ -1453,9 +1541,9 @@ export const upgrades: Upgrade[] = [
     name: 'Singularidade Agrícola',
     description: '🏆 COMPOSTO: IA superinteligente controla toda a produção',
     category: 'Upgrades Compostos',
-    baseCost: 5000000000,
+    baseCost: 250000000,
     costMultiplier: 1.2,
-    baseIncome: 50000000,
+    baseIncome: 2500000,
     incomeMultiplier: 1.15,
     icon: '🤖',
     isComposite: true,
@@ -1472,9 +1560,9 @@ export const upgrades: Upgrade[] = [
     name: 'Fábrica Quantum',
     description: '🏆 COMPOSTO: Processamento em nível molecular e quântico',
     category: 'Upgrades Compostos',
-    baseCost: 10000000000,
+    baseCost: 500000000,
     costMultiplier: 1.2,
-    baseIncome: 100000000,
+    baseIncome: 5000000,
     incomeMultiplier: 1.15,
     icon: '⚛️',
     isComposite: true,
@@ -1491,9 +1579,9 @@ export const upgrades: Upgrade[] = [
     name: 'Colônia Intergaláctica',
     description: '🏆 COMPOSTO: Fazendas em múltiplas galáxias',
     category: 'Upgrades Compostos',
-    baseCost: 25000000000,
+    baseCost: 1250000000,
     costMultiplier: 1.2,
-    baseIncome: 250000000,
+    baseIncome: 12500000,
     incomeMultiplier: 1.15,
     icon: '🌌',
     isComposite: true,
@@ -1510,9 +1598,9 @@ export const upgrades: Upgrade[] = [
     name: 'Deus da Agricultura',
     description: '🏆 LENDÁRIO: Controle divino sobre toda a produção universal',
     category: 'Upgrades Compostos',
-    baseCost: 100000000000,
+    baseCost: 5000000000,
     costMultiplier: 1.3,
-    baseIncome: 1000000000,
+    baseIncome: 50000000,
     incomeMultiplier: 1.2,
     icon: '✨',
     isComposite: true,
@@ -1524,10 +1612,456 @@ export const upgrades: Upgrade[] = [
       { upgradeId: 'future_11', minCount: 1 }   // 1x Multiverso Agrícola
     ]
   },
+
+  // ⚙️ PRODUÇÃO EM CADEIA - Sistema complexo de produção realista
+  // Requer animais/plantas base para produzir recursos processados
+  
+  // === CADEIA DE OVOS ===
+  {
+    id: 'chain_egg_production',
+    name: 'Produção de Ovos 🥚',
+    description: '⚙️ CADEIA: Galinhas produzem ovos frescos. Requer galinhas ativas',
+    category: 'Produção em Cadeia',
+    baseCost: 100,
+    costMultiplier: 1.3,
+    baseIncome: 2,
+    incomeMultiplier: 1.2,
+    icon: '🥚',
+    isComposite: true,
+    tier: calculateTier(100),
+    requirements: [
+      { upgradeId: 'cattle_01', minCount: 5 }  // 5x Galinha Caipira
+    ]
+  },
+  {
+    id: 'chain_egg_incubation',
+    name: 'Chocadeira Automática 🐣',
+    description: '⚙️ CADEIA: Choca ovos em pintinhos (48h). Requer ovos + galinhas',
+    category: 'Produção em Cadeia',
+    baseCost: 2500,
+    costMultiplier: 1.3,
+    baseIncome: 50,
+    incomeMultiplier: 1.25,
+    icon: '🐣',
+    isComposite: true,
+    tier: calculateTier(2500),
+    requirements: [
+      { upgradeId: 'chain_egg_production', minCount: 10 },  // 10x Produção de Ovos
+      { upgradeId: 'cattle_01', minCount: 20 }  // 20x Galinha Caipira
+    ]
+  },
+
+  // === CADEIA DE LEITE ===
+  {
+    id: 'chain_milk_production',
+    name: 'Ordenha Diária 🥛',
+    description: '⚙️ CADEIA: Vacas produzem leite fresco. Requer vacas leiteiras',
+    category: 'Produção em Cadeia',
+    baseCost: 500,
+    costMultiplier: 1.3,
+    baseIncome: 10,
+    incomeMultiplier: 1.2,
+    icon: '🥛',
+    isComposite: true,
+    tier: calculateTier(500),
+    requirements: [
+      { upgradeId: 'cattle_03', minCount: 5 }  // 5x Vaca Leiteira
+    ]
+  },
+  {
+    id: 'chain_butter_production',
+    name: 'Fabricação de Manteiga 🧈',
+    description: '⚙️ CADEIA: Processa leite em manteiga cremosa. Requer leite',
+    category: 'Produção em Cadeia',
+    baseCost: 3500,
+    costMultiplier: 1.3,
+    baseIncome: 70,
+    incomeMultiplier: 1.25,
+    icon: '🧈',
+    isComposite: true,
+    tier: calculateTier(3500),
+    requirements: [
+      { upgradeId: 'chain_milk_production', minCount: 10 },  // 10x Ordenha Diária
+      { upgradeId: 'cattle_03', minCount: 15 }  // 15x Vaca Leiteira
+    ]
+  },
+  {
+    id: 'chain_cheese_production',
+    name: 'Queijaria Artesanal 🧀',
+    description: '⚙️ CADEIA: Transforma leite em queijos premium. Requer leite e tempo de maturação',
+    category: 'Produção em Cadeia',
+    baseCost: 15000,
+    costMultiplier: 1.3,
+    baseIncome: 300,
+    incomeMultiplier: 1.3,
+    icon: '🧀',
+    isComposite: true,
+    tier: calculateTier(15000),
+    requirements: [
+      { upgradeId: 'chain_milk_production', minCount: 25 },  // 25x Ordenha Diária
+      { upgradeId: 'cattle_03', minCount: 30 },  // 30x Vaca Leiteira
+      { upgradeId: 'cattle_05', minCount: 10 }   // 10x Cabra (leite de cabra)
+    ]
+  },
+  {
+    id: 'chain_yogurt_production',
+    name: 'Fábrica de Iogurte 🍶',
+    description: '⚙️ CADEIA: Fermenta leite em iogurte probiótico. Requer leite e cultura bacteriana',
+    category: 'Produção em Cadeia',
+    baseCost: 8500,
+    costMultiplier: 1.3,
+    baseIncome: 170,
+    incomeMultiplier: 1.25,
+    icon: '🍶',
+    isComposite: true,
+    tier: calculateTier(8500),
+    requirements: [
+      { upgradeId: 'chain_milk_production', minCount: 15 },  // 15x Ordenha Diária
+      { upgradeId: 'cattle_03', minCount: 20 }  // 20x Vaca Leiteira
+    ]
+  },
+
+  // === CADEIA DE CARNE ===
+  {
+    id: 'chain_pork_production',
+    name: 'Criação de Suínos 🥓',
+    description: '⚙️ CADEIA: Porcos crescem e produzem carne. Requer alimentação e 6 meses',
+    category: 'Produção em Cadeia',
+    baseCost: 1200,
+    costMultiplier: 1.3,
+    baseIncome: 24,
+    incomeMultiplier: 1.2,
+    icon: '🥓',
+    isComposite: true,
+    tier: calculateTier(1200),
+    requirements: [
+      { upgradeId: 'cattle_02', minCount: 10 },  // 10x Porco
+      { upgradeId: 'plant_02', minCount: 15 }    // 15x Sementes de Trigo (alimentação)
+    ]
+  },
+  {
+    id: 'chain_beef_production',
+    name: 'Criação de Gado de Corte 🥩',
+    description: '⚙️ CADEIA: Gado engorda para produzir carne bovina premium. Requer pasto e 12 meses',
+    category: 'Produção em Cadeia',
+    baseCost: 5000,
+    costMultiplier: 1.3,
+    baseIncome: 100,
+    incomeMultiplier: 1.25,
+    icon: '🥩',
+    isComposite: true,
+    tier: calculateTier(5000),
+    requirements: [
+      { upgradeId: 'cattle_03', minCount: 15 },  // 15x Vaca
+      { upgradeId: 'plant_03', minCount: 20 },   // 20x Regador (pasto)
+      { upgradeId: 'plant_02', minCount: 25 }    // 25x Trigo (alimentação)
+    ]
+  },
+  {
+    id: 'chain_poultry_production',
+    name: 'Abate de Aves 🍗',
+    description: '⚙️ CADEIA: Frangos crescem para produzir carne branca. Requer 3 meses de criação',
+    category: 'Produção em Cadeia',
+    baseCost: 800,
+    costMultiplier: 1.3,
+    baseIncome: 16,
+    incomeMultiplier: 1.2,
+    icon: '🍗',
+    isComposite: true,
+    tier: calculateTier(800),
+    requirements: [
+      { upgradeId: 'cattle_01', minCount: 25 },  // 25x Galinha
+      { upgradeId: 'plant_02', minCount: 15 }    // 15x Trigo (ração)
+    ]
+  },
+  {
+    id: 'chain_sausage_production',
+    name: 'Fábrica de Embutidos 🌭',
+    description: '⚙️ CADEIA: Processa carne em salsichas e linguiças. Requer múltiplos tipos de carne',
+    category: 'Produção em Cadeia',
+    baseCost: 25000,
+    costMultiplier: 1.3,
+    baseIncome: 500,
+    incomeMultiplier: 1.3,
+    icon: '🌭',
+    isComposite: true,
+    tier: calculateTier(25000),
+    requirements: [
+      { upgradeId: 'chain_pork_production', minCount: 15 },    // 15x Criação de Suínos
+      { upgradeId: 'chain_beef_production', minCount: 10 },    // 10x Gado de Corte
+      { upgradeId: 'chain_poultry_production', minCount: 20 }  // 20x Abate de Aves
+    ]
+  },
+
+  // === CADEIA DE LÃ E TÊXTEIS ===
+  {
+    id: 'chain_wool_production',
+    name: 'Tosquia de Ovelhas 🧶',
+    description: '⚙️ CADEIA: Ovelhas produzem lã a cada estação. Requer ovelhas e tosquiador',
+    category: 'Produção em Cadeia',
+    baseCost: 3000,
+    costMultiplier: 1.3,
+    baseIncome: 60,
+    incomeMultiplier: 1.2,
+    icon: '🧶',
+    isComposite: true,
+    tier: calculateTier(3000),
+    requirements: [
+      { upgradeId: 'cattle_04', minCount: 15 }  // 15x Ovelha
+    ]
+  },
+  {
+    id: 'chain_fabric_production',
+    name: 'Tecelagem Industrial 🧵',
+    description: '⚙️ CADEIA: Transforma lã em tecidos finos. Requer lã e tear mecânico',
+    category: 'Produção em Cadeia',
+    baseCost: 18000,
+    costMultiplier: 1.3,
+    baseIncome: 360,
+    incomeMultiplier: 1.25,
+    icon: '🧵',
+    isComposite: true,
+    tier: calculateTier(18000),
+    requirements: [
+      { upgradeId: 'chain_wool_production', minCount: 20 },  // 20x Tosquia
+      { upgradeId: 'cattle_04', minCount: 30 },  // 30x Ovelha
+      { upgradeId: 'cattle_09', minCount: 10 }   // 10x Alpaca (lã premium)
+    ]
+  },
+  {
+    id: 'chain_clothing_production',
+    name: 'Confecção de Roupas 👕',
+    description: '⚙️ CADEIA: Produz roupas de alta qualidade. Requer tecidos e costureiros',
+    category: 'Produção em Cadeia',
+    baseCost: 45000,
+    costMultiplier: 1.3,
+    baseIncome: 900,
+    incomeMultiplier: 1.3,
+    icon: '👕',
+    isComposite: true,
+    tier: calculateTier(45000),
+    requirements: [
+      { upgradeId: 'chain_fabric_production', minCount: 25 },  // 25x Tecelagem
+      { upgradeId: 'chain_wool_production', minCount: 30 }     // 30x Tosquia
+    ]
+  },
+
+  // === CADEIA DE MEL ===
+  {
+    id: 'chain_honey_production',
+    name: 'Colheita de Mel 🍯',
+    description: '⚙️ CADEIA: Abelhas produzem mel puro. Requer colmeias ativas e flores',
+    category: 'Produção em Cadeia',
+    baseCost: 2200,
+    costMultiplier: 1.3,
+    baseIncome: 44,
+    incomeMultiplier: 1.2,
+    icon: '🍯',
+    isComposite: true,
+    tier: calculateTier(2200),
+    requirements: [
+      { upgradeId: 'bee_01', minCount: 10 },    // 10x Colmeia Básica
+      { upgradeId: 'orchard_01', minCount: 15 } // 15x Macieiras (flores)
+    ]
+  },
+  {
+    id: 'chain_beeswax_production',
+    name: 'Produção de Cera 🕯️',
+    description: '⚙️ CADEIA: Extrai cera das colmeias. Requer mel e processamento',
+    category: 'Produção em Cadeia',
+    baseCost: 12000,
+    costMultiplier: 1.3,
+    baseIncome: 240,
+    incomeMultiplier: 1.25,
+    icon: '🕯️',
+    isComposite: true,
+    tier: calculateTier(12000),
+    requirements: [
+      { upgradeId: 'chain_honey_production', minCount: 20 },  // 20x Colheita de Mel
+      { upgradeId: 'bee_01', minCount: 25 }  // 25x Colmeia
+    ]
+  },
+
+  // === CADEIA DE PEIXES ===
+  {
+    id: 'chain_fish_harvest',
+    name: 'Pesca Diária 🐟',
+    description: '⚙️ CADEIA: Tanques produzem peixes frescos. Requer alimentação regular',
+    category: 'Produção em Cadeia',
+    baseCost: 1800,
+    costMultiplier: 1.3,
+    baseIncome: 36,
+    incomeMultiplier: 1.2,
+    icon: '🐟',
+    isComposite: true,
+    tier: calculateTier(1800),
+    requirements: [
+      { upgradeId: 'fish_01', minCount: 10 },  // 10x Tanque de Tilápia
+      { upgradeId: 'plant_02', minCount: 10 }  // 10x Trigo (ração)
+    ]
+  },
+  {
+    id: 'chain_fish_processing',
+    name: 'Processamento de Peixes 🍤',
+    description: '⚙️ CADEIA: Limpa, corta e embala peixes. Requer peixes frescos e câmara fria',
+    category: 'Produção em Cadeia',
+    baseCost: 22000,
+    costMultiplier: 1.3,
+    baseIncome: 440,
+    incomeMultiplier: 1.25,
+    icon: '🍤',
+    isComposite: true,
+    tier: calculateTier(22000),
+    requirements: [
+      { upgradeId: 'chain_fish_harvest', minCount: 20 },  // 20x Pesca Diária
+      { upgradeId: 'fish_01', minCount: 30 },  // 30x Tanque de Tilápia
+      { upgradeId: 'fish_05', minCount: 10 }   // 10x Salmão
+    ]
+  },
+
+  // === CADEIA DE FRUTAS ===
+  {
+    id: 'chain_juice_production',
+    name: 'Fábrica de Sucos 🧃',
+    description: '⚙️ CADEIA: Espreme frutas frescas em sucos naturais. Requer pomar ativo',
+    category: 'Produção em Cadeia',
+    baseCost: 8000,
+    costMultiplier: 1.3,
+    baseIncome: 160,
+    incomeMultiplier: 1.2,
+    icon: '🧃',
+    isComposite: true,
+    tier: calculateTier(8000),
+    requirements: [
+      { upgradeId: 'orchard_01', minCount: 20 },  // 20x Macieiras
+      { upgradeId: 'orchard_02', minCount: 15 },  // 15x Laranjeiras
+      { upgradeId: 'orchard_05', minCount: 10 }   // 10x Limoeiro
+    ]
+  },
+  {
+    id: 'chain_jam_production',
+    name: 'Produção de Geleias 🍓',
+    description: '⚙️ CADEIA: Cozinha frutas com açúcar para fazer geleias. Requer frutas e açúcar',
+    category: 'Produção em Cadeia',
+    baseCost: 14000,
+    costMultiplier: 1.3,
+    baseIncome: 280,
+    incomeMultiplier: 1.25,
+    icon: '🍓',
+    isComposite: true,
+    tier: calculateTier(14000),
+    requirements: [
+      { upgradeId: 'orchard_06', minCount: 25 },  // 25x Morangueiro
+      { upgradeId: 'orchard_01', minCount: 20 },  // 20x Macieiras
+      { upgradeId: 'plant_02', minCount: 30 }     // 30x Trigo (açúcar)
+    ]
+  },
+
+  // === CADEIAS COMPLEXAS AVANÇADAS ===
+  {
+    id: 'chain_pizza_production',
+    name: 'Pizzaria Artesanal 🍕',
+    description: '⚙️ CADEIA COMPLEXA: Pizza completa! Requer trigo→massa, leite→queijo, tomate→molho',
+    category: 'Produção em Cadeia',
+    baseCost: 75000,
+    costMultiplier: 1.4,
+    baseIncome: 1500,
+    incomeMultiplier: 1.35,
+    icon: '🍕',
+    isComposite: true,
+    tier: calculateTier(75000),
+    requirements: [
+      { upgradeId: 'plant_02', minCount: 50 },  // 50x Trigo (massa)
+      { upgradeId: 'chain_cheese_production', minCount: 20 },  // 20x Queijaria
+      { upgradeId: 'orchard_03', minCount: 30 },  // 30x Tomateiros (molho)
+      { upgradeId: 'chain_pork_production', minCount: 15 }  // 15x Suínos (calabresa)
+    ]
+  },
+  {
+    id: 'chain_burger_production',
+    name: 'Hamburgueria Gourmet 🍔',
+    description: '⚙️ CADEIA COMPLEXA: Hambúrguer completo! Requer carne bovina, queijo, pão e vegetais',
+    category: 'Produção em Cadeia',
+    baseCost: 95000,
+    costMultiplier: 1.4,
+    baseIncome: 1900,
+    incomeMultiplier: 1.35,
+    icon: '🍔',
+    isComposite: true,
+    tier: calculateTier(95000),
+    requirements: [
+      { upgradeId: 'chain_beef_production', minCount: 30 },  // 30x Gado de Corte
+      { upgradeId: 'chain_cheese_production', minCount: 25 },  // 25x Queijaria
+      { upgradeId: 'plant_02', minCount: 60 },  // 60x Trigo (pão)
+      { upgradeId: 'orchard_03', minCount: 25 }   // 25x Tomate
+    ]
+  },
+  {
+    id: 'chain_bakery_production',
+    name: 'Padaria Completa 🥖',
+    description: '⚙️ CADEIA COMPLEXA: Padaria artesanal! Requer trigo→farinha, ovos, leite e manteiga',
+    category: 'Produção em Cadeia',
+    baseCost: 55000,
+    costMultiplier: 1.35,
+    baseIncome: 1100,
+    incomeMultiplier: 1.3,
+    icon: '🥖',
+    isComposite: true,
+    tier: calculateTier(55000),
+    requirements: [
+      { upgradeId: 'plant_02', minCount: 70 },  // 70x Trigo
+      { upgradeId: 'chain_egg_production', minCount: 35 },  // 35x Produção de Ovos
+      { upgradeId: 'chain_milk_production', minCount: 30 },  // 30x Ordenha
+      { upgradeId: 'chain_butter_production', minCount: 20 }  // 20x Manteiga
+    ]
+  },
+  {
+    id: 'chain_ice_cream_production',
+    name: 'Sorveteria Artesanal 🍦',
+    description: '⚙️ CADEIA COMPLEXA: Sorvetes cremosos! Requer leite, ovos, frutas e açúcar',
+    category: 'Produção em Cadeia',
+    baseCost: 68000,
+    costMultiplier: 1.35,
+    baseIncome: 1360,
+    incomeMultiplier: 1.3,
+    icon: '🍦',
+    isComposite: true,
+    tier: calculateTier(68000),
+    requirements: [
+      { upgradeId: 'chain_milk_production', minCount: 40 },  // 40x Ordenha
+      { upgradeId: 'chain_egg_production', minCount: 30 },  // 30x Ovos
+      { upgradeId: 'orchard_06', minCount: 35 },  // 35x Morangueiro
+      { upgradeId: 'orchard_04', minCount: 25 }   // 25x Bananeiras
+    ]
+  },
+  {
+    id: 'chain_restaurant_production',
+    name: 'Restaurante 5 Estrelas 🍽️',
+    description: '⚙️ CADEIA SUPREMA: Restaurante completo! Combina TODAS as cadeias de produção',
+    category: 'Produção em Cadeia',
+    baseCost: 500000,
+    costMultiplier: 1.5,
+    baseIncome: 10000,
+    incomeMultiplier: 1.5,
+    icon: '🍽️',
+    isComposite: true,
+    tier: calculateTier(500000),
+    requirements: [
+      { upgradeId: 'chain_pizza_production', minCount: 10 },
+      { upgradeId: 'chain_burger_production', minCount: 10 },
+      { upgradeId: 'chain_bakery_production', minCount: 15 },
+      { upgradeId: 'chain_ice_cream_production', minCount: 10 },
+      { upgradeId: 'chain_juice_production', minCount: 20 },
+      { upgradeId: 'chain_fish_processing', minCount: 15 },
+      { upgradeId: 'wine_08', minCount: 10 }  // 10x Safra Especial (vinho)
+    ]
+  },
 ];
+
 
 export const categories = [
   'Todos',
+  'Terrenos',
   'Plantação Básica',
   'Criação de Gado',
   'Pomar',
@@ -1538,5 +2072,6 @@ export const categories = [
   'Agricultura Industrial',
   'Processamento',
   'Tecnologia Futurista',
-  'Upgrades Compostos'
+  'Upgrades Compostos',
+  'Produção em Cadeia'
 ];

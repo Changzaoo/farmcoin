@@ -1,30 +1,14 @@
 import { doc, setDoc, getDoc, updateDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from './config';
-import { UserRole, UserData, GameState, Upgrade } from '../types';
+import { UserRole, UserData, GameState } from '../types';
 import { createPasswordHash, generateSecureId } from '../utils/crypto';
+import { upgrades as upgradesData } from '../data/upgrades';
 
-// Upgrades iniciais
-const initialUpgrades: Upgrade[] = [
-  // Plantações
-  { id: 'semente', name: 'Semente', cost: 3, income: 0.03, count: 0, icon: '🌱', category: 'plantacoes' },
-  { id: 'trigo', name: 'Trigo', cost: 5, income: 0.05, count: 0, icon: '🌾', category: 'plantacoes' },
-  { id: 'milho', name: 'Milho', cost: 15, income: 0.15, count: 0, icon: '🌽', category: 'plantacoes' },
-  { id: 'tomate', name: 'Tomate', cost: 40, income: 0.4, count: 0, icon: '🍅', category: 'plantacoes' },
-  { id: 'melancia', name: 'Melancia', cost: 100, income: 1, count: 0, icon: '🍉', category: 'plantacoes' },
-  { id: 'abobora', name: 'Abóbora', cost: 300, income: 3, count: 0, icon: '🎃', category: 'plantacoes' },
-  { id: 'morango', name: 'Morango', cost: 80, income: 0.8, count: 0, icon: '🍓', category: 'plantacoes' },
-  { id: 'uva', name: 'Uva', cost: 120, income: 1.2, count: 0, icon: '🍇', category: 'plantacoes' },
-  { id: 'maca', name: 'Maçã', cost: 150, income: 1.5, count: 0, icon: '🍎', category: 'plantacoes' },
-  { id: 'banana', name: 'Banana', cost: 200, income: 2, count: 0, icon: '🍌', category: 'plantacoes' },
-  { id: 'abacaxi', name: 'Abacaxi', cost: 250, income: 2.5, count: 0, icon: '🍍', category: 'plantacoes' },
-  { id: 'coco', name: 'Coco', cost: 180, income: 1.8, count: 0, icon: '🥥', category: 'plantacoes' },
-
-  // Animais (continuando com todos os outros...)
-  { id: 'passaro', name: 'Pássaro', cost: 8, income: 0.08, count: 0, icon: '🦜', category: 'animais' },
-  { id: 'galinha', name: 'Galinha', cost: 20, income: 0.2, count: 0, icon: '🐔', category: 'animais' },
-  { id: 'vaca', name: 'Vaca', cost: 75, income: 0.75, count: 0, icon: '🐄', category: 'animais' },
-  // ... adicionar todos os outros upgrades aqui
-];
+// Upgrades iniciais - Todos começam com count 0
+const initialUpgrades = upgradesData.map(u => ({
+  id: u.id,
+  count: 0
+}));
 
 /**
  * Verifica se um nome de usuário já existe
@@ -182,14 +166,34 @@ export async function getUserData(uid: string): Promise<UserData> {
 
     if (docSnap.exists()) {
       const data = docSnap.data();
+      
+      // Garantir que gameState sempre tenha valores válidos
+      const gameState = data.gameState || {
+        coins: 0,
+        totalCoins: 0,
+        perSecond: 0,
+        totalClicks: 0,
+        totalPurchases: 0,
+      };
+      
+      // Garantir que upgrades sempre exista
+      const upgrades = data.upgrades || [];
+      
+      console.log('📥 Dados carregados do Firestore:', {
+        uid: data.uid,
+        username: data.username,
+        coins: gameState.coins,
+        upgradesCount: upgrades.length
+      });
+      
       return {
         uid: data.uid,
         username: data.username,
         role: data.role,
         createdAt: data.createdAt?.toDate() || new Date(),
         lastLogin: data.lastLogin?.toDate() || new Date(),
-        gameState: data.gameState,
-        upgrades: data.upgrades,
+        gameState: gameState,
+        upgrades: upgrades,
       };
     } else {
       throw new Error('Usuário não encontrado');

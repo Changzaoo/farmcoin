@@ -46,25 +46,112 @@ export default function Marketplace({
   const [offerPrice, setOfferPrice] = useState(0);
   const [offerMessage, setOfferMessage] = useState('');
 
+  // Filter states
+  const [filterTier, setFilterTier] = useState<UpgradeTier | 'all'>('all');
+  const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterMinPrice, setFilterMinPrice] = useState<number>(0);
+  const [filterMaxPrice, setFilterMaxPrice] = useState<number>(999999999);
+  const [filterMinEfficiency, setFilterMinEfficiency] = useState<number>(0);
+  const [sortBy, setSortBy] = useState<'price' | 'efficiency' | 'name' | 'tier'>('price');
+
   useEffect(() => {
     loadListings();
   }, [activeTab]);
+
+  useEffect(() => {
+    if (listings.length > 0) {
+      loadListings();
+    }
+  }, [filterTier, filterCategory, filterMinPrice, filterMaxPrice, filterMinEfficiency, sortBy]);
 
   const loadListings = async () => {
     setLoading(true);
     try {
       const data = await getMarketplaceListings(100);
       
+      let filteredData = data;
+      
       if (activeTab === 'browse') {
-        setListings(data.filter(l => l.sellerId !== userId));
+        filteredData = data.filter(l => l.sellerId !== userId);
       } else if (activeTab === 'myListings') {
-        setListings(data.filter(l => l.sellerId === userId));
+        filteredData = data.filter(l => l.sellerId === userId);
       }
+
+      // Apply filters
+      filteredData = applyFilters(filteredData);
+      
+      setListings(filteredData);
     } catch (error) {
       console.error('Erro ao carregar listagens:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const applyFilters = (data: MarketplaceListing[]) => {
+    let filtered = [...data];
+
+    // Filter by tier
+    if (filterTier !== 'all') {
+      filtered = filtered.filter(l => l.upgradeTier === filterTier);
+    }
+
+    // Filter by category (based on upgrade name patterns)
+    if (filterCategory !== 'all') {
+      const categoryPatterns: Record<string, string[]> = {
+        plantacoes: ['Fazenda', 'Plantação', 'Colheita', 'Semente'],
+        animais: ['Galinha', 'Vaca', 'Porco', 'Ovelha', 'Cabra'],
+        producao: ['Moinho', 'Padaria', 'Fábrica', 'Indústria'],
+        tecnologia: ['Drone', 'Robô', 'IA', 'Computador', 'Sistema'],
+        especiais: ['Mágico', 'Místico', 'Lendário', 'Divino'],
+      };
+
+      const patterns = categoryPatterns[filterCategory] || [];
+      filtered = filtered.filter(l => 
+        patterns.some(pattern => l.upgradeName.includes(pattern))
+      );
+    }
+
+    // Filter by price range
+    filtered = filtered.filter(l => 
+      l.pricePerUnit >= filterMinPrice && l.pricePerUnit <= filterMaxPrice
+    );
+
+    // Filter by efficiency (coins per second per cost)
+    if (filterMinEfficiency > 0) {
+      filtered = filtered.filter(l => {
+        const efficiency = l.incomePerUnit / l.pricePerUnit;
+        return efficiency >= filterMinEfficiency;
+      });
+    }
+
+    // Sort listings
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'price':
+          return a.pricePerUnit - b.pricePerUnit;
+        case 'efficiency':
+          const effA = a.incomePerUnit / a.pricePerUnit;
+          const effB = b.incomePerUnit / b.pricePerUnit;
+          return effB - effA; // Higher efficiency first
+        case 'name':
+          return a.upgradeName.localeCompare(b.upgradeName);
+        case 'tier':
+          const tierOrder: Record<UpgradeTier, number> = {
+            [UpgradeTier.COMUM]: 0,
+            [UpgradeTier.INCOMUM]: 1,
+            [UpgradeTier.RARO]: 2,
+            [UpgradeTier.EPICO]: 3,
+            [UpgradeTier.LENDARIO]: 4,
+            [UpgradeTier.MITICO]: 5,
+          };
+          return tierOrder[b.upgradeTier] - tierOrder[a.upgradeTier]; // Higher tier first
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
   };
 
   const handleCreateListing = async () => {
@@ -206,6 +293,167 @@ export default function Marketplace({
           </button>
         )}
       </div>
+
+      {/* Painel de Filtros */}
+      {activeTab === 'browse' && (
+        <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-lg p-4 space-y-4 border-2 border-blue-200 shadow-lg">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+              🔍 Filtros Avançados
+            </h3>
+            <button
+              onClick={() => {
+                setFilterTier('all');
+                setFilterCategory('all');
+                setFilterMinPrice(0);
+                setFilterMaxPrice(999999999);
+                setFilterMinEfficiency(0);
+                setSortBy('price');
+              }}
+              className="text-sm px-3 py-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all shadow-md hover:shadow-lg"
+            >
+              🔄 Limpar Filtros
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Filtro de Raridade */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                ⭐ Raridade:
+              </label>
+              <select
+                value={filterTier}
+                onChange={(e) => setFilterTier(e.target.value as UpgradeTier | 'all')}
+                className="w-full px-3 py-2 bg-white text-gray-800 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none shadow-sm hover:border-blue-400 transition-colors"
+              >
+                <option value="all">Todas</option>
+                <option value={UpgradeTier.COMUM}>⚪ Comum</option>
+                <option value={UpgradeTier.INCOMUM}>🟢 Incomum</option>
+                <option value={UpgradeTier.RARO}>🔵 Raro</option>
+                <option value={UpgradeTier.EPICO}>🟣 Épico</option>
+                <option value={UpgradeTier.LENDARIO}>🟠 Lendário</option>
+                <option value={UpgradeTier.MITICO}>🔴 Mítico</option>
+              </select>
+            </div>
+
+            {/* Filtro de Categoria */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                📁 Categoria:
+              </label>
+              <select
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className="w-full px-3 py-2 bg-white text-gray-800 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none shadow-sm hover:border-blue-400 transition-colors"
+              >
+                <option value="all">Todas</option>
+                <option value="plantacoes">🌾 Plantações</option>
+                <option value="animais">🐄 Animais</option>
+                <option value="producao">🏭 Produção</option>
+                <option value="tecnologia">🤖 Tecnologia</option>
+                <option value="especiais">✨ Especiais</option>
+              </select>
+            </div>
+
+            {/* Filtro de Preço */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                💰 Faixa de Preço:
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Mín"
+                  value={filterMinPrice || ''}
+                  onChange={(e) => setFilterMinPrice(Number(e.target.value) || 0)}
+                  className="w-1/2 px-2 py-2 bg-white text-gray-800 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm shadow-sm hover:border-blue-400 transition-colors placeholder-gray-400"
+                />
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Máx"
+                  value={filterMaxPrice === 999999999 ? '' : filterMaxPrice}
+                  onChange={(e) => setFilterMaxPrice(Number(e.target.value) || 999999999)}
+                  className="w-1/2 px-2 py-2 bg-white text-gray-800 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm shadow-sm hover:border-blue-400 transition-colors placeholder-gray-400"
+                />
+              </div>
+            </div>
+
+            {/* Filtro de Eficiência */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                📊 Eficiência Mínima:
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.001"
+                placeholder="Ex: 0.05"
+                value={filterMinEfficiency || ''}
+                onChange={(e) => setFilterMinEfficiency(Number(e.target.value) || 0)}
+                className="w-full px-3 py-2 bg-white text-gray-800 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none shadow-sm hover:border-blue-400 transition-colors placeholder-gray-400"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Moedas/s por moeda gasta
+              </p>
+            </div>
+          </div>
+
+          {/* Ordenação */}
+          <div className="flex items-center gap-3 pt-2 border-t border-blue-200">
+            <label className="text-sm font-semibold text-gray-700">
+              🔀 Ordenar por:
+            </label>
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={() => setSortBy('price')}
+                className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all shadow-sm ${
+                  sortBy === 'price'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
+                    : 'bg-white text-gray-700 border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-400'
+                }`}
+              >
+                💰 Preço
+              </button>
+              <button
+                onClick={() => setSortBy('efficiency')}
+                className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all shadow-sm ${
+                  sortBy === 'efficiency'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
+                    : 'bg-white text-gray-700 border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-400'
+                }`}
+              >
+                📊 Eficiência
+              </button>
+              <button
+                onClick={() => setSortBy('tier')}
+                className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all shadow-sm ${
+                  sortBy === 'tier'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
+                    : 'bg-white text-gray-700 border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-400'
+                }`}
+              >
+                ⭐ Raridade
+              </button>
+              <button
+                onClick={() => setSortBy('name')}
+                className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all shadow-sm ${
+                  sortBy === 'name'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
+                    : 'bg-white text-gray-700 border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-400'
+                }`}
+              >
+                🔤 Nome
+              </button>
+            </div>
+            <div className="ml-auto text-sm text-gray-400">
+              {listings.length} {listings.length === 1 ? 'item encontrado' : 'itens encontrados'}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Listings Grid */}
       {loading ? (

@@ -19,7 +19,11 @@ export function useGameData(userId: string, initialGameState: GameState, initial
 
   // Calcula renda passiva
   useEffect(() => {
-    const totalIncome = upgrades.reduce((sum, upgrade) => sum + upgrade.income * upgrade.count, 0);
+    const totalIncome = upgrades.reduce((sum, upgrade) => {
+      const income = upgrade.income || 0;
+      const count = upgrade.count || 0;
+      return sum + income * count;
+    }, 0);
     
     setGameState((prev) => ({
       ...prev,
@@ -57,7 +61,7 @@ export function useGameData(userId: string, initialGameState: GameState, initial
 
   // Clique manual
   const handleClick = useCallback(() => {
-    const clickAmount = 0.1;
+    const clickAmount = 0.005; // Reduzido em 95% (0.1 * 0.05)
     setGameState((prev) => ({
       ...prev,
       coins: prev.coins + clickAmount,
@@ -83,20 +87,25 @@ export function useGameData(userId: string, initialGameState: GameState, initial
   // Comprar upgrade
   const buyUpgrade = useCallback((upgradeId: string) => {
     const upgrade = upgrades.find((u) => u.id === upgradeId);
-    if (!upgrade || gameState.coins < upgrade.cost) return;
+    if (!upgrade) return;
+    
+    const upgradeCost = upgrade.cost || 0;
+    const upgradeCount = upgrade.count || 0;
+    
+    if (gameState.coins < upgradeCost) return;
 
-    const newCost = Math.ceil(upgrade.cost * 1.15);
+    const newCost = Math.ceil(upgradeCost * 1.15);
     
     setGameState((prev) => ({
       ...prev,
-      coins: prev.coins - upgrade.cost,
+      coins: prev.coins - upgradeCost,
       totalPurchases: prev.totalPurchases + 1,
     }));
 
     setUpgrades((prev) =>
       prev.map((u) =>
         u.id === upgradeId
-          ? { ...u, count: u.count + 1, cost: newCost }
+          ? { ...u, count: (u.count || 0) + 1, cost: newCost }
           : u
       )
     );
@@ -105,16 +114,16 @@ export function useGameData(userId: string, initialGameState: GameState, initial
     logUserAction({
       userId,
       type: LogType.PURCHASE_UPGRADE,
-      amount: -upgrade.cost,
+      amount: -upgradeCost,
       description: `Comprou ${upgrade.name}`,
       metadata: {
         upgradeId: upgrade.id,
         upgradeName: upgrade.name,
-        upgradeCount: upgrade.count + 1,
-        upgradeCost: upgrade.cost,
+        upgradeCount: upgradeCount + 1,
+        upgradeCost: upgradeCost,
         newCost: newCost,
         balanceBefore: gameState.coins,
-        balanceAfter: gameState.coins - upgrade.cost,
+        balanceAfter: gameState.coins - upgradeCost,
       },
     });
   }, [upgrades, gameState.coins, userId]);

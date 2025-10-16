@@ -11,10 +11,23 @@ import {
   limit,
   serverTimestamp,
   Timestamp,
-  deleteDoc,
+  writeBatch,
 } from 'firebase/firestore';
 import { db } from './config';
-import { UserData, UserLog, LogType, GameState, Upgrade, MarketplaceListing, MarketplaceOffer, OfferStatus } from '../types';
+import { 
+  UserData, 
+  UserLog, 
+  LogType, 
+  GameState, 
+  Upgrade, 
+  MarketplaceListing, 
+  MarketplaceOffer, 
+  OfferStatus,
+  Land,
+  LandType,
+  LandListing,
+  LandResident
+} from '../types';
 
 /**
  * Salva o estado do jogo do usuário
@@ -26,12 +39,31 @@ export async function saveGameState(
 ): Promise<void> {
   try {
     const userRef = doc(db, 'users', userId);
+    
+    // Calcular quantidade de upgrades possuídos
+    const upgradesOwned = upgrades.filter(u => (u.count || 0) > 0).length;
+    
+    console.log('💾 Salvando no Firestore:', {
+      userId,
+      coins: gameState.coins,
+      perSecond: gameState.perSecond,
+      upgradesOwned,
+      upgradesTotal: upgrades.length
+    });
+    
     await updateDoc(userRef, {
       gameState,
       upgrades,
+      coins: gameState.coins,
+      perSecond: gameState.perSecond,
+      upgradesOwned,
+      username: gameState.username,
       lastUpdated: serverTimestamp(),
     });
+    
+    console.log('✅ Dados salvos com sucesso!');
   } catch (error: any) {
+    console.error('❌ Erro ao salvar:', error);
     throw new Error(`Erro ao salvar estado do jogo: ${error.message}`);
   }
 }
@@ -366,5 +398,778 @@ export async function cancelMarketplaceListing(listingId: string): Promise<void>
     });
   } catch (error: any) {
     throw new Error(`Erro ao cancelar listagem: ${error.message}`);
+  }
+}
+
+// ============= FUNÇÕES DE TERRENOS =============
+
+/**
+ * Inicializa o mapa com terrenos (executar apenas uma vez)
+ */
+export async function initializeLands(): Promise<void> {
+  try {
+    const batch = writeBatch(db);
+    const mapWidth = 50; // 50x50 = 2500 terrenos
+    const mapHeight = 50;
+    
+    for (let x = 0; x < mapWidth; x++) {
+      for (let y = 0; y < mapHeight; y++) {
+        const landId = `land_${x}_${y}`;
+        const landRef = doc(db, 'lands', landId);
+        
+        // Determinar região
+        let region = 'center';
+        if (y < 15) region = 'north';
+        else if (y > 35) region = 'south';
+        else if (x < 15) region = 'west';
+        else if (x > 35) region = 'east';
+        
+        // Determinar tipo de terreno baseado em posição
+        let type: LandType;
+        const random = (x * y) % 100;
+        if (random < 40) type = LandType.PLAINS;
+        else if (random < 60) type = LandType.FOREST;
+        else if (random < 75) type = LandType.HILLS;
+        else if (random < 85) type = LandType.DESERT;
+        else if (random < 92) type = LandType.MOUNTAINS;
+        else if (random < 96) type = LandType.SWAMP;
+        else if (random < 98) type = LandType.BEACH;
+        else if (random < 99) type = LandType.VOLCANO;
+        else if (random < 99.5) type = LandType.GLACIER;
+        else type = LandType.PARADISE;
+        
+        // Bônus de renda baseado no tipo
+        const bonuses: Record<LandType, number> = {
+          [LandType.PLAINS]: 5,
+          [LandType.FOREST]: 10,
+          [LandType.HILLS]: 12,
+          [LandType.MOUNTAINS]: 20,
+          [LandType.DESERT]: 15,
+          [LandType.SWAMP]: 18,
+          [LandType.BEACH]: 30,
+          [LandType.VOLCANO]: 50,
+          [LandType.GLACIER]: 55,
+          [LandType.PARADISE]: 100
+        };
+        
+        const land: Omit<Land, 'id'> = {
+          coordinates: { x, y, region },
+          type,
+          ownerId: null,
+          ownerUsername: null,
+          residents: [],
+          maxResidents: 100,
+          size: Math.floor(random % 5) + 1,
+          bonusIncome: bonuses[type],
+          forSale: false,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        
+        batch.set(landRef, {
+          ...land,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+      }
+    }
+    
+    await batch.commit();
+    console.log('✅ Mapa inicializado com 2500 terrenos!');
+  } catch (error: any) {
+    throw new Error(`Erro ao inicializar terrenos: ${error.message}`);
+  }
+}
+
+/**
+ * Busca todos os terrenos (com paginação)
+ */
+export async function getLands(limitCount: number = 100): Promise<Land[]> {
+  try {
+    const landsQuery = query(
+      collection(db, 'lands'),
+      limit(limitCount)
+    );
+    
+    const snapshot = await getDocs(landsQuery);
+    const lands: Land[] = [];
+    
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      lands.push({
+        id: doc.id,
+        coordinates: data.coordinates,
+        type: data.type,
+        name: data.name,
+        description: data.description,
+        ownerId: data.ownerId,
+        ownerUsername: data.ownerUsername,
+        purchasedAt: data.purchasedAt?.toDate(),
+        purchasePrice: data.purchasePrice,
+        residents: data.residents || [],
+        maxResidents: data.maxResidents || 100,
+        size: data.size,
+        bonusIncome: data.bonusIncome,
+        forSale: data.forSale,
+        salePrice: data.salePrice,
+        listedAt: data.listedAt?.toDate(),
+        createdAt: data.createdAt?.toDate() || new Date(),
+        updatedAt: data.updatedAt?.toDate() || new Date()
+      });
+    });
+    
+    return lands;
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar terrenos: ${error.message}`);
+  }
+}
+
+// ==================== LAND OFFERS ====================
+
+/**
+ * Fazer oferta em um terreno listado
+ */
+export async function makeLandOffer(
+  landId: string,
+  listingId: string,
+  buyerId: string,
+  buyerUsername: string,
+  offerAmount: number,
+  message?: string
+): Promise<string> {
+  try {
+    // Verificar se listing existe e está ativa
+    const listingDoc = await getDoc(doc(db, 'landListings', listingId));
+    if (!listingDoc.exists()) {
+      throw new Error('Listagem não encontrada');
+    }
+    
+    const listing = listingDoc.data();
+    if (listing.status !== 'active') {
+      throw new Error('Esta listagem não está mais ativa');
+    }
+    
+    // Criar oferta
+    const offerRef = await addDoc(collection(db, 'landOffers'), {
+      landId,
+      listingId,
+      buyerId,
+      buyerUsername,
+      sellerId: listing.sellerId,
+      offerAmount,
+      message: message || '',
+      status: 'pending',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+    
+    return offerRef.id;
+  } catch (error: any) {
+    throw new Error(`Erro ao fazer oferta: ${error.message}`);
+  }
+}
+
+/**
+ * Aceitar oferta em terreno
+ */
+export async function acceptLandOffer(
+  offerId: string,
+  sellerId: string
+): Promise<void> {
+  try {
+    const offerDoc = await getDoc(doc(db, 'landOffers', offerId));
+    if (!offerDoc.exists()) {
+      throw new Error('Oferta não encontrada');
+    }
+    
+    const offer = offerDoc.data();
+    if (offer.sellerId !== sellerId) {
+      throw new Error('Apenas o vendedor pode aceitar ofertas');
+    }
+    
+    if (offer.status !== 'pending') {
+      throw new Error('Esta oferta não está mais pendente');
+    }
+    
+    // Atualizar oferta
+    await updateDoc(doc(db, 'landOffers', offerId), {
+      status: 'accepted',
+      acceptedAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+    
+    // Transferir terreno (similar a buyLandFromMarketplace)
+    await buyLandFromMarketplace(offer.listingId, offer.buyerId, offer.buyerUsername);
+  } catch (error: any) {
+    throw new Error(`Erro ao aceitar oferta: ${error.message}`);
+  }
+}
+
+/**
+ * Recusar oferta em terreno
+ */
+export async function rejectLandOffer(
+  offerId: string,
+  sellerId: string,
+  reason?: string
+): Promise<void> {
+  try {
+    const offerDoc = await getDoc(doc(db, 'landOffers', offerId));
+    if (!offerDoc.exists()) {
+      throw new Error('Oferta não encontrada');
+    }
+    
+    const offer = offerDoc.data();
+    if (offer.sellerId !== sellerId) {
+      throw new Error('Apenas o vendedor pode recusar ofertas');
+    }
+    
+    if (offer.status !== 'pending') {
+      throw new Error('Esta oferta não está mais pendente');
+    }
+    
+    // Atualizar oferta
+    await updateDoc(doc(db, 'landOffers', offerId), {
+      status: 'rejected',
+      rejectedAt: serverTimestamp(),
+      rejectionReason: reason || '',
+      updatedAt: serverTimestamp()
+    });
+  } catch (error: any) {
+    throw new Error(`Erro ao recusar oferta: ${error.message}`);
+  }
+}
+
+/**
+ * Buscar ofertas feitas em um terreno
+ */
+export async function getLandOffers(landId: string): Promise<any[]> {
+  try {
+    const offersQuery = query(
+      collection(db, 'landOffers'),
+      where('landId', '==', landId),
+      where('status', '==', 'pending'),
+      orderBy('offerAmount', 'desc')
+    );
+    
+    const snapshot = await getDocs(offersQuery);
+    const offers: any[] = [];
+    
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      offers.push({
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate() || new Date(),
+        updatedAt: data.updatedAt?.toDate() || new Date()
+      });
+    });
+    
+    return offers;
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar ofertas: ${error.message}`);
+  }
+}
+
+/**
+ * Buscar ofertas feitas POR um usuário
+ */
+export async function getUserLandOffers(userId: string): Promise<any[]> {
+  try {
+    const offersQuery = query(
+      collection(db, 'landOffers'),
+      where('buyerId', '==', userId),
+      orderBy('createdAt', 'desc'),
+      limit(50)
+    );
+    
+    const snapshot = await getDocs(offersQuery);
+    const offers: any[] = [];
+    
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      offers.push({
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate() || new Date(),
+        updatedAt: data.updatedAt?.toDate() || new Date()
+      });
+    });
+    
+    return offers;
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar suas ofertas: ${error.message}`);
+  }
+}
+
+/**
+ * Buscar ofertas RECEBIDAS por um vendedor
+ */
+export async function getSellerLandOffers(sellerId: string): Promise<any[]> {
+  try {
+    const offersQuery = query(
+      collection(db, 'landOffers'),
+      where('sellerId', '==', sellerId),
+      where('status', '==', 'pending'),
+      orderBy('offerAmount', 'desc')
+    );
+    
+    const snapshot = await getDocs(offersQuery);
+    const offers: any[] = [];
+    
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      offers.push({
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate() || new Date(),
+        updatedAt: data.updatedAt?.toDate() || new Date()
+      });
+    });
+    
+    return offers;
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar ofertas recebidas: ${error.message}`);
+  }
+}
+
+/**
+ * Busca terrenos por região
+ */
+export async function getLandsByRegion(
+  minX: number,
+  maxX: number,
+  minY: number,
+  maxY: number
+): Promise<Land[]> {
+  try {
+    const lands: Land[] = [];
+    
+    for (let x = minX; x <= maxX; x++) {
+      for (let y = minY; y <= maxY; y++) {
+        const landId = `land_${x}_${y}`;
+        const landDoc = await getDoc(doc(db, 'lands', landId));
+        
+        if (landDoc.exists()) {
+          const data = landDoc.data();
+          lands.push({
+            id: landDoc.id,
+            coordinates: data.coordinates,
+            type: data.type,
+            name: data.name,
+            description: data.description,
+            ownerId: data.ownerId,
+            ownerUsername: data.ownerUsername,
+            purchasedAt: data.purchasedAt?.toDate(),
+            purchasePrice: data.purchasePrice,
+            residents: data.residents || [],
+            maxResidents: data.maxResidents || 100,
+            size: data.size,
+            bonusIncome: data.bonusIncome,
+            forSale: data.forSale,
+            salePrice: data.salePrice,
+            listedAt: data.listedAt?.toDate(),
+            createdAt: data.createdAt?.toDate() || new Date(),
+            updatedAt: data.updatedAt?.toDate() || new Date()
+          });
+        }
+      }
+    }
+    
+    return lands;
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar terrenos por região: ${error.message}`);
+  }
+}
+
+/**
+ * Busca um terreno específico
+ */
+export async function getLand(landId: string): Promise<Land | null> {
+  try {
+    const landDoc = await getDoc(doc(db, 'lands', landId));
+    
+    if (!landDoc.exists()) {
+      return null;
+    }
+    
+    const data = landDoc.data();
+    return {
+      id: landDoc.id,
+      coordinates: data.coordinates,
+      type: data.type,
+      name: data.name,
+      description: data.description,
+      ownerId: data.ownerId,
+      ownerUsername: data.ownerUsername,
+      purchasedAt: data.purchasedAt?.toDate(),
+      purchasePrice: data.purchasePrice,
+      residents: data.residents || [],
+      maxResidents: data.maxResidents || 100,
+      size: data.size,
+      bonusIncome: data.bonusIncome,
+      forSale: data.forSale,
+      salePrice: data.salePrice,
+      listedAt: data.listedAt?.toDate(),
+      createdAt: data.createdAt?.toDate() || new Date(),
+      updatedAt: data.updatedAt?.toDate() || new Date()
+    };
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar terreno: ${error.message}`);
+  }
+}
+
+/**
+ * Compra um terreno diretamente (não listado)
+ */
+export async function purchaseLand(
+  landId: string,
+  userId: string,
+  username: string,
+  price: number
+): Promise<void> {
+  try {
+    const landRef = doc(db, 'lands', landId);
+    const userRef = doc(db, 'users', userId);
+    
+    // Buscar terreno
+    const landDoc = await getDoc(landRef);
+    if (!landDoc.exists()) {
+      throw new Error('Terreno não encontrado');
+    }
+    
+    const land = landDoc.data();
+    if (land.ownerId) {
+      throw new Error('Terreno já possui dono');
+    }
+    
+    // Buscar usuário
+    const userDoc = await getDoc(userRef);
+    if (!userDoc.exists()) {
+      throw new Error('Usuário não encontrado');
+    }
+    
+    const userData = userDoc.data();
+    if (userData.gameState.coins < price) {
+      throw new Error('Moedas insuficientes');
+    }
+    
+    // Atualizar terreno
+    await updateDoc(landRef, {
+      ownerId: userId,
+      ownerUsername: username,
+      purchasedAt: serverTimestamp(),
+      purchasePrice: price,
+      updatedAt: serverTimestamp()
+    });
+    
+    // Deduzir moedas
+    await updateDoc(userRef, {
+      'gameState.coins': userData.gameState.coins - price,
+      lastUpdated: serverTimestamp()
+    });
+  } catch (error: any) {
+    throw new Error(`Erro ao comprar terreno: ${error.message}`);
+  }
+}
+
+/**
+ * Lista terreno para venda no marketplace
+ */
+export async function listLandForSale(
+  landId: string,
+  userId: string,
+  price: number,
+  description?: string,
+  durationDays?: number
+): Promise<string> {
+  try {
+    const landRef = doc(db, 'lands', landId);
+    const landDoc = await getDoc(landRef);
+    
+    if (!landDoc.exists()) {
+      throw new Error('Terreno não encontrado');
+    }
+    
+    const land = landDoc.data();
+    if (land.ownerId !== userId) {
+      throw new Error('Você não é dono deste terreno');
+    }
+    
+    // Calcular data de expiração (padrão: 7 dias)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + (durationDays || 7));
+    
+    // Criar listagem
+    const listingRef = await addDoc(collection(db, 'landListings'), {
+      landId,
+      sellerId: userId,
+      sellerUsername: land.ownerUsername,
+      price,
+      description: description || '',
+      status: 'active',
+      expiresAt: Timestamp.fromDate(expiresAt),
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+    
+    // Marcar terreno como à venda
+    await updateDoc(landRef, {
+      forSale: true,
+      salePrice: price,
+      listedAt: serverTimestamp(),
+      listingExpiresAt: Timestamp.fromDate(expiresAt),
+      updatedAt: serverTimestamp()
+    });
+    
+    return listingRef.id;
+  } catch (error: any) {
+    throw new Error(`Erro ao listar terreno: ${error.message}`);
+  }
+}
+
+/**
+ * Compra terreno do marketplace
+ */
+export async function buyLandFromMarketplace(
+  listingId: string,
+  buyerId: string,
+  buyerUsername: string
+): Promise<void> {
+  try {
+    const listingRef = doc(db, 'landListings', listingId);
+    const listingDoc = await getDoc(listingRef);
+    
+    if (!listingDoc.exists()) {
+      throw new Error('Listagem não encontrada');
+    }
+    
+    const listing = listingDoc.data();
+    if (listing.status !== 'active') {
+      throw new Error('Listagem não está ativa');
+    }
+    
+    const landRef = doc(db, 'lands', listing.landId);
+    const buyerRef = doc(db, 'users', buyerId);
+    const sellerRef = doc(db, 'users', listing.sellerId);
+    
+    // Buscar dados
+    const [, buyerDoc, sellerDoc] = await Promise.all([
+      getDoc(landRef),
+      getDoc(buyerRef),
+      getDoc(sellerRef)
+    ]);
+    
+    if (!buyerDoc.exists() || !sellerDoc.exists()) {
+      throw new Error('Usuário não encontrado');
+    }
+    
+    const buyerData = buyerDoc.data();
+    const sellerData = sellerDoc.data();
+    
+    if (buyerData.gameState.coins < listing.price) {
+      throw new Error('Moedas insuficientes');
+    }
+    
+    // Transferir propriedade
+    await updateDoc(landRef, {
+      ownerId: buyerId,
+      ownerUsername: buyerUsername,
+      purchasedAt: serverTimestamp(),
+      purchasePrice: listing.price,
+      forSale: false,
+      salePrice: null,
+      listedAt: null,
+      residents: [], // Limpar moradores na transferência
+      updatedAt: serverTimestamp()
+    });
+    
+    // Atualizar moedas
+    await Promise.all([
+      updateDoc(buyerRef, {
+        'gameState.coins': buyerData.gameState.coins - listing.price,
+        lastUpdated: serverTimestamp()
+      }),
+      updateDoc(sellerRef, {
+        'gameState.coins': sellerData.gameState.coins + listing.price,
+        lastUpdated: serverTimestamp()
+      })
+    ]);
+    
+    // Marcar listagem como vendida
+    await updateDoc(listingRef, {
+      status: 'sold',
+      updatedAt: serverTimestamp()
+    });
+  } catch (error: any) {
+    throw new Error(`Erro ao comprar terreno: ${error.message}`);
+  }
+}
+
+/**
+ * Busca listagens ativas de terrenos
+ */
+export async function getActiveLandListings(limitCount: number = 50): Promise<LandListing[]> {
+  try {
+    const listingsQuery = query(
+      collection(db, 'landListings'),
+      where('status', '==', 'active'),
+      orderBy('createdAt', 'desc'),
+      limit(limitCount)
+    );
+    
+    const snapshot = await getDocs(listingsQuery);
+    const listings: LandListing[] = [];
+    
+    for (const doc of snapshot.docs) {
+      const data = doc.data();
+      const land = await getLand(data.landId);
+      
+      if (land) {
+        listings.push({
+          id: doc.id,
+          landId: data.landId,
+          land,
+          sellerId: data.sellerId,
+          sellerUsername: data.sellerUsername,
+          price: data.price,
+          description: data.description,
+          status: data.status,
+          createdAt: data.createdAt?.toDate() || new Date(),
+          updatedAt: data.updatedAt?.toDate() || new Date()
+        });
+      }
+    }
+    
+    return listings;
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar listagens: ${error.message}`);
+  }
+}
+
+/**
+ * Adiciona morador a um terreno
+ */
+export async function addLandResident(
+  landId: string,
+  ownerId: string,
+  residentUserId: string,
+  residentUsername: string,
+  permissions: { canBuild: boolean; canInvite: boolean }
+): Promise<void> {
+  try {
+    const landRef = doc(db, 'lands', landId);
+    const landDoc = await getDoc(landRef);
+    
+    if (!landDoc.exists()) {
+      throw new Error('Terreno não encontrado');
+    }
+    
+    const land = landDoc.data();
+    if (land.ownerId !== ownerId) {
+      throw new Error('Apenas o dono pode adicionar moradores');
+    }
+    
+    const residents: LandResident[] = land.residents || [];
+    if (residents.length >= land.maxResidents) {
+      throw new Error('Número máximo de moradores atingido');
+    }
+    
+    if (residents.some(r => r.userId === residentUserId)) {
+      throw new Error('Usuário já é morador');
+    }
+    
+    const newResident: LandResident = {
+      userId: residentUserId,
+      username: residentUsername,
+      addedAt: new Date(),
+      permissions
+    };
+    
+    await updateDoc(landRef, {
+      residents: [...residents, {
+        ...newResident,
+        addedAt: serverTimestamp()
+      }],
+      updatedAt: serverTimestamp()
+    });
+  } catch (error: any) {
+    throw new Error(`Erro ao adicionar morador: ${error.message}`);
+  }
+}
+
+/**
+ * Remove morador de um terreno
+ */
+export async function removeLandResident(
+  landId: string,
+  ownerId: string,
+  residentUserId: string
+): Promise<void> {
+  try {
+    const landRef = doc(db, 'lands', landId);
+    const landDoc = await getDoc(landRef);
+    
+    if (!landDoc.exists()) {
+      throw new Error('Terreno não encontrado');
+    }
+    
+    const land = landDoc.data();
+    if (land.ownerId !== ownerId) {
+      throw new Error('Apenas o dono pode remover moradores');
+    }
+    
+    const residents: LandResident[] = land.residents || [];
+    const updatedResidents = residents.filter(r => r.userId !== residentUserId);
+    
+    await updateDoc(landRef, {
+      residents: updatedResidents,
+      updatedAt: serverTimestamp()
+    });
+  } catch (error: any) {
+    throw new Error(`Erro ao remover morador: ${error.message}`);
+  }
+}
+
+/**
+ * Busca terrenos de um usuário
+ */
+export async function getUserLands(userId: string): Promise<Land[]> {
+  try {
+    const landsQuery = query(
+      collection(db, 'lands'),
+      where('ownerId', '==', userId)
+    );
+    
+    const snapshot = await getDocs(landsQuery);
+    const lands: Land[] = [];
+    
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      lands.push({
+        id: doc.id,
+        coordinates: data.coordinates,
+        type: data.type,
+        name: data.name,
+        description: data.description,
+        ownerId: data.ownerId,
+        ownerUsername: data.ownerUsername,
+        purchasedAt: data.purchasedAt?.toDate(),
+        purchasePrice: data.purchasePrice,
+        residents: data.residents || [],
+        maxResidents: data.maxResidents || 100,
+        size: data.size,
+        bonusIncome: data.bonusIncome,
+        forSale: data.forSale,
+        salePrice: data.salePrice,
+        listedAt: data.listedAt?.toDate(),
+        createdAt: data.createdAt?.toDate() || new Date(),
+        updatedAt: data.updatedAt?.toDate() || new Date()
+      });
+    });
+    
+    return lands;
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar terrenos do usuário: ${error.message}`);
   }
 }
