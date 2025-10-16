@@ -1,4 +1,4 @@
-import { Upgrade } from '../types';
+﻿import { Upgrade } from '../types';
 import { calculateTier } from '../utils/tierSystem';
 
 export const upgrades: Upgrade[] = [
@@ -7,86 +7,86 @@ export const upgrades: Upgrade[] = [
   
   {
     id: 'land_starter',
-    name: 'Terreno Iniciante 🟢',
+    name: 'Terreno Iniciante 🏡',
     description: '🗺️ TERRENO: Lote básico de 100m². Bônus: +10% em Plantação Básica',
     category: 'Terrenos',
     baseCost: 50000,
     costMultiplier: 2.0,
     baseIncome: 500,
     incomeMultiplier: 1.1,
-    icon: '🟢',
+    icon: '🏡',
     tier: calculateTier(50000)
   },
   {
     id: 'land_agricultural',
-    name: 'Fazenda Agrícola 🔵',
+    name: 'Fazenda Agrícola 🌾',
     description: '🗺️ TERRENO: 500m² de terra fértil. Bônus: +25% em Plantação e Pomar',
     category: 'Terrenos',
     baseCost: 500000,
     costMultiplier: 2.0,
     baseIncome: 5000,
     incomeMultiplier: 1.25,
-    icon: '🔵',
+    icon: '🌾',
     tier: calculateTier(500000)
   },
   {
     id: 'land_livestock',
-    name: 'Campo de Criação 🟣',
+    name: 'Campo de Criação 🐄',
     description: '🗺️ TERRENO: 1.000m² com pastos. Bônus: +40% em Gado, Apicultura e Piscicultura',
     category: 'Terrenos',
     baseCost: 2500000,
     costMultiplier: 2.0,
     baseIncome: 25000,
     incomeMultiplier: 1.4,
-    icon: '🟣',
+    icon: '🐄',
     tier: calculateTier(2500000)
   },
   {
     id: 'land_industrial',
-    name: 'Complexo Industrial 🟠',
+    name: 'Complexo Industrial 🏭',
     description: '🗺️ TERRENO: 5.000m² com infraestrutura. Bônus: +60% em Processamento e Laticínios',
     category: 'Terrenos',
     baseCost: 15000000,
     costMultiplier: 2.0,
     baseIncome: 150000,
     incomeMultiplier: 1.6,
-    icon: '�',
+    icon: '🏭',
     tier: calculateTier(15000000)
   },
   {
     id: 'land_mega_farm',
-    name: 'Mega Fazenda �',
+    name: 'Mega Fazenda 🏰',
     description: '🗺️ TERRENO: 10 hectares de terra premium. Bônus: +100% em TODAS as categorias básicas',
     category: 'Terrenos',
     baseCost: 100000000,
     costMultiplier: 2.5,
     baseIncome: 1000000,
     incomeMultiplier: 2.0,
-    icon: '🔴',
+    icon: '🏰',
     tier: calculateTier(100000000)
   },
   {
     id: 'land_technological',
-    name: 'Campus Tecnológico 💎',
+    name: 'Campus Tecnológico 🏙️',
     description: '🗺️ TERRENO: Complexo futurista de 50 hectares. Bônus: +150% em Tecnologia e Industrial',
     category: 'Terrenos',
     baseCost: 750000000,
     costMultiplier: 3.0,
     baseIncome: 7500000,
     incomeMultiplier: 2.5,
-    icon: '�',
+    icon: '🏙️',
     tier: calculateTier(750000000)
   },
   {
     id: 'land_divine',
-    name: 'Reino Divino ✨',
+    name: 'Reino Divino 🌈',
     description: '🗺️ TERRENO LENDÁRIO: Terra abençoada infinita. Bônus: +300% em TODAS as categorias',
     category: 'Terrenos',
     baseCost: 5000000000,
     costMultiplier: 4.0,
     baseIncome: 50000000,
     incomeMultiplier: 4.0,
-    icon: '✨',
+    icon: '🌈',
     tier: calculateTier(5000000000)
   },
 
@@ -318,7 +318,7 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 7500,
     incomeMultiplier: 1.1,
-    icon: '🦙',
+    icon: '🏭',
     tier: calculateTier(15000000)
   },
   {
@@ -440,7 +440,7 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 7500,
     incomeMultiplier: 1.1,
-    icon: '🍋',
+    icon: '🏭',
     tier: calculateTier(15000000)
   },
   {
@@ -598,7 +598,7 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 375000,
     incomeMultiplier: 1.1,
-    icon: '🧬',
+    icon: '🏙️',
     tier: calculateTier(750000000)
   },
   {
@@ -1086,7 +1086,7 @@ export const upgrades: Upgrade[] = [
     costMultiplier: 1.15,
     baseIncome: 7500,
     incomeMultiplier: 1.1,
-    icon: '🤖',
+    icon: '🏭',
     tier: calculateTier(15000000)
   },
   {
