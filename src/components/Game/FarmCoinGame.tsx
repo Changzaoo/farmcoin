@@ -845,17 +845,17 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
               <>
                 {/* Controles de Seleção e Venda em Massa */}
                 {inventoryItems.length > 0 && (
-                  <div className="mb-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border-2 border-purple-300">
-                    <div className="flex flex-wrap gap-2 mb-3">
+                  <div className="mb-6 p-5 glass-vibrant rounded-2xl border-2 border-white/30 shadow-xl">
+                    <div className="flex flex-wrap gap-3 mb-4">
                       <button
                         onClick={selectAll}
-                        className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-semibold transition-all"
+                        className="px-5 py-2.5 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] text-white rounded-xl text-sm font-black transition-all shadow-lg dopamine-hover"
                       >
                         ✅ Selecionar Todos
                       </button>
                       <button
                         onClick={deselectAll}
-                        className="px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-sm font-semibold transition-all"
+                        className="px-5 py-2.5 glass-vibrant hover:bg-white/20 text-white rounded-xl text-sm font-black transition-all shadow-lg dopamine-hover border border-white/30"
                       >
                         ❌ Desmarcar Todos
                       </button>
@@ -863,44 +863,44 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                       {/* Seleção por Tier */}
                       <select
                         onChange={(e) => e.target.value && selectByTier(e.target.value as UpgradeTier)}
-                        className="px-3 py-1.5 bg-white border-2 border-purple-300 rounded-lg text-sm font-semibold"
+                        className="px-4 py-2.5 glass-vibrant backdrop-blur-md border-2 border-white/30 rounded-xl text-sm font-black text-white cursor-pointer shadow-lg hover:border-purple-300 transition-all"
                         defaultValue=""
                       >
-                        <option value="">🎨 Por Raridade</option>
-                        <option value={UpgradeTier.COMUM}>⚪ Comum</option>
-                        <option value={UpgradeTier.INCOMUM}>🟢 Incomum</option>
-                        <option value={UpgradeTier.RARO}>🔵 Raro</option>
-                        <option value={UpgradeTier.EPICO}>🟣 Épico</option>
-                        <option value={UpgradeTier.LENDARIO}>🔴 Lendário</option>
-                        <option value={UpgradeTier.MITICO}>⭐ Mítico</option>
+                        <option value="" className="bg-gray-800">🎨 Por Raridade</option>
+                        <option value={UpgradeTier.COMUM} className="bg-gray-800">⚪ Comum</option>
+                        <option value={UpgradeTier.INCOMUM} className="bg-gray-800">🟢 Incomum</option>
+                        <option value={UpgradeTier.RARO} className="bg-gray-800">🔵 Raro</option>
+                        <option value={UpgradeTier.EPICO} className="bg-gray-800">🟣 Épico</option>
+                        <option value={UpgradeTier.LENDARIO} className="bg-gray-800">🔴 Lendário</option>
+                        <option value={UpgradeTier.MITICO} className="bg-gray-800">⭐ Mítico</option>
                       </select>
 
                       {/* Seleção por Categoria */}
                       <select
                         onChange={(e) => e.target.value && selectByCategory(e.target.value)}
-                        className="px-3 py-1.5 bg-white border-2 border-purple-300 rounded-lg text-sm font-semibold"
+                        className="px-4 py-2.5 glass-vibrant backdrop-blur-md border-2 border-white/30 rounded-xl text-sm font-black text-white cursor-pointer shadow-lg hover:border-purple-300 transition-all"
                         defaultValue=""
                       >
-                        <option value="">📁 Por Categoria</option>
+                        <option value="" className="bg-gray-800">📁 Por Categoria</option>
                         {categories.map(cat => (
-                          <option key={cat.id} value={cat.id}>
+                          <option key={cat.id} value={cat.id} className="bg-gray-800">
                             {cat.icon} {cat.name}
                           </option>
                         ))}
                       </select>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-purple-700">
-                        {selectedItems.size} item(ns) selecionado(s)
+                    <div className="flex items-center justify-between glass-vibrant p-4 rounded-2xl border border-white/30">
+                      <span className="text-lg font-black bg-gradient-to-r from-purple-200 via-pink-200 to-purple-200 bg-clip-text text-transparent drop-shadow-lg">
+                        ✨ {selectedItems.size} item(ns) selecionado(s)
                       </span>
                       <button
                         onClick={() => setShowBulkSellModal(true)}
                         disabled={selectedItems.size === 0}
-                        className={`px-4 py-2 rounded-lg font-bold transition-all ${
+                        className={`px-6 py-3 rounded-2xl font-black transition-all shadow-lg ${
                           selectedItems.size > 0
-                            ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg hover:scale-105'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 text-white hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] hover:scale-105 active:scale-95'
+                            : 'bg-gray-400/50 text-gray-300 cursor-not-allowed backdrop-blur-sm'
                         }`}
                       >
                         🏷️ Listar Selecionados
@@ -909,12 +909,12 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                   </div>
                 )}
 
-                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                 {inventoryItems.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <Package className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg font-semibold">Inventário Vazio</p>
-                    <p className="text-sm mt-2">Compre upgrades para vê-los aqui!</p>
+                  <div className="text-center py-16 glass-vibrant rounded-3xl">
+                    <Package className="w-24 h-24 mx-auto mb-6 text-white/40 animate-bounce" />
+                    <p className="text-3xl font-black text-white drop-shadow-lg">Inventário Vazio</p>
+                    <p className="text-lg text-white/80 mt-3 font-semibold">Compre upgrades para vê-los aqui! 🛒✨</p>
                   </div>
                 ) : (
                   inventoryItems.map(item => {
@@ -926,10 +926,10 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                     return (
                       <div
                         key={item.id}
-                        className={`p-4 rounded-xl border-2 transition-all ${
+                        className={`glass-vibrant p-5 rounded-2xl border-2 transition-all duration-300 ${
                           isSelected 
-                            ? 'bg-gradient-to-r from-purple-100 to-pink-100 border-purple-500 shadow-lg' 
-                            : `bg-gradient-to-r from-blue-50 to-purple-50 ${tierGlow} ${tierColors ? tierColors.border : 'border-blue-300'}`
+                            ? 'border-purple-300 shadow-[0_0_30px_rgba(168,85,247,0.6)] scale-[1.02] achievement-glow' 
+                            : `border-white/30 ${tierGlow} dopamine-hover hover:scale-[1.01]`
                         }`}
                       >
                         <div className="flex items-center gap-4">
@@ -938,13 +938,13 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => toggleItemSelection(item.id)}
-                            className="w-5 h-5 cursor-pointer"
+                            className="w-6 h-6 cursor-pointer accent-purple-500 scale-125"
                           />
                           
                           {/* Input de quantidade (só aparece quando selecionado) */}
                           {isSelected && (
-                            <div className="flex flex-col items-center">
-                              <label className="text-xs text-gray-600 font-semibold mb-1">
+                            <div className="flex flex-col items-center glass-vibrant p-3 rounded-xl border border-purple-300">
+                              <label className="text-xs text-white/80 font-bold mb-1">
                                 Qtd:
                               </label>
                               <input
@@ -954,38 +954,38 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                                 value={itemQuantities.get(item.id) || 1}
                                 onChange={(e) => updateItemQuantity(item.id, Number(e.target.value))}
                                 onClick={(e) => e.stopPropagation()}
-                                className="w-16 px-2 py-1 border-2 border-purple-400 rounded-lg text-center font-bold focus:ring-2 focus:ring-purple-500 outline-none"
+                                className="w-20 px-3 py-2 border-2 border-purple-300 rounded-lg text-center font-black bg-white/20 backdrop-blur-sm text-white focus:ring-4 focus:ring-purple-400/50 outline-none"
                               />
-                              <span className="text-xs text-gray-500 mt-1">
+                              <span className="text-xs text-white/60 mt-1 font-semibold">
                                 de {item.count}
                               </span>
                             </div>
                           )}
                           
-                          <div className="text-4xl">{item.icon}</div>
+                          <div className="text-5xl animate-float drop-shadow-2xl">{item.icon}</div>
                           
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-bold text-gray-800">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-black text-xl text-white drop-shadow-lg">
                                 {item.name}
                               </h3>
                               {item.tier && tierColors && (
-                                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${tierColors.bg} ${tierColors.text}`}>
-                                  {getTierName(item.tier)}
+                                <span className={`px-3 py-1 rounded-full text-xs font-black ${tierColors.bg} ${tierColors.text} shadow-lg animate-pulse`}>
+                                  ✨ {getTierName(item.tier)}
                                 </span>
                               )}
-                              <span className="px-3 py-1 bg-blue-500 text-white rounded-full text-sm font-bold">
+                              <span className="px-4 py-1.5 bg-gradient-to-r from-blue-400 to-cyan-400 text-white rounded-full text-sm font-black shadow-lg">
                                 x{item.count}
                               </span>
                             </div>
-                            <p className="text-sm text-gray-600 mt-1">
+                            <p className="text-sm text-white/90 font-medium mt-1 drop-shadow">
                               {item.description}
                             </p>
                             <div className="flex gap-4 mt-2 text-sm">
-                              <span className="text-green-600 font-semibold">
+                              <span className="font-black bg-gradient-to-r from-green-200 via-emerald-200 to-teal-200 bg-clip-text text-transparent drop-shadow-lg">
                                 📈 +{formatNumber(item.income || 0)}/s cada
                               </span>
-                              <span className="text-green-700 font-bold">
+                              <span className="font-black text-lg bg-gradient-to-r from-green-300 via-emerald-300 to-teal-300 bg-clip-text text-transparent drop-shadow-lg">
                                 💰 Total: +{formatNumber(totalIncome)}/s
                               </span>
                             </div>
@@ -1005,19 +1005,19 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                 {/* Filtros */}
                 <div className="mb-6 space-y-4">
                   {/* Busca */}
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <div className="relative glass-vibrant rounded-2xl p-1">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 w-6 h-6" />
                     <input
                       type="text"
-                      placeholder="Buscar melhorias..."
+                      placeholder="🔎 Buscar melhorias mágicas..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-400 focus:ring-2 focus:ring-green-200 outline-none transition-all"
+                      className="w-full pl-14 pr-4 py-4 rounded-xl bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder-white/60 font-semibold focus:border-yellow-300 focus:ring-4 focus:ring-yellow-400/50 outline-none transition-all"
                     />
                   </div>
 
                   {/* Categorias */}
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {categories.map(category => {
                       const availableCount = getCategoryCount(category);
                       const emoji = getCategoryEmoji(category);
@@ -1025,18 +1025,19 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                         <button
                           key={category}
                           onClick={() => setSelectedCategory(category)}
-                          className={`px-4 py-2 rounded-xl font-medium transition-all flex items-center gap-2 ${
+                          className={`px-5 py-3 rounded-2xl font-black text-sm transition-all duration-200 flex items-center gap-2 shadow-lg ${
                             selectedCategory === category
-                              ? 'bg-green-500 text-white shadow-lg'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 text-white scale-110 shadow-[0_0_20px_rgba(16,185,129,0.5)]'
+                              : 'glass-vibrant text-white/90 hover:scale-105 dopamine-hover'
                           }`}
                         >
-                          <span>{emoji} {category}</span>
+                          <span className="text-xl">{emoji}</span>
+                          <span>{category}</span>
                           {availableCount > 0 && (
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                            <span className={`px-2.5 py-1 rounded-full text-xs font-black shadow-lg animate-pulse ${
                               selectedCategory === category
                                 ? 'bg-white/30 text-white'
-                                : 'bg-green-500 text-white'
+                                : 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white'
                             }`}>
                               {availableCount}
                             </span>
@@ -1048,7 +1049,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
             </div>
 
             {/* Lista de Upgrades */}
-            <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
               {filteredUpgrades.map(upgrade => {
                 const canBuy = gameState.coins >= (upgrade.cost || 0);
                 const isLocked = upgrade.isComposite && !upgrade.unlocked;
@@ -1062,50 +1063,50 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                 return (
                   <div
                     key={upgrade.id}
-                    className={`p-4 rounded-xl border-2 transition-all ${tierGlow} ${
+                    className={`glass-vibrant p-5 rounded-2xl border-2 transition-all duration-300 ${
                       isLocked
-                        ? 'bg-gray-100 border-gray-300 opacity-50'
+                        ? 'opacity-50 grayscale'
                         : canBuy
-                        ? 'bg-gradient-to-r from-green-50 to-yellow-50 border-green-300 hover:shadow-lg'
-                        : 'bg-gray-50 border-gray-200 opacity-60'
-                    } ${tierColors ? tierColors.border : ''}`}
+                        ? 'achievement-glow dopamine-hover border-yellow-300/50 hover:scale-[1.02] hover:-translate-y-1'
+                        : 'opacity-70 border-white/20'
+                    } ${tierGlow}`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="text-4xl relative">
+                      <div className="text-6xl relative animate-float drop-shadow-2xl">
                         {upgrade.icon}
                         {isLocked && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg">
-                            <Lock className="w-6 h-6 text-white" />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl backdrop-blur-sm">
+                            <Lock className="w-8 h-8 text-white drop-shadow-lg animate-pulse" />
                           </div>
                         )}
                       </div>
                       
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-bold text-gray-800 truncate">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-black text-xl text-white drop-shadow-lg">
                             {upgrade.name}
                             {upgrade.count ? ` (${upgrade.count})` : ''}
                           </h3>
                           {upgrade.tier && tierColors && (
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${tierColors.bg} ${tierColors.text}`}>
-                              {getTierName(upgrade.tier)}
+                            <span className={`px-3 py-1 rounded-full text-xs font-black ${tierColors.bg} ${tierColors.text} shadow-lg animate-pulse`}>
+                              ✨ {getTierName(upgrade.tier)}
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 truncate">
+                        <p className="text-sm text-white/90 font-medium mt-1 drop-shadow">
                           {upgrade.description}
                         </p>
                         
                         {isLocked && missingReqs.length > 0 ? (
-                          <div className="mt-1 text-xs text-red-600">
+                          <div className="mt-2 text-sm font-bold text-red-200 bg-red-500/20 px-3 py-1 rounded-lg inline-block backdrop-blur-sm">
                             🔒 Requisitos: {missingReqs.join(', ')}
                           </div>
                         ) : (
-                          <div className="flex gap-4 mt-1 text-sm">
-                            <span className="text-yellow-600 font-semibold">
+                          <div className="flex gap-4 mt-2 text-sm">
+                            <span className="font-black text-lg bg-gradient-to-r from-yellow-200 via-amber-200 to-orange-200 bg-clip-text text-transparent drop-shadow-lg">
                               💰 {formatNumber(upgrade.cost || 0)}
                             </span>
-                            <span className="text-green-600 font-semibold">
+                            <span className="font-black text-lg bg-gradient-to-r from-green-200 via-emerald-200 to-teal-200 bg-clip-text text-transparent drop-shadow-lg">
                               📈 +{formatNumber(upgrade.income || 0)}/s
                             </span>
                           </div>
@@ -1115,15 +1116,15 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                       <button
                         onClick={() => handleBuyUpgrade(upgrade.id)}
                         disabled={!canBuy || isLocked}
-                        className={`px-6 py-3 rounded-xl font-bold transition-all ${
+                        className={`px-8 py-4 rounded-2xl font-black text-lg transition-all duration-200 shadow-2xl ${
                           isLocked
-                            ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                            ? 'bg-gray-500/50 text-gray-300 cursor-not-allowed backdrop-blur-sm'
                             : canBuy
-                            ? 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:shadow-lg hover:scale-105 active:scale-95'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 text-white hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] hover:scale-110 active:scale-95 animate-pulse'
+                            : 'bg-gray-400/50 text-gray-200 cursor-not-allowed backdrop-blur-sm'
                         }`}
                       >
-                        {isLocked ? '🔒 Bloqueado' : 'Comprar'}
+                        {isLocked ? '🔒 Bloqueado' : canBuy ? '🛒 Comprar!' : 'Sem Moedas'}
                       </button>
                     </div>
                   </div>
@@ -1131,9 +1132,10 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
               })}
 
               {filteredUpgrades.length === 0 && (
-                <div className="text-center py-12 text-gray-500">
-                  <p className="text-lg">Nenhuma melhoria encontrada</p>
-                  <p className="text-sm mt-2">Tente ajustar os filtros</p>
+                <div className="text-center py-16 glass-vibrant rounded-2xl">
+                  <div className="text-8xl mb-4 animate-bounce">🔍</div>
+                  <p className="text-2xl font-black text-white drop-shadow-lg">Nenhuma melhoria encontrada</p>
+                  <p className="text-lg text-white/80 mt-2 font-semibold">Tente ajustar os filtros</p>
                 </div>
               )}
             </div>
