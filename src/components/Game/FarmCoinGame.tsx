@@ -1,8 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Coins, TrendingUp, ShoppingCart, Search } from 'lucide-react';
 import { upgrades as upgradesData, categories } from '../../data/upgrades';
 import { GameState, Upgrade } from '../../types';
 import { saveGameState } from '../../firebase/firestore';
+
+interface FloatingCoin {
+  id: number;
+  x: number;
+  y: number;
+}
 
 interface FarmCoinGameProps {
   uid: string;
@@ -15,6 +21,10 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [lastSave, setLastSave] = useState(Date.now());
+  const [floatingCoins, setFloatingCoins] = useState<FloatingCoin[]>([]);
+  const [clickEffect, setClickEffect] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const coinIdRef = useRef(0);
 
   // Inicializar upgrades
   useEffect(() => {
@@ -43,55 +53,85 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
     }, 0);
   }, [upgrades]);
 
-  // Atualizar moedas passivamente
+  // Atualizar moedas passivamente e salvar
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       const perSecond = calculatePassiveIncome();
       
-      setGameState(prev => ({
-        ...prev,
-        coins: prev.coins + perSecond,
-        totalCoins: prev.totalCoins + perSecond,
-        perSecond
-      }));
+      setGameState(prev => {
+        const newState = {
+          ...prev,
+          coins: prev.coins + perSecond,
+          totalCoins: prev.totalCoins + perSecond,
+          perSecond
+        };
+        
+        // Salvar automaticamente a cada ganho passivo
+        if (perSecond > 0) {
+          saveGame(newState);
+        }
+        
+        return newState;
+      });
     }, 1000);
 
     return () => clearInterval(interval);
   }, [calculatePassiveIncome]);
 
-  // Auto-save a cada 10 segundos
-  useEffect(() => {
-    const autoSaveInterval = setInterval(() => {
-      const now = Date.now();
-      if (now - lastSave >= 10000) {
-        saveGame();
-        setLastSave(now);
-      }
-    }, 10000);
-
-    return () => clearInterval(autoSaveInterval);
-  }, [gameState, lastSave]);
-
-  // Salvar jogo
-  const saveGame = async () => {
+  // Salvar jogo (pode receber estado opcional)
+  const saveGame = async (stateToSave?: GameState) => {
     try {
-      await saveGameState(uid, gameState, upgrades);
+      const currentState = stateToSave || gameState;
+      await saveGameState(uid, currentState, upgrades);
+      setLastSave(Date.now());
     } catch (error) {
       console.error('Erro ao salvar jogo:', error);
     }
   };
 
-  // Click manual
-  const handleClick = () => {
-    setGameState(prev => ({
-      ...prev,
-      coins: prev.coins + 0.1,
-      totalCoins: prev.totalCoins + 0.1,
-      totalClicks: prev.totalClicks + 1
-    }));
+  // Click manual com efeitos visuais
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Efeito de click no botão
+    setClickEffect(true);
+    setTimeout(() => setClickEffect(false), 150);
+
+    // Criar moeda flutuante
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const newCoin: FloatingCoin = {
+        id: coinIdRef.current++,
+        x,
+        y
+      };
+      
+      setFloatingCoins(prev => [...prev, newCoin]);
+      
+      // Remover moeda após animação
+      setTimeout(() => {
+        setFloatingCoins(prev => prev.filter(coin => coin.id !== newCoin.id));
+      }, 1000);
+    }
+
+    // Atualizar estado e salvar
+    setGameState(prev => {
+      const newState = {
+        ...prev,
+        coins: prev.coins + 0.1,
+        totalCoins: prev.totalCoins + 0.1,
+        totalClicks: prev.totalClicks + 1
+      };
+      
+      // Salvar após cada click
+      saveGame(newState);
+      
+      return newState;
+    });
   };
 
-  // Comprar upgrade
+  // Comprar upgrade e salvar
   const handleBuyUpgrade = (upgradeId: string) => {
     const upgrade = upgrades.find(u => u.id === upgradeId);
     if (!upgrade || !upgrade.cost) return;
@@ -109,11 +149,18 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
         )
       );
 
-      setGameState(prev => ({
-        ...prev,
-        coins: prev.coins - upgrade.cost!,
-        totalPurchases: prev.totalPurchases + 1
-      }));
+      setGameState(prev => {
+        const newState = {
+          ...prev,
+          coins: prev.coins - upgrade.cost!,
+          totalPurchases: prev.totalPurchases + 1
+        };
+        
+        // Salvar após cada compra
+        saveGame(newState);
+        
+        return newState;
+      });
     }
   };
 
@@ -188,27 +235,58 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
               Fazenda
             </h2>
             
-            <button
-              onClick={handleClick}
-              className="w-full aspect-square bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-3xl shadow-2xl hover:shadow-yellow-400/50 transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center text-8xl animate-bounce-slow"
-            >
-              🌾
-            </button>
-
-            <p className="text-center mt-6 text-gray-600 text-sm">
-              Clique para ganhar <span className="font-bold text-yellow-600">+0.1</span> moedas
-            </p>
-
-            <div className="mt-6 space-y-2 text-sm text-gray-600">
-              <div className="flex justify-between">
-                <span>Total de Moedas:</span>
-                <span className="font-bold">{formatNumber(gameState.totalCoins)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Total de Clicks:</span>
-                <span className="font-bold">{gameState.totalClicks}</span>
-              </div>
+            <div className="relative">
+              <button
+                ref={buttonRef}
+                onClick={handleClick}
+                className={`
+                  w-full aspect-square relative overflow-hidden
+                  bg-gradient-to-br from-amber-500 via-yellow-500 to-orange-500
+                  rounded-3xl shadow-2xl
+                  hover:shadow-amber-500/60 hover:shadow-3xl
+                  transition-all duration-300 transform
+                  hover:scale-105 active:scale-95
+                  flex items-center justify-center
+                  border-4 border-yellow-300/50
+                  group
+                  ${clickEffect ? 'animate-pulse-fast' : ''}
+                `}
+              >
+                {/* Efeito de brilho */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                {/* Partículas de fundo */}
+                <div className="absolute inset-0">
+                  <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/30 rounded-full animate-float-slow"></div>
+                  <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-white/20 rounded-full animate-float-medium"></div>
+                  <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-white/40 rounded-full animate-float-fast"></div>
+                </div>
+                
+                {/* Ícone da picareta */}
+                <div className="relative z-10 text-8xl drop-shadow-2xl transform group-hover:rotate-12 transition-transform duration-300">
+                  ⛏️
+                </div>
+                
+                {/* Moedas flutuantes */}
+                {floatingCoins.map(coin => (
+                  <div
+                    key={coin.id}
+                    className="absolute text-3xl font-bold text-yellow-300 pointer-events-none animate-float-up"
+                    style={{
+                      left: coin.x,
+                      top: coin.y,
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+                    }}
+                  >
+                    +0.1 💰
+                  </div>
+                ))}
+              </button>
             </div>
+
+            <p className="text-center mt-6 text-gray-600 text-base font-medium">
+              Clique para ganhar <span className="font-bold text-yellow-600 text-lg">+0.1</span> moedas
+            </p>
           </div>
         </div>
 
@@ -314,13 +392,71 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
       </div>
 
       <style>{`
-        @keyframes bounce-slow {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
+        @keyframes float-up {
+          0% {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(-150px) scale(1.5);
+            opacity: 0;
+          }
         }
-        
-        .animate-bounce-slow {
-          animation: bounce-slow 3s ease-in-out infinite;
+
+        @keyframes float-slow {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+        }
+
+        @keyframes float-medium {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-15px);
+          }
+        }
+
+        @keyframes float-fast {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+        }
+
+        @keyframes pulse-fast {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(0.95);
+          }
+        }
+
+        .animate-float-up {
+          animation: float-up 1s ease-out forwards;
+        }
+
+        .animate-float-slow {
+          animation: float-slow 4s ease-in-out infinite;
+        }
+
+        .animate-float-medium {
+          animation: float-medium 3s ease-in-out infinite;
+        }
+
+        .animate-float-fast {
+          animation: float-fast 2s ease-in-out infinite;
+        }
+
+        .animate-pulse-fast {
+          animation: pulse-fast 0.15s ease-in-out;
         }
 
         .custom-scrollbar::-webkit-scrollbar {
