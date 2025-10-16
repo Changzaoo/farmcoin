@@ -217,6 +217,17 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
     // Verificar se upgrade composto está desbloqueado
     if (upgrade.isComposite && !upgrade.unlocked) return;
 
+    // ⚙️ VALIDAÇÃO CONTÍNUA: Para Produção em Cadeia, sempre verificar requisitos
+    if (upgrade.isComposite && upgrade.requirements) {
+      const userUpgradesForCheck = upgrades.map(u => ({ id: u.id, count: u.count || 0 }));
+      const hasRequirements = canUnlockCompositeUpgrade(upgrade.requirements, userUpgradesForCheck);
+      
+      if (!hasRequirements) {
+        console.warn('⚠️ Requisitos não atendidos para comprar:', upgrade.name);
+        return;
+      }
+    }
+
     if (gameState.coins >= upgrade.cost) {
       const newCount = (upgrade.count || 0) + 1;
       const newCost = upgrade.baseCost * Math.pow(upgrade.costMultiplier, newCount);
@@ -1068,12 +1079,18 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                 const tierColors = upgrade.tier ? getTierColor(upgrade.tier) : null;
                 const tierGlow = upgrade.tier ? getTierGlow(upgrade.tier) : '';
                 const userUpgrades = upgrades.map(u => ({ id: u.id, count: u.count || 0 }));
+                
+                // ⚙️ VALIDAÇÃO CONTÍNUA: Verificar requisitos sempre, mesmo depois de desbloqueado
+                const hasRequirementsContinuous = upgrade.isComposite && upgrade.requirements
+                  ? canUnlockCompositeUpgrade(upgrade.requirements, userUpgrades)
+                  : true;
+                
                 const missingReqs = isLocked && upgrade.requirements 
                   ? getMissingRequirements(upgrade.requirements, userUpgrades, upgradesData)
                   : [];
                 
-                // Pegar os upgrades que faltam (objetos completos)
-                const missingUpgrades = isLocked && upgrade.requirements
+                // Pegar os upgrades que faltam (objetos completos) - SEMPRE para compostos
+                const missingUpgrades = upgrade.isComposite && upgrade.requirements && !hasRequirementsContinuous
                   ? upgrade.requirements
                       .map(req => {
                         const reqUpgrade = upgradesData.find(u => u.id === req.upgradeId);
@@ -1130,7 +1147,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                           {upgrade.description}
                         </p>
                         
-                        {isLocked && missingUpgrades.length > 0 ? (
+                        {missingUpgrades.length > 0 ? (
                           <div className="mt-3 space-y-2">
                             <div className="text-sm font-bold text-red-700 flex items-center gap-2">
                               <Lock className="w-4 h-4" />
@@ -1199,16 +1216,23 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
 
                       <button
                         onClick={() => handleBuyUpgrade(upgrade.id)}
-                        disabled={!canBuy || isLocked}
+                        disabled={!canBuy || isLocked || !hasRequirementsContinuous}
                         className={`px-8 py-4 rounded-2xl font-black text-lg transition-all duration-200 shadow-2xl ${
-                          isLocked
+                          isLocked || !hasRequirementsContinuous
                             ? 'bg-gray-500/50 text-gray-300 cursor-not-allowed backdrop-blur-sm'
                             : canBuy
                             ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 text-white hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] hover:scale-110 active:scale-95 animate-pulse'
                             : 'bg-gray-400/50 text-gray-200 cursor-not-allowed backdrop-blur-sm'
                         }`}
                       >
-                        {isLocked ? '🔒 Bloqueado' : canBuy ? '🛒 Comprar!' : 'Sem Moedas'}
+                        {isLocked 
+                          ? '🔒 Bloqueado' 
+                          : !hasRequirementsContinuous 
+                            ? '⚠️ Faltam Requisitos'
+                            : canBuy 
+                              ? '🛒 Comprar!' 
+                              : 'Sem Moedas'
+                        }
                       </button>
                     </div>
                   </div>
