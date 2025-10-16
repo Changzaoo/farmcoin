@@ -680,56 +680,88 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                 ref={buttonRef}
                 onClick={handleClick}
                 className={`
-                  w-full aspect-square relative overflow-hidden
-                  bg-gradient-to-br from-amber-500 via-yellow-500 to-orange-500
-                  rounded-3xl shadow-2xl
-                  hover:shadow-amber-500/60 hover:shadow-3xl
-                  transition-all duration-300 transform
-                  hover:scale-105 active:scale-95
+                  w-full max-w-xs mx-auto aspect-square relative overflow-hidden
+                  bg-gradient-to-br from-amber-400 via-yellow-400 to-orange-400
+                  rounded-3xl
+                  transition-all duration-200
                   flex items-center justify-center
-                  border-4 border-yellow-300/50
-                  group
-                  ${clickEffect ? 'animate-pulse-fast' : ''}
+                  border-4 border-yellow-300/60
+                  cursor-pointer select-none
+                  ${isMining ? 'btn-mine-active' : 'btn-mine-idle'}
                 `}
               >
-                {/* Efeito de brilho */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                {/* Shimmer de fundo */}
+                <div className="absolute inset-0 shimmer"></div>
                 
-                {/* Partículas de fundo */}
-                <div className="absolute inset-0">
-                  <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/30 rounded-full animate-float-slow"></div>
-                  <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-white/20 rounded-full animate-float-medium"></div>
-                  <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-white/40 rounded-full animate-float-fast"></div>
+                {/* Onda de choque ao clicar */}
+                {isMining && (
+                  <div className="absolute inset-0 shockwave bg-white/30 rounded-3xl pointer-events-none"></div>
+                )}
+                
+                {/* Partículas de fundo animadas */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute top-[15%] left-[20%] w-3 h-3 bg-white/40 rounded-full float-particle-1"></div>
+                  <div className="absolute top-[60%] right-[15%] w-4 h-4 bg-yellow-200/50 rounded-full float-particle-2"></div>
+                  <div className="absolute bottom-[25%] left-[35%] w-2.5 h-2.5 bg-amber-200/40 rounded-full float-particle-3"></div>
+                  <div className="absolute top-[40%] right-[30%] w-3 h-3 bg-white/30 rounded-full float-particle-1" style={{animationDelay: '1s'}}></div>
+                  <div className="absolute bottom-[45%] left-[15%] w-2 h-2 bg-yellow-300/40 rounded-full float-particle-2" style={{animationDelay: '1.5s'}}></div>
                 </div>
                 
+                {/* Estrelas de recompensa ao clicar */}
+                {isMining && (
+                  <>
+                    <div className="absolute top-1/4 left-1/4 text-3xl reward-star pointer-events-none">⭐</div>
+                    <div className="absolute top-1/4 right-1/4 text-3xl reward-star pointer-events-none" style={{animationDelay: '0.1s'}}>✨</div>
+                    <div className="absolute bottom-1/4 left-1/3 text-3xl reward-star pointer-events-none" style={{animationDelay: '0.05s'}}>💫</div>
+                  </>
+                )}
+                
                 {/* Ícone da picareta */}
-                <div className={`relative z-10 text-8xl drop-shadow-2xl transition-transform duration-300 ${
-                  isMining 
-                    ? 'animate-mining' 
-                    : 'group-hover:rotate-12'
+                <div className={`relative z-10 text-7xl filter drop-shadow-2xl ${
+                  isMining ? 'pickaxe-mining' : 'pickaxe-idle'
                 }`}>
                   ⛏️
                 </div>
                 
-                {/* Moedas flutuantes */}
+                {/* Moedas flutuantes aprimoradas */}
                 {floatingCoins.map(coin => (
                   <div
                     key={coin.id}
-                    className="absolute text-3xl font-bold text-yellow-300 pointer-events-none animate-float-up"
+                    className="absolute text-4xl font-black text-yellow-300 pointer-events-none coin-float-up"
                     style={{
                       left: coin.x,
                       top: coin.y,
-                      textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+                      textShadow: '0 0 10px rgba(251, 191, 36, 0.8), 2px 2px 4px rgba(0,0,0,0.5)',
+                      filter: 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.6))'
                     }}
                   >
                     +0.1 💰
                   </div>
                 ))}
+                
+                {/* Partículas de ouro ao clicar */}
+                {isMining && (
+                  <div className="absolute inset-0 pointer-events-none">
+                    {[...Array(8)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute particle-burst text-2xl"
+                        style={{
+                          left: `${50 + Math.cos(i * Math.PI / 4) * 30}%`,
+                          top: `${50 + Math.sin(i * Math.PI / 4) * 30}%`,
+                          animationDelay: `${i * 0.05}s`
+                        }}
+                      >
+                        ✨
+                      </div>
+                    ))}
+                  </div>
+                )}
               </button>
             </div>
 
-            <p className="text-center mt-6 text-gray-600 text-base font-medium">
-              Clique para ganhar <span className="font-bold text-yellow-600 text-lg">+0.1</span> moedas
+            <p className="text-center mt-6 text-gray-600 text-base font-semibold">
+              Clique para ganhar <span className="font-bold text-yellow-600 text-xl animate-pulse">+0.1</span> moedas
             </p>
 
             {/* 🛡️ Aviso Anti-Bot */}

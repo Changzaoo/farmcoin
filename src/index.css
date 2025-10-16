@@ -29,6 +29,278 @@
     }
   }
 
+  /* ========== ANIMAÇÕES DE DOPAMINA ========== */
+  
+  /* Idle suave e hipnótico */
+  .btn-mine-idle {
+    animation: breathe 3s ease-in-out infinite, gentle-rotate 6s ease-in-out infinite, glow-pulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes breathe {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+  
+  @keyframes gentle-rotate {
+    0%, 100% {
+      transform: rotate(-2deg) scale(1);
+    }
+    50% {
+      transform: rotate(2deg) scale(1.05);
+    }
+  }
+  
+  @keyframes glow-pulse {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.5), 0 0 40px rgba(251, 191, 36, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.8), 0 0 60px rgba(251, 191, 36, 0.5);
+    }
+  }
+  
+  /* Animação de mineração - DOPAMINA MÁXIMA */
+  .btn-mine-active {
+    animation: mining-bounce 0.15s ease-in-out, shake 0.15s ease-in-out, explosion-flash 0.2s ease-out;
+  }
+  
+  @keyframes mining-bounce {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(0.92);
+    }
+    100% {
+      transform: scale(1.08);
+    }
+  }
+  
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0) rotate(0deg);
+    }
+    25% {
+      transform: translateX(-5px) rotate(-5deg);
+    }
+    75% {
+      transform: translateX(5px) rotate(5deg);
+    }
+  }
+  
+  @keyframes explosion-flash {
+    0% {
+      box-shadow: 0 0 0px rgba(251, 191, 36, 0);
+    }
+    50% {
+      box-shadow: 0 0 50px rgba(251, 191, 36, 1), 0 0 100px rgba(251, 191, 36, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.5);
+    }
+    100% {
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+    }
+  }
+  
+  /* Picareta animada */
+  .pickaxe-idle {
+    animation: pickaxe-float 2s ease-in-out infinite, pickaxe-shine 3s ease-in-out infinite;
+  }
+  
+  @keyframes pickaxe-float {
+    0%, 100% {
+      transform: translateY(-5px) rotate(-8deg);
+    }
+    50% {
+      transform: translateY(5px) rotate(8deg);
+    }
+  }
+  
+  @keyframes pickaxe-shine {
+    0%, 100% {
+      filter: brightness(1) drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
+    }
+    50% {
+      filter: brightness(1.3) drop-shadow(0 0 20px rgba(251, 191, 36, 0.8));
+    }
+  }
+  
+  .pickaxe-mining {
+    animation: pickaxe-strike 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+  
+  @keyframes pickaxe-strike {
+    0% {
+      transform: translateY(0) rotate(0deg) scale(1);
+    }
+    30% {
+      transform: translateY(-20px) rotate(-25deg) scale(1.1);
+    }
+    70% {
+      transform: translateY(10px) rotate(15deg) scale(0.95);
+    }
+    100% {
+      transform: translateY(0) rotate(0deg) scale(1);
+    }
+  }
+  
+  /* Partículas de ouro */
+  .particle-burst {
+    animation: particle-explode 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+  
+  @keyframes particle-explode {
+    0% {
+      opacity: 1;
+      transform: scale(0) translateY(0);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.5) translateY(-30px);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.5) translateY(-60px);
+    }
+  }
+  
+  /* Ondas de choque */
+  .shockwave {
+    animation: shockwave-expand 0.5s ease-out forwards;
+  }
+  
+  @keyframes shockwave-expand {
+    0% {
+      transform: scale(0);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(3);
+      opacity: 0;
+    }
+  }
+  
+  /* Estrelas de recompensa */
+  .reward-star {
+    animation: star-twinkle 0.8s ease-out forwards;
+  }
+  
+  @keyframes star-twinkle {
+    0% {
+      transform: scale(0) rotate(0deg);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.5) rotate(180deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(0.8) rotate(360deg) translateY(-100px);
+      opacity: 0;
+    }
+  }
+  
+  /* Moedas flutuantes aprimoradas */
+  .coin-float-up {
+    animation: coin-rise 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+  
+  @keyframes coin-rise {
+    0% {
+      transform: translateY(0) scale(0) rotate(0deg);
+      opacity: 0;
+    }
+    20% {
+      transform: translateY(-20px) scale(1.2) rotate(15deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-150px) scale(0.5) rotate(720deg);
+      opacity: 0;
+    }
+  }
+  
+  /* Brilho de fundo animado */
+  .shimmer {
+    animation: shimmer-move 2s linear infinite;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+  }
+  
+  @keyframes shimmer-move {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  
+  /* Partículas flutuantes de fundo */
+  .float-particle-1 {
+    animation: float-random-1 4s ease-in-out infinite;
+  }
+  
+  .float-particle-2 {
+    animation: float-random-2 5s ease-in-out infinite;
+  }
+  
+  .float-particle-3 {
+    animation: float-random-3 3.5s ease-in-out infinite;
+  }
+  
+  @keyframes float-random-1 {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.3;
+    }
+    25% {
+      transform: translate(10px, -15px) scale(1.1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translate(-5px, -30px) scale(0.9);
+      opacity: 0.4;
+    }
+    75% {
+      transform: translate(15px, -20px) scale(1.2);
+      opacity: 0.6;
+    }
+  }
+  
+  @keyframes float-random-2 {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg);
+      opacity: 0.4;
+    }
+    33% {
+      transform: translate(-12px, -20px) rotate(120deg);
+      opacity: 0.6;
+    }
+    66% {
+      transform: translate(8px, -35px) rotate(240deg);
+      opacity: 0.5;
+    }
+  }
+  
+  @keyframes float-random-3 {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translate(-8px, -25px) scale(1.3);
+      opacity: 0.7;
+    }
+  }
+
   .glass {
     @apply bg-white/10 backdrop-blur-lg border border-white/20;
   }
