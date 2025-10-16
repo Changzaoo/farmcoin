@@ -125,7 +125,7 @@ export default function Ranking({
           className={`flex-1 px-6 py-3 rounded-2xl font-black text-sm transition-all duration-200 shadow-lg ${
             activeTab === 'coins'
               ? 'bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 text-white scale-110 shadow-[0_0_20px_rgba(251,191,36,0.5)]'
-              : 'glass-vibrant text-white/90 hover:scale-105 dopamine-hover border border-white/30'
+              : 'glass-vibrant text-gray-900 hover:scale-105 dopamine-hover border border-white/30'
           }`}
         >
           💰 Moedas
@@ -135,7 +135,7 @@ export default function Ranking({
           className={`flex-1 px-6 py-3 rounded-2xl font-black text-sm transition-all duration-200 shadow-lg ${
             activeTab === 'perSecond'
               ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 text-white scale-110 shadow-[0_0_20px_rgba(16,185,129,0.5)]'
-              : 'glass-vibrant text-white/90 hover:scale-105 dopamine-hover border border-white/30'
+              : 'glass-vibrant text-gray-900 hover:scale-105 dopamine-hover border border-white/30'
           }`}
         >
           📈 Renda
@@ -145,7 +145,7 @@ export default function Ranking({
           className={`flex-1 px-6 py-3 rounded-2xl font-black text-sm transition-all duration-200 shadow-lg ${
             activeTab === 'upgrades'
               ? 'bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 text-white scale-110 shadow-[0_0_20px_rgba(168,85,247,0.5)]'
-              : 'glass-vibrant text-white/90 hover:scale-105 dopamine-hover border border-white/30'
+              : 'glass-vibrant text-gray-900 hover:scale-105 dopamine-hover border border-white/30'
           }`}
         >
           ⭐ Upgrades
@@ -154,16 +154,16 @@ export default function Ranking({
 
       {/* Sua Posição */}
       {currentUserRank && (
-        <div className="glass-vibrant rounded-2xl p-6 text-white border-2 border-white/30 shadow-xl achievement-glow">
+        <div className="glass-vibrant rounded-2xl p-6 border-2 border-white/30 shadow-xl achievement-glow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-white/80 font-semibold mb-1">✨ Sua Posição</p>
-              <p className="text-3xl font-black drop-shadow-lg">
+              <p className="text-sm text-gray-800 font-semibold mb-1">✨ Sua Posição</p>
+              <p className="text-3xl font-black text-gray-900">
                 {getMedalEmoji(currentUserRank)} {currentUsername}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-white/80 font-semibold mb-1">{tabInfo.label}</p>
+              <p className="text-sm text-gray-800 font-semibold mb-1">{tabInfo.label}</p>
               <p className="text-3xl font-black bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">
                 {tabInfo.icon} {formatNumber(tabInfo.value)}
               </p>
@@ -176,13 +176,13 @@ export default function Ranking({
       {loading ? (
         <div className="text-center py-16 glass-vibrant rounded-3xl">
           <div className="text-8xl mb-4 animate-spin">⏳</div>
-          <p className="text-2xl font-black text-white drop-shadow-lg">Carregando ranking...</p>
+          <p className="text-2xl font-black text-gray-900">Carregando ranking...</p>
         </div>
       ) : rankings.length === 0 ? (
         <div className="text-center py-16 glass-vibrant rounded-3xl">
           <div className="text-8xl mb-4 animate-bounce">🏆</div>
-          <p className="text-2xl font-black text-white drop-shadow-lg">Nenhum jogador no ranking ainda</p>
-          <p className="text-lg text-white/80 mt-2 font-semibold">Seja o primeiro! 🚀</p>
+          <p className="text-2xl font-black text-gray-900">Nenhum jogador no ranking ainda</p>
+          <p className="text-lg text-gray-800 mt-2 font-semibold">Seja o primeiro! 🚀</p>
         </div>
       ) : (
         <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
@@ -209,7 +209,7 @@ export default function Ranking({
               >
                 <div className="flex items-center gap-5">
                   {/* Posição */}
-                  <div className={`text-4xl font-black min-w-[80px] text-center drop-shadow-lg ${
+                  <div className={`text-4xl font-black min-w-[80px] text-center ${
                     position === 1 ? 'animate-pulse' : ''
                   }`}>
                     {getMedalEmoji(position)}
@@ -218,8 +218,8 @@ export default function Ranking({
                   {/* Informações do Jogador */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className={`font-black text-xl drop-shadow-lg ${
-                        isCurrentUser ? 'text-blue-200' : 'text-white'
+                      <h3 className={`font-black text-xl ${
+                        isCurrentUser ? 'text-blue-600' : 'text-gray-900'
                       }`}>
                         {entry.username}
                         {isCurrentUser && <span className="ml-2 text-xs bg-gradient-to-r from-blue-400 to-cyan-400 text-white px-3 py-1 rounded-full font-black shadow-lg animate-pulse">VOCÊ</span>}

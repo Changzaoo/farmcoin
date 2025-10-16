@@ -179,15 +179,12 @@
     }
   }
   
-  /* Texto gradiente com sombra forte para garantir legibilidade */
+  /* Texto gradiente sem sombras - totalmente limpo e legível */
   .gradient-text-readable {
     -webkit-text-fill-color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8), 
-                 0 0 20px rgba(0, 0, 0, 0.5),
-                 2px 2px 4px rgba(0, 0, 0, 0.9);
-    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.6));
+    /* Sem sombras para máxima clareza */
   }
 
   /* ========== ANIMAÇÕES DE DOPAMINA ========== */

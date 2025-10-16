@@ -571,7 +571,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
           <div className="glass-vibrant rounded-2xl p-mobile sm:p-6 shadow-2xl achievement-glow dopamine-hover">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-mobile-xs sm:text-sm text-white/80 mb-1 font-semibold">💰 Moedas</p>
+                <p className="text-mobile-xs sm:text-sm text-gray-900/90 mb-1 font-semibold">💰 Moedas</p>
                 <p className="text-mobile-lg sm:text-4xl font-black bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">
                   {formatNumber(gameState.coins)}
                 </p>
@@ -586,7 +586,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
           <div className="glass-vibrant rounded-2xl p-mobile sm:p-6 shadow-2xl achievement-glow dopamine-hover">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="text-mobile-xs sm:text-sm text-white/80 mb-1 font-semibold">📈 Por Segundo</p>
+                <p className="text-mobile-xs sm:text-sm text-gray-900/90 mb-1 font-semibold">📈 Por Segundo</p>
                 <p className="text-mobile-lg sm:text-4xl font-black bg-gradient-to-r from-green-500 via-emerald-600 to-teal-600 bg-clip-text text-transparent gradient-text-readable">
                   {formatNumber(gameState.perSecond)}
                 </p>
@@ -648,7 +648,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
           <div className="glass-vibrant rounded-2xl p-6 shadow-2xl achievement-glow dopamine-hover">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-sm text-white/80 mb-1 font-semibold">🎁 Upgrades</p>
+                <p className="text-sm text-gray-900/90 mb-1 font-semibold">🎁 Upgrades</p>
                 <p className="text-4xl font-black bg-gradient-to-r from-blue-500 via-cyan-600 to-purple-600 bg-clip-text text-transparent gradient-text-readable">
                   {upgradeStats.owned}/{upgradeStats.total}
                 </p>
@@ -855,7 +855,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                       </button>
                       <button
                         onClick={deselectAll}
-                        className="px-5 py-2.5 glass-vibrant hover:bg-white/20 text-white rounded-xl text-sm font-black transition-all shadow-lg dopamine-hover border border-white/30"
+                        className="px-5 py-2.5 glass-vibrant hover:bg-white/20 text-gray-900 rounded-xl text-sm font-black transition-all shadow-lg dopamine-hover border border-white/30"
                       >
                         ❌ Desmarcar Todos
                       </button>
@@ -863,27 +863,27 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                       {/* Seleção por Tier */}
                       <select
                         onChange={(e) => e.target.value && selectByTier(e.target.value as UpgradeTier)}
-                        className="px-4 py-2.5 glass-vibrant backdrop-blur-md border-2 border-white/30 rounded-xl text-sm font-black text-white cursor-pointer shadow-lg hover:border-purple-300 transition-all"
+                        className="px-4 py-2.5 glass-vibrant backdrop-blur-md border-2 border-white/30 rounded-xl text-sm font-black text-gray-900 cursor-pointer shadow-lg hover:border-purple-300 transition-all"
                         defaultValue=""
                       >
-                        <option value="" className="bg-gray-800">🎨 Por Raridade</option>
-                        <option value={UpgradeTier.COMUM} className="bg-gray-800">⚪ Comum</option>
-                        <option value={UpgradeTier.INCOMUM} className="bg-gray-800">🟢 Incomum</option>
-                        <option value={UpgradeTier.RARO} className="bg-gray-800">🔵 Raro</option>
-                        <option value={UpgradeTier.EPICO} className="bg-gray-800">🟣 Épico</option>
-                        <option value={UpgradeTier.LENDARIO} className="bg-gray-800">🔴 Lendário</option>
-                        <option value={UpgradeTier.MITICO} className="bg-gray-800">⭐ Mítico</option>
+                        <option value="" className="bg-gray-800 text-white">🎨 Por Raridade</option>
+                        <option value={UpgradeTier.COMUM} className="bg-gray-800 text-white">⚪ Comum</option>
+                        <option value={UpgradeTier.INCOMUM} className="bg-gray-800 text-white">🟢 Incomum</option>
+                        <option value={UpgradeTier.RARO} className="bg-gray-800 text-white">🔵 Raro</option>
+                        <option value={UpgradeTier.EPICO} className="bg-gray-800 text-white">🟣 Épico</option>
+                        <option value={UpgradeTier.LENDARIO} className="bg-gray-800 text-white">🔴 Lendário</option>
+                        <option value={UpgradeTier.MITICO} className="bg-gray-800 text-white">⭐ Mítico</option>
                       </select>
 
                       {/* Seleção por Categoria */}
                       <select
                         onChange={(e) => e.target.value && selectByCategory(e.target.value)}
-                        className="px-4 py-2.5 glass-vibrant backdrop-blur-md border-2 border-white/30 rounded-xl text-sm font-black text-white cursor-pointer shadow-lg hover:border-purple-300 transition-all"
+                        className="px-4 py-2.5 glass-vibrant backdrop-blur-md border-2 border-white/30 rounded-xl text-sm font-black text-gray-900 cursor-pointer shadow-lg hover:border-purple-300 transition-all"
                         defaultValue=""
                       >
-                        <option value="" className="bg-gray-800">📁 Por Categoria</option>
+                        <option value="" className="bg-gray-800 text-white">📁 Por Categoria</option>
                         {categories.map(cat => (
-                          <option key={cat.id} value={cat.id} className="bg-gray-800">
+                          <option key={cat.id} value={cat.id} className="bg-gray-800 text-white">
                             {cat.icon} {cat.name}
                           </option>
                         ))}
@@ -912,9 +912,9 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                 <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                 {inventoryItems.length === 0 ? (
                   <div className="text-center py-16 glass-vibrant rounded-3xl">
-                    <Package className="w-24 h-24 mx-auto mb-6 text-white/40 animate-bounce" />
-                    <p className="text-3xl font-black text-white drop-shadow-lg">Inventário Vazio</p>
-                    <p className="text-lg text-white/80 mt-3 font-semibold">Compre upgrades para vê-los aqui! 🛒✨</p>
+                    <Package className="w-24 h-24 mx-auto mb-6 text-gray-400 animate-bounce" />
+                    <p className="text-3xl font-black text-gray-900">Inventário Vazio</p>
+                    <p className="text-lg text-gray-800/90 mt-3 font-semibold">Compre upgrades para vê-los aqui! 🛒✨</p>
                   </div>
                 ) : (
                   inventoryItems.map(item => {
@@ -966,7 +966,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                           
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <h3 className="font-black text-xl text-white drop-shadow-lg">
+                              <h3 className="font-black text-xl text-gray-900">
                                 {item.name}
                               </h3>
                               {item.tier && tierColors && (
@@ -978,7 +978,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                                 x{item.count}
                               </span>
                             </div>
-                            <p className="text-sm text-white/90 font-medium mt-1 drop-shadow">
+                            <p className="text-sm text-gray-800 font-medium mt-1">
                               {item.description}
                             </p>
                             <div className="flex gap-4 mt-2 text-sm">
@@ -1076,14 +1076,14 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                         {upgrade.icon}
                         {isLocked && (
                           <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl backdrop-blur-sm">
-                            <Lock className="w-8 h-8 text-white drop-shadow-lg animate-pulse" />
+                            <Lock className="w-8 h-8 text-white animate-pulse" />
                           </div>
                         )}
                       </div>
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-black text-xl text-white drop-shadow-lg">
+                          <h3 className="font-black text-xl text-gray-900">
                             {upgrade.name}
                             {upgrade.count ? ` (${upgrade.count})` : ''}
                           </h3>
@@ -1093,7 +1093,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-white/90 font-medium mt-1 drop-shadow">
+                        <p className="text-sm text-gray-800 font-medium mt-1">
                           {upgrade.description}
                         </p>
                         
@@ -1134,8 +1134,8 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
               {filteredUpgrades.length === 0 && (
                 <div className="text-center py-16 glass-vibrant rounded-2xl">
                   <div className="text-8xl mb-4 animate-bounce">🔍</div>
-                  <p className="text-2xl font-black text-white drop-shadow-lg">Nenhuma melhoria encontrada</p>
-                  <p className="text-lg text-white/80 mt-2 font-semibold">Tente ajustar os filtros</p>
+                  <p className="text-2xl font-black text-gray-900">Nenhuma melhoria encontrada</p>
+                  <p className="text-lg text-gray-800 mt-2 font-semibold">Tente ajustar os filtros</p>
                 </div>
               )}
             </div>

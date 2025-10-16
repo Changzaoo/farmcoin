@@ -269,7 +269,7 @@ export default function Marketplace({
           className={`px-6 py-3 rounded-2xl font-black text-sm transition-all duration-200 shadow-lg ${
             activeTab === 'browse'
               ? 'bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 text-white scale-110 shadow-[0_0_20px_rgba(59,130,246,0.5)]'
-              : 'glass-vibrant text-white/90 hover:scale-105 dopamine-hover border border-white/30'
+              : 'glass-vibrant text-gray-900 hover:scale-105 dopamine-hover border border-white/30'
           }`}
         >
           🛒 Navegar
@@ -279,7 +279,7 @@ export default function Marketplace({
           className={`px-6 py-3 rounded-2xl font-black text-sm transition-all duration-200 shadow-lg ${
             activeTab === 'myListings'
               ? 'bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 text-white scale-110 shadow-[0_0_20px_rgba(168,85,247,0.5)]'
-              : 'glass-vibrant text-white/90 hover:scale-105 dopamine-hover border border-white/30'
+              : 'glass-vibrant text-gray-900 hover:scale-105 dopamine-hover border border-white/30'
           }`}
         >
           📦 Minhas Vendas
@@ -298,7 +298,7 @@ export default function Marketplace({
       {activeTab === 'browse' && (
         <div className="glass-vibrant rounded-2xl p-6 space-y-5 border-2 border-white/30 shadow-xl">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-2xl font-black text-white drop-shadow-lg flex items-center gap-3">
+            <h3 className="text-2xl font-black text-gray-900 flex items-center gap-3">
               <span className="text-3xl">🔍</span> Filtros Avançados
             </h3>
             <button
@@ -319,40 +319,40 @@ export default function Marketplace({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Filtro de Raridade */}
             <div>
-              <label className="block text-sm font-black text-white/90 mb-2 drop-shadow">
+              <label className="block text-sm font-black text-gray-900 mb-2">
                 ⭐ Raridade:
               </label>
               <select
                 value={filterTier}
                 onChange={(e) => setFilterTier(e.target.value as UpgradeTier | 'all')}
-                className="w-full px-4 py-3 glass-vibrant backdrop-blur-md text-white font-bold border-2 border-white/30 rounded-xl focus:ring-4 focus:ring-blue-400/50 focus:border-blue-300 outline-none shadow-lg hover:border-blue-300 transition-all cursor-pointer"
+                className="w-full px-4 py-3 glass-vibrant backdrop-blur-md text-gray-900 font-bold border-2 border-white/30 rounded-xl focus:ring-4 focus:ring-blue-400/50 focus:border-blue-300 outline-none shadow-lg hover:border-blue-300 transition-all cursor-pointer"
               >
-                <option value="all" className="bg-gray-800">Todas</option>
-                <option value={UpgradeTier.COMUM} className="bg-gray-800">⚪ Comum</option>
-                <option value={UpgradeTier.INCOMUM} className="bg-gray-800">🟢 Incomum</option>
-                <option value={UpgradeTier.RARO} className="bg-gray-800">🔵 Raro</option>
-                <option value={UpgradeTier.EPICO} className="bg-gray-800">🟣 Épico</option>
-                <option value={UpgradeTier.LENDARIO} className="bg-gray-800">🟠 Lendário</option>
-                <option value={UpgradeTier.MITICO} className="bg-gray-800">🔴 Mítico</option>
+                <option value="all" className="bg-gray-800 text-white">Todas</option>
+                <option value={UpgradeTier.COMUM} className="bg-gray-800 text-white">⚪ Comum</option>
+                <option value={UpgradeTier.INCOMUM} className="bg-gray-800 text-white">🟢 Incomum</option>
+                <option value={UpgradeTier.RARO} className="bg-gray-800 text-white">🔵 Raro</option>
+                <option value={UpgradeTier.EPICO} className="bg-gray-800 text-white">🟣 Épico</option>
+                <option value={UpgradeTier.LENDARIO} className="bg-gray-800 text-white">🟠 Lendário</option>
+                <option value={UpgradeTier.MITICO} className="bg-gray-800 text-white">🔴 Mítico</option>
               </select>
             </div>
 
             {/* Filtro de Categoria */}
             <div>
-              <label className="block text-sm font-black text-white/90 mb-2 drop-shadow">
+              <label className="block text-sm font-black text-gray-900 mb-2">
                 📁 Categoria:
               </label>
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className="w-full px-4 py-3 glass-vibrant backdrop-blur-md text-white font-bold border-2 border-white/30 rounded-xl focus:ring-4 focus:ring-blue-400/50 focus:border-blue-300 outline-none shadow-lg hover:border-blue-300 transition-all cursor-pointer"
+                className="w-full px-4 py-3 glass-vibrant backdrop-blur-md text-gray-900 font-bold border-2 border-white/30 rounded-xl focus:ring-4 focus:ring-blue-400/50 focus:border-blue-300 outline-none shadow-lg hover:border-blue-300 transition-all cursor-pointer"
               >
-                <option value="all" className="bg-gray-800">Todas</option>
-                <option value="plantacoes">🌾 Plantações</option>
-                <option value="animais">🐄 Animais</option>
-                <option value="producao">🏭 Produção</option>
-                <option value="tecnologia">🤖 Tecnologia</option>
-                <option value="especiais">✨ Especiais</option>
+                <option value="all" className="bg-gray-800 text-white">Todas</option>
+                <option value="plantacoes" className="bg-gray-800 text-white">🌾 Plantações</option>
+                <option value="animais" className="bg-gray-800 text-white">🐄 Animais</option>
+                <option value="producao" className="bg-gray-800 text-white">🏭 Produção</option>
+                <option value="tecnologia" className="bg-gray-800 text-white">🤖 Tecnologia</option>
+                <option value="especiais" className="bg-gray-800 text-white">✨ Especiais</option>
               </select>
             </div>
 
@@ -403,7 +403,7 @@ export default function Marketplace({
 
           {/* Ordenação */}
           <div className="flex items-center gap-4 pt-4 border-t-2 border-white/20">
-            <label className="text-sm font-black text-white/90 drop-shadow">
+            <label className="text-sm font-black text-gray-900">
               🔀 Ordenar por:
             </label>
             <div className="flex gap-3 flex-wrap">
@@ -412,7 +412,7 @@ export default function Marketplace({
                 className={`px-4 py-2 rounded-xl text-sm font-black transition-all shadow-lg ${
                   sortBy === 'price'
                     ? 'bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 text-white shadow-[0_0_20px_rgba(59,130,246,0.5)] scale-105'
-                    : 'glass-vibrant text-white/80 border border-white/30 hover:scale-105 dopamine-hover'
+                    : 'glass-vibrant text-gray-900 border border-white/30 hover:scale-105 dopamine-hover'
                 }`}
               >
                 💰 Preço
@@ -422,7 +422,7 @@ export default function Marketplace({
                 className={`px-4 py-2 rounded-xl text-sm font-black transition-all shadow-lg ${
                   sortBy === 'efficiency'
                     ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] scale-105'
-                    : 'glass-vibrant text-white/80 border border-white/30 hover:scale-105 dopamine-hover'
+                    : 'glass-vibrant text-gray-900 border border-white/30 hover:scale-105 dopamine-hover'
                 }`}
               >
                 📊 Eficiência
@@ -432,7 +432,7 @@ export default function Marketplace({
                 className={`px-4 py-2 rounded-xl text-sm font-black transition-all shadow-lg ${
                   sortBy === 'tier'
                     ? 'bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 text-white shadow-[0_0_20px_rgba(168,85,247,0.5)] scale-105'
-                    : 'glass-vibrant text-white/80 border border-white/30 hover:scale-105 dopamine-hover'
+                    : 'glass-vibrant text-gray-900 border border-white/30 hover:scale-105 dopamine-hover'
                 }`}
               >
                 ⭐ Raridade
@@ -442,7 +442,7 @@ export default function Marketplace({
                 className={`px-4 py-2 rounded-xl text-sm font-black transition-all shadow-lg ${
                   sortBy === 'name'
                     ? 'bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 text-white shadow-[0_0_20px_rgba(251,191,36,0.5)] scale-105'
-                    : 'glass-vibrant text-white/80 border border-white/30 hover:scale-105 dopamine-hover'
+                    : 'glass-vibrant text-gray-900 border border-white/30 hover:scale-105 dopamine-hover'
                 }`}
               >
                 🔤 Nome
@@ -459,12 +459,12 @@ export default function Marketplace({
       {loading ? (
         <div className="text-center py-16 glass-vibrant rounded-3xl">
           <div className="text-8xl mb-4 animate-spin">⏳</div>
-          <p className="text-2xl font-black text-white drop-shadow-lg">Carregando...</p>
+          <p className="text-2xl font-black text-gray-900">Carregando...</p>
         </div>
       ) : listings.length === 0 ? (
         <div className="text-center py-16 glass-vibrant rounded-3xl">
           <div className="text-8xl mb-4 animate-bounce">📦</div>
-          <p className="text-2xl font-black text-white drop-shadow-lg">
+          <p className="text-2xl font-black text-gray-900">
             {activeTab === 'browse' ? 'Nenhum item disponível no momento' : 'Você não tem listagens ativas'}
           </p>
         </div>
@@ -479,7 +479,7 @@ export default function Marketplace({
               <div className="flex items-start gap-4 mb-4">
                 <span className="text-6xl animate-float drop-shadow-2xl">{listing.upgradeIcon}</span>
                 <div className="flex-1">
-                  <h3 className="font-black text-xl text-white drop-shadow-lg mb-2">{listing.upgradeName}</h3>
+                  <h3 className="font-black text-xl text-gray-900 mb-2">{listing.upgradeName}</h3>
                   <span
                     className={`text-xs px-3 py-1.5 rounded-full font-black shadow-lg animate-pulse ${getTierColor(listing.upgradeTier || UpgradeTier.COMUM)}`}
                   >
