@@ -49,17 +49,33 @@ export async function saveGameState(
     // Calcular quantidade de upgrades possuídos
     const upgradesOwned = upgrades.filter(u => (u.count || 0) > 0).length;
     
+    // 🐛 DEBUG: Filtrar apenas os dados essenciais para salvar (remover funções e objetos complexos)
+    const upgradesClean = upgrades.map(u => ({
+      id: u.id,
+      count: u.count || 0,
+      cost: u.cost,
+      income: u.income,
+      unlocked: u.unlocked
+    }));
+    
+    const compositeCount = upgradesClean.filter(u => u.count > 0 && u.id.includes('composite')).length;
+    const chainCount = upgradesClean.filter(u => u.count > 0 && u.id.includes('chain')).length;
+    const landCount = upgradesClean.filter(u => u.count > 0 && u.id.includes('land')).length;
+    
     console.log('💾 Salvando no Firestore:', {
       userId,
       coins: gameState.coins,
       perSecond: gameState.perSecond,
       upgradesOwned,
-      upgradesTotal: upgrades.length
+      upgradesTotal: upgrades.length,
+      compositeUpgrades: compositeCount,
+      chainUpgrades: chainCount,
+      landUpgrades: landCount
     });
     
     await updateDoc(userRef, {
       gameState,
-      upgrades,
+      upgrades: upgradesClean,
       coins: gameState.coins,
       perSecond: gameState.perSecond,
       upgradesOwned,

@@ -179,11 +179,19 @@ export async function getUserData(uid: string): Promise<UserData> {
       // Garantir que upgrades sempre exista
       const upgrades = data.upgrades || [];
       
+      const compositeCount = upgrades.filter((u: any) => u.count > 0 && u.id.includes('composite')).length;
+      const chainCount = upgrades.filter((u: any) => u.count > 0 && u.id.includes('chain')).length;
+      const landCount = upgrades.filter((u: any) => u.count > 0 && u.id.includes('land')).length;
+      
       console.log('📥 Dados carregados do Firestore:', {
         uid: data.uid,
         username: data.username,
         coins: gameState.coins,
-        upgradesCount: upgrades.length
+        upgradesCount: upgrades.length,
+        upgradesWithCount: upgrades.filter((u: any) => u.count > 0).length,
+        compositeUpgrades: compositeCount,
+        chainUpgrades: chainCount,
+        landUpgrades: landCount
       });
       
       return {
