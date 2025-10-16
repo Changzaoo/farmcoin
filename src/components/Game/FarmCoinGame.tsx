@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Coins, TrendingUp, ShoppingCart, Search, Lock, Package, Shield, AlertTriangle } from 'lucide-react';
 import { upgrades as upgradesData, categories } from '../../data/upgrades';
 import { GameState, Upgrade, UpgradeTier } from '../../types';
-import { saveGameState, createMarketplaceListing } from '../../firebase/firestore';
+import { saveGameState, createMarketplaceListing, updateGuildMaxMembers, getUserGuild } from '../../firebase/firestore';
 import { getTierColor, getTierName, getTierGlow, canUnlockCompositeUpgrade, getMissingRequirements } from '../../utils/tierSystem';
 import { antiBot } from '../../utils/antiBot';
 import { uniqueItems, UniqueItem } from '../../utils/uniqueItems';
@@ -286,6 +286,20 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
         
         // Salvar após cada compra com os upgrades atualizados
         setTimeout(() => saveGameState(uid, newState, updatedUpgrades), 0);
+        
+        // 🏰 Se comprou um TERRENO e tem GUILDA, atualizar limite de membros (acumulativo)
+        if (upgrade.category === 'Terrenos') {
+          getUserGuild(uid).then(guild => {
+            if (guild && guild.ownerId === uid) {
+              // Se o usuário é dono de uma guilda, atualizar o limite
+              updateGuildMaxMembers(guild.id).catch(err => {
+                console.error('Erro ao atualizar limite de membros da guilda:', err);
+              });
+            }
+          }).catch(err => {
+            console.error('Erro ao verificar guilda:', err);
+          });
+        }
         
         return newState;
       });
@@ -824,7 +838,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                📦 Ver Inventário
+                📦 Inventário
               </button>
               
               <button

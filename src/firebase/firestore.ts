@@ -1201,19 +1201,63 @@ export async function getUserLands(userId: string): Promise<Land[]> {
 // ============================================
 
 /**
- * Calcula o limite de membros baseado no tier do terreno
+ * Calcula o limite de membros baseado no tier do terreno (reduzido 90%)
+ * Agora os terrenos são ACUMULATIVOS - soma-se o limite de todos os terrenos que o dono possui
  */
 function calculateGuildMaxMembers(tier: UpgradeTier): number {
   const limits: Record<UpgradeTier, number> = {
-    [UpgradeTier.COMUM]: 5,
-    [UpgradeTier.INCOMUM]: 10,
-    [UpgradeTier.RARO]: 20,
-    [UpgradeTier.EPICO]: 35,
-    [UpgradeTier.LENDARIO]: 50,
-    [UpgradeTier.MITICO]: 100
+    [UpgradeTier.COMUM]: 1,        // Era 5, agora 1 (90% redução, arredondado para cima)
+    [UpgradeTier.INCOMUM]: 1,      // Era 10, agora 1
+    [UpgradeTier.RARO]: 2,         // Era 20, agora 2
+    [UpgradeTier.EPICO]: 4,        // Era 35, agora 4 (arredondado)
+    [UpgradeTier.LENDARIO]: 5,     // Era 50, agora 5
+    [UpgradeTier.MITICO]: 10       // Era 100, agora 10
   };
   
-  return limits[tier] || 5;
+  return limits[tier] || 1;
+}
+
+/**
+ * Calcula limite TOTAL de membros baseado em TODOS os terrenos que o dono possui
+ */
+async function calculateTotalGuildMaxMembers(ownerId: string): Promise<number> {
+  try {
+    // Buscar dados do usuário
+    const userRef = doc(db, 'users', ownerId);
+    const userDoc = await getDoc(userRef);
+    
+    if (!userDoc.exists()) {
+      return 1; // Mínimo de 1 membro (o dono)
+    }
+    
+    const userData = userDoc.data();
+    const userUpgrades = userData.upgrades || [];
+    
+    // Buscar todos os terrenos que o usuário possui
+    const upgrades: Upgrade[] = await import('../data/upgrades').then(m => m.upgrades);
+    const landsOwned = userUpgrades
+      .filter((u: any) => (u.count || 0) > 0)
+      .map((u: any) => {
+        const landData = upgrades.find(upg => upg.id === u.id && upg.category === 'Terrenos');
+        return landData ? { ...landData, count: u.count } : null;
+      })
+      .filter(Boolean);
+    
+    // Somar limites de TODOS os terrenos (acumulativo)
+    let totalLimit = 1; // Começa com 1 (o dono)
+    
+    for (const land of landsOwned) {
+      if (land && land.tier) {
+        const limitPerLand = calculateGuildMaxMembers(land.tier);
+        totalLimit += limitPerLand * (land.count || 1); // Multiplica pela quantidade de terrenos
+      }
+    }
+    
+    return totalLimit;
+  } catch (error: any) {
+    console.error('Erro ao calcular limite de membros:', error);
+    return 1;
+  }
 }
 
 /**
@@ -1268,8 +1312,8 @@ export async function createGuild(
       throw new Error('Você já possui uma guilda');
     }
     
-    // Calcular limite de membros baseado no tier do terreno
-    const maxMembers = calculateGuildMaxMembers(land.tier);
+    // Calcular limite de membros baseado em TODOS os terrenos do usuário (ACUMULATIVO)
+    const maxMembers = await calculateTotalGuildMaxMembers(ownerId);
     
     const ownerMember: GuildMember = {
       uid: ownerId,
@@ -1298,6 +1342,38 @@ export async function createGuild(
     return docRef.id;
   } catch (error: any) {
     throw new Error(`Erro ao criar guilda: ${error.message}`);
+  }
+}
+
+/**
+ * Atualiza o limite de membros de uma guilda baseado nos terrenos atuais do dono
+ * Deve ser chamada sempre que o dono compra um novo terreno
+ */
+export async function updateGuildMaxMembers(guildId: string): Promise<void> {
+  try {
+    const guildRef = doc(db, 'guilds', guildId);
+    const guildDoc = await getDoc(guildRef);
+    
+    if (!guildDoc.exists()) {
+      throw new Error('Guilda não encontrada');
+    }
+    
+    const guildData = guildDoc.data();
+    const ownerId = guildData.ownerId;
+    
+    // Recalcular limite total baseado em todos os terrenos
+    const newMaxMembers = await calculateTotalGuildMaxMembers(ownerId);
+    
+    // Atualizar no Firestore
+    await updateDoc(guildRef, {
+      maxMembers: newMaxMembers,
+      updatedAt: serverTimestamp()
+    });
+    
+    console.log(`✅ Limite de membros da guilda ${guildId} atualizado para ${newMaxMembers}`);
+  } catch (error: any) {
+    console.error('Erro ao atualizar limite de membros da guilda:', error);
+    throw new Error(`Erro ao atualizar limite de membros: ${error.message}`);
   }
 }
 
@@ -1554,3 +1630,8 @@ export async function updateGuild(
     throw new Error(`Erro ao atualizar guilda: ${error.message}`);
   }
 }
+
+// ========================
+// EXPORTAR FUNÇÕES DO SISTEMA DE GUERRA
+// ========================
+export * from './guildWarfare';

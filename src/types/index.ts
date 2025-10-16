@@ -298,3 +298,69 @@ export interface Guild {
   updatedAt: Date;
 }
 
+// Transação do Cofre da Guilda
+export interface TreasuryTransaction {
+  id: string;
+  type: 'deposit' | 'withdraw' | 'upgrade' | 'attack' | 'defense' | 'reward';
+  userId: string;
+  username: string;
+  amount: number;
+  description: string;
+  timestamp: Date;
+}
+
+// Cofre da Guilda
+export interface GuildTreasury {
+  guildId: string;
+  balance: number;
+  transactions: TreasuryTransaction[];
+  totalDeposited: number;
+  totalSpent: number;
+  totalEarned: number; // De ataques bem-sucedidos
+}
+
+// Melhorias da Guilda (Armas e Defesa)
+export interface GuildUpgrades {
+  guildId: string;
+  weaponLevel: number;
+  defenseLevel: number;
+  lastUpgradeAt?: Date;
+}
+
+// Ataque entre Guildas
+export interface GuildAttack {
+  id: string;
+  attackerGuildId: string;
+  attackerGuildName: string;
+  defenderGuildId: string;
+  defenderGuildName: string;
+  attackerWeaponLevel: number;
+  defenderDefenseLevel: number;
+  attackCost: number;
+  success: boolean;
+  coinsStolen?: number; // 20% do cofre inimigo
+  timestamp: Date;
+}
+
+// Armas/Defesa de Jogadores Solo (sem guilda)
+export interface PlayerWeapons {
+  userId: string;
+  weaponLevel: number;
+  defenseLevel: number;
+  lastUpgradeAt?: Date;
+}
+
+// Ataque PvP (jogadores sem guilda)
+export interface PvPAttack {
+  id: string;
+  attackerId: string;
+  attackerName: string;
+  defenderId: string;
+  defenderName: string;
+  attackerWeaponLevel: number;
+  defenderDefenseLevel: number;
+  attackCost: number;
+  success: boolean;
+  coinsStolen?: number;
+  timestamp: Date;
+}
