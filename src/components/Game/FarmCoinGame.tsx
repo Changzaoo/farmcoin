@@ -944,7 +944,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                           {/* Input de quantidade (só aparece quando selecionado) */}
                           {isSelected && (
                             <div className="flex flex-col items-center glass-vibrant p-3 rounded-xl border border-purple-300">
-                              <label className="text-xs text-white/80 font-bold mb-1">
+                              <label className="text-xs text-gray-900 font-bold mb-1">
                                 Qtd:
                               </label>
                               <input
@@ -954,9 +954,9 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                                 value={itemQuantities.get(item.id) || 1}
                                 onChange={(e) => updateItemQuantity(item.id, Number(e.target.value))}
                                 onClick={(e) => e.stopPropagation()}
-                                className="w-20 px-3 py-2 border-2 border-purple-300 rounded-lg text-center font-black bg-white/20 backdrop-blur-sm text-white focus:ring-4 focus:ring-purple-400/50 outline-none"
+                                className="w-20 px-3 py-2 border-2 border-purple-300 rounded-lg text-center font-black bg-white/20 backdrop-blur-sm text-gray-900 focus:ring-4 focus:ring-purple-400/50 outline-none"
                               />
-                              <span className="text-xs text-white/60 mt-1 font-semibold">
+                              <span className="text-xs text-gray-700 mt-1 font-semibold">
                                 de {item.count}
                               </span>
                             </div>
@@ -1006,13 +1006,13 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                 <div className="mb-6 space-y-4">
                   {/* Busca */}
                   <div className="relative glass-vibrant rounded-2xl p-1">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 w-6 h-6" />
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600 w-6 h-6" />
                     <input
                       type="text"
                       placeholder="🔎 Buscar melhorias mágicas..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-14 pr-4 py-4 rounded-xl bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder-white/60 font-semibold focus:border-yellow-300 focus:ring-4 focus:ring-yellow-400/50 outline-none transition-all"
+                      className="w-full pl-14 pr-4 py-4 rounded-xl bg-white/10 backdrop-blur-sm border-2 border-white/30 text-gray-900 placeholder-gray-600 font-semibold focus:border-yellow-300 focus:ring-4 focus:ring-yellow-400/50 outline-none transition-all"
                     />
                   </div>
 
@@ -1028,7 +1028,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                           className={`px-5 py-3 rounded-2xl font-black text-sm transition-all duration-200 flex items-center gap-2 shadow-lg ${
                             selectedCategory === category
                               ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 text-white scale-110 shadow-[0_0_20px_rgba(16,185,129,0.5)]'
-                              : 'glass-vibrant text-white/90 hover:scale-105 dopamine-hover'
+                              : 'glass-vibrant text-gray-900 hover:scale-105 dopamine-hover'
                           }`}
                         >
                           <span className="text-xl">{emoji}</span>
@@ -1036,7 +1036,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                           {availableCount > 0 && (
                             <span className={`px-2.5 py-1 rounded-full text-xs font-black shadow-lg animate-pulse ${
                               selectedCategory === category
-                                ? 'bg-white/30 text-white'
+                                ? 'bg-white/30 text-gray-900'
                                 : 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white'
                             }`}>
                               {availableCount}

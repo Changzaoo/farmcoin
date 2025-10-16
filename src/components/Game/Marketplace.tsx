@@ -489,26 +489,26 @@ export default function Marketplace({
               </div>
 
               {/* Seller */}
-              <div className="text-sm text-white/80 font-semibold mb-3 glass-vibrant p-2 rounded-lg border border-white/20">
-                👤 Vendedor: <span className="text-white font-black">{listing.sellerUsername}</span>
+              <div className="text-sm text-gray-800 font-semibold mb-3 glass-vibrant p-2 rounded-lg border border-white/20">
+                👤 Vendedor: <span className="text-gray-900 font-black">{listing.sellerUsername}</span>
               </div>
 
               {/* Quantity & Stats */}
               <div className="glass-vibrant rounded-xl p-4 mb-4 space-y-2 text-sm border border-white/20 shadow-lg">
                 <div className="flex justify-between">
-                  <span className="text-white/80 font-semibold">Quantidade:</span>
-                  <span className="text-white font-black text-lg">{listing.quantity}x</span>
+                  <span className="text-gray-800 font-semibold">Quantidade:</span>
+                  <span className="text-gray-900 font-black text-lg">{listing.quantity}x</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/80 font-semibold">Preço/Unidade:</span>
+                  <span className="text-gray-800 font-semibold">Preço/Unidade:</span>
                   <span className="font-black text-lg bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">{formatNumber(listing.pricePerUnit)} 🪙</span>
                 </div>
                 <div className="flex justify-between border-t border-white/20 pt-2">
-                  <span className="text-white/80 font-semibold">Renda/Unidade:</span>
+                  <span className="text-gray-800 font-semibold">Renda/Unidade:</span>
                   <span className="font-black bg-gradient-to-r from-green-500 via-emerald-600 to-teal-600 bg-clip-text text-transparent gradient-text-readable">{formatNumber(listing.incomePerUnit)}/s</span>
                 </div>
                 <div className="flex justify-between text-base border-t-2 border-white/30 pt-3 mt-2">
-                  <span className="text-white font-black">💎 Total:</span>
+                  <span className="text-gray-900 font-black">💎 Total:</span>
                   <span className="font-black text-xl bg-gradient-to-r from-yellow-600 via-amber-700 to-orange-700 bg-clip-text text-transparent gradient-text-readable animate-pulse">{formatNumber(listing.totalPrice)} 🪙</span>
                 </div>
               </div>
