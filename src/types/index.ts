@@ -119,3 +119,64 @@ export interface UserStats {
   totalPurchases: number;
   totalPassiveIncome: number;
 }
+
+// Tipo de oferta no Marketplace
+export enum OfferStatus {
+  PENDING = 'pending',     // Aguardando aprovação do vendedor
+  ACCEPTED = 'accepted',   // Aceita pelo vendedor
+  REJECTED = 'rejected',   // Rejeitada pelo vendedor
+  EXPIRED = 'expired',     // Expirou o tempo
+  CANCELLED = 'cancelled'  // Cancelada pelo comprador
+}
+
+// Oferta de compra no Marketplace
+export interface MarketplaceOffer {
+  id: string;
+  listingId: string;
+  buyerId: string;
+  buyerUsername: string;
+  offerPrice: number;
+  message?: string;
+  expiresAt?: Date;
+  status: OfferStatus;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Listagem no Marketplace
+export interface MarketplaceListing {
+  id: string;
+  sellerId: string;
+  sellerUsername: string;
+  upgradeId: string;
+  upgradeName: string;
+  upgradeIcon: string;
+  upgradeTier?: UpgradeTier;
+  quantity: number;
+  pricePerUnit: number;
+  totalPrice: number;
+  incomePerUnit: number;
+  totalIncome: number;
+  originalCost: number;
+  description?: string;
+  acceptOffers: boolean;
+  minOfferPrice?: number;
+  expiresAt?: Date;
+  status: 'active' | 'sold' | 'cancelled' | 'expired';
+  createdAt: Date;
+  updatedAt: Date;
+  offers?: MarketplaceOffer[];
+}
+
+// Filtros da loja
+export interface ShopFilters {
+  category: string;
+  searchTerm: string;
+  tier?: UpgradeTier;
+  minPrice?: number;
+  maxPrice?: number;
+  minIncome?: number;
+  maxIncome?: number;
+  sortBy: 'name' | 'price' | 'income' | 'tier';
+  sortOrder: 'asc' | 'desc';
+}
