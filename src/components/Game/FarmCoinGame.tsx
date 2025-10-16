@@ -485,29 +485,29 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
   console.log('🎨 FarmCoinGame: Pronto para renderizar UI');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-yellow-50 to-green-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-yellow-50 to-green-100 p-mobile sm:p-4 pb-safe">
       {/* Header Stats */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="max-w-7xl mx-auto mb-mobile">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-mobile">
           {/* Moedas Atuais */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-yellow-400">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-mobile sm:p-6 shadow-xl border-2 border-yellow-400">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Moedas</p>
-                <p className="text-3xl font-bold text-yellow-600">
+                <p className="text-mobile-xs sm:text-sm text-gray-600 mb-1">Moedas</p>
+                <p className="text-mobile-lg sm:text-3xl font-bold text-yellow-600">
                   {formatNumber(gameState.coins)}
                 </p>
               </div>
-              <Coins className="w-12 h-12 text-yellow-500" />
+              <Coins className="w-8 h-8 sm:w-12 sm:h-12 text-yellow-500" />
             </div>
           </div>
 
           {/* Renda Passiva */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-green-400">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-mobile sm:p-6 shadow-xl border-2 border-green-400">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="text-sm text-gray-600 mb-1">Por Segundo</p>
-                <p className="text-3xl font-bold text-green-600">
+                <p className="text-mobile-xs sm:text-sm text-gray-600 mb-1">Por Segundo</p>
+                <p className="text-mobile-lg sm:text-3xl font-bold text-green-600">
                   {formatNumber(gameState.perSecond)}
                 </p>
                 
