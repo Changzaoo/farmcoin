@@ -749,105 +749,11 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
                 </div>
               </div>
             )}
-
-            {/* Botão de Inventário */}
-            <button
-              onClick={() => {
-                setShowInventory(!showInventory);
-                setShowMarketplace(false);
-                setShowRanking(false);
-              }}
-              className={`w-full mt-4 px-6 py-4 rounded-xl font-bold transition-all ${
-                showInventory
-                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white'
-                  : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:shadow-lg hover:scale-105'
-              } active:scale-95`}
-            >
-              <div className="flex items-center justify-center gap-2">
-                <span>{showInventory ? '🛒 Ver Loja' : '📦 Ver Inventário'}</span>
-                <span className="ml-2 px-2 py-1 bg-white/20 rounded-full text-sm">
-                  {upgradeStats.owned}
-                </span>
-              </div>
-            </button>
-
-            {/* Botão de Marketplace */}
-            <button
-              onClick={() => {
-                setShowMarketplace(!showMarketplace);
-                setShowInventory(false);
-                setShowRanking(false);
-              }}
-              className={`w-full mt-3 px-6 py-4 rounded-xl font-bold transition-all ${
-                showMarketplace
-                  ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
-                  : 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:shadow-lg hover:scale-105'
-              } active:scale-95`}
-            >
-              <div className="flex items-center justify-center gap-2">
-                <span>{showMarketplace ? '🎮 Voltar ao Jogo' : '🏪 Marketplace'}</span>
-              </div>
-            </button>
-
-            {/* Botão de Ranking */}
-            <button
-              onClick={() => {
-                setShowRanking(!showRanking);
-                setShowInventory(false);
-                setShowMarketplace(false);
-              }}
-              className={`w-full mt-3 px-6 py-4 rounded-xl font-bold transition-all ${
-                showRanking
-                  ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white'
-                  : 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white hover:shadow-lg hover:scale-105'
-              } active:scale-95`}
-            >
-              <div className="flex items-center justify-center gap-2">
-                <span>{showRanking ? '🎮 Voltar ao Jogo' : '🏆 Ranking'}</span>
-              </div>
-            </button>
           </div>
         </div>
 
         {/* Inventário, Marketplace, Ranking ou Lista de Upgrades */}
         <div className="lg:col-span-2">
-          {showRanking ? (
-            /* ========== RANKING ========== */
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-yellow-400">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">
-                🏆 Ranking Global
-              </h2>
-              <Ranking
-                currentUserId={uid}
-                currentUsername={gameState.username || 'Jogador'}
-                currentCoins={gameState.coins}
-                currentPerSecond={gameState.perSecond}
-                currentUpgradesOwned={upgradeStats.owned}
-              />
-            </div>
-          ) : showMarketplace ? (
-            /* ========== MARKETPLACE ========== */
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-orange-400">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">
-                🏪 Marketplace
-              </h2>
-              <Marketplace
-                userId={uid}
-                username={gameState.username || 'Jogador'}
-                coins={gameState.coins}
-                ownedUpgrades={inventoryItems.map(u => ({
-                  id: u.id,
-                  name: u.name,
-                  icon: u.icon,
-                  tier: u.tier || UpgradeTier.COMUM,
-                  count: u.count || 0,
-                  baseIncome: u.baseIncome,
-                  baseCost: u.baseCost
-                }))}
-                onPurchaseComplete={handleMarketplacePurchase}
-              />
-            </div>
-          ) : (
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border-2 border-gray-200 overflow-hidden">
             {/* Sistema de Abas */}
             <div className="flex border-b-2 border-gray-200">
@@ -1231,7 +1137,6 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
               )}
             </div>
           </div>
-          )}
         </div>
       </div>
 
