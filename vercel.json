@@ -5,6 +5,10 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/blocked.html",
+      "destination": "/blocked.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

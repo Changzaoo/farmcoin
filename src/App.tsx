@@ -1,11 +1,12 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import { FarmCoinGame } from './components/Game/FarmCoinGame';
 import { UserRole } from './types';
+// import './utils/devToolsProtection'; // Desabilitado temporariamente para debug
 
 // Placeholder components - precisam ser implementados
 const AdminPanel = () => <div>Admin Panel - To be implemented</div>;
@@ -16,6 +17,17 @@ function App() {
   const [showLogin, setShowLogin] = useState(true);
 
   console.log('🚀 App: Estado atual -', { user, userData, loading, showLogin });
+
+  // Aplicar proteções adicionais ao montar
+  useEffect(() => {
+    // Desabilitar console em produção
+    if (process.env.NODE_ENV === 'production') {
+      console.log = () => {};
+      console.debug = () => {};
+      console.info = () => {};
+      console.warn = () => {};
+    }
+  }, []);
 
   if (loading) {
     console.log('⏳ App: Mostrando tela de carregamento...');

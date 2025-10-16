@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔒 Acesso Restrito - FarmCoin</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Efeito de partículas animadas */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background-image: 
+        radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      background-position: 0 0, 25px 25px;
+      animation: moveBackground 20s linear infinite;
+    }
+
+    @keyframes moveBackground {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 500px;
+      width: 90%;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    h1 {
+      color: #667eea;
+      font-size: 28px;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    .warning {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      font-size: 16px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+
+    .instructions {
+      text-align: left;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 25px 0;
+      border-left: 4px solid #667eea;
+    }
+
+    .instructions h3 {
+      color: #667eea;
+      font-size: 18px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .instructions ol {
+      margin-left: 20px;
+      color: #495057;
+      line-height: 1.8;
+    }
+
+    .instructions li {
+      margin-bottom: 8px;
+    }
+
+    .instructions li strong {
+      color: #667eea;
+    }
+
+    .button {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      margin-top: 10px;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .button:active {
+      transform: translateY(0);
+    }
+
+    .countdown {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #6c757d;
+      font-weight: 500;
+    }
+
+    .countdown .time {
+      color: #667eea;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #6c757d;
+      line-height: 1.6;
+    }
+
+    /* Animação do ícone de alerta */
+    @keyframes shake {
+      0%, 100% { transform: rotate(0deg); }
+      10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
+      20%, 40%, 60%, 80% { transform: rotate(10deg); }
+    }
+
+    .icon.shake {
+      animation: shake 0.5s ease-in-out, pulse 2s ease-in-out infinite;
+    }
+
+    /* Bloqueio de seleção */
+    .container {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon shake">🔒</div>
+    
+    <h1>Acesso Restrito</h1>
+    
+    <div class="warning">
+      ⚠️ Ferramentas de Desenvolvedor Detectadas
+    </div>
+    
+    <div class="instructions">
+      <h3>📋 Para continuar:</h3>
+      <ol>
+        <li><strong>Feche</strong> as Ferramentas de Desenvolvedor (F12)</li>
+        <li><strong>Desative</strong> extensões de desenvolvimento</li>
+        <li><strong>Recarregue</strong> a página usando o botão abaixo</li>
+      </ol>
+    </div>
+    
+    <button class="button" onclick="tryReload()">
+      🔄 Recarregar Página
+    </button>
+    
+    <div class="countdown">
+      Reload automático em <span class="time" id="timer">10</span> segundos...
+    </div>
+    
+    <div class="footer">
+      🛡️ Esta medida de segurança protege a integridade da aplicação.<br>
+      Agradecemos sua compreensão.
+    </div>
+  </div>
+
+  <script>
+    // Continua bloqueando DevTools mesmo na página de bloqueio
+    (function() {
+      'use strict';
+      
+      // Bloqueia context menu
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      
+      // Bloqueia atalhos de teclado
+      document.addEventListener('keydown', function(e) {
+        // F12
+        if (e.key === 'F12' || e.keyCode === 123) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Ctrl+Shift+I (DevTools)
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.keyCode === 73)) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Ctrl+Shift+J (Console)
+        if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.keyCode === 74)) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Ctrl+Shift+C (Inspect)
+        if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.keyCode === 67)) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Ctrl+U (View Source)
+        if (e.ctrlKey && (e.key === 'U' || e.keyCode === 85)) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Cmd+Option+I (Mac DevTools)
+        if (e.metaKey && e.altKey && (e.key === 'I' || e.keyCode === 73)) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Cmd+Option+J (Mac Console)
+        if (e.metaKey && e.altKey && (e.key === 'J' || e.keyCode === 74)) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Cmd+Option+C (Mac Inspect)
+        if (e.metaKey && e.altKey && (e.key === 'C' || e.keyCode === 67)) {
+          e.preventDefault();
+          return false;
+        }
+      }, true);
+
+      // Desabilita console
+      if (typeof console !== 'undefined') {
+        console.log = function() {};
+        console.debug = function() {};
+        console.info = function() {};
+        console.warn = function() {};
+        console.error = function() {};
+      }
+
+      // Detecta debugger
+      setInterval(function() {
+        const before = Date.now();
+        debugger;
+        const after = Date.now();
+        if (after - before > 100) {
+          window.location.reload();
+        }
+      }, 1000);
+
+      // Detecta DevTools por tamanho
+      setInterval(function() {
+        const widthThreshold = window.outerWidth - window.innerWidth > 160;
+        const heightThreshold = window.outerHeight - window.innerHeight > 160;
+        if (widthThreshold || heightThreshold) {
+          window.location.reload();
+        }
+      }, 1000);
+    })();
+
+    // Countdown automático
+    let timeLeft = 10;
+    const timerElement = document.getElementById('timer');
+    
+    const countdown = setInterval(function() {
+      timeLeft--;
+      timerElement.textContent = timeLeft;
+      
+      if (timeLeft <= 0) {
+        clearInterval(countdown);
+        tryReload();
+      }
+    }, 1000);
+
+    // Função de reload
+    function tryReload() {
+      // Remove o marcador de bloqueio
+      sessionStorage.removeItem('devtools-detected');
+      sessionStorage.removeItem('devtools-block-until');
+      
+      // Volta para a página inicial
+      window.location.href = '/';
+    }
+
+    // Se não tiver sido bloqueado via sessionStorage, redireciona imediatamente
+    if (!sessionStorage.getItem('devtools-detected')) {
+      setTimeout(function() {
+        window.location.href = '/';
+      }, 100);
+    }
+  </script>
+</body>
+</html>
