@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import React, { useState, useEffect } from 'react';
-import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 
 interface RankingEntry {
@@ -34,53 +34,86 @@ export default function Ranking({
   const [rankings, setRankings] = useState<RankingEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
+  const [updatesCount, setUpdatesCount] = useState(0);
+  const [changedUsers, setChangedUsers] = useState<Set<string>>(new Set());
 
+  // 🔥 LISTENER EM TEMPO REAL
   useEffect(() => {
-    loadRankings();
-  }, [activeTab]);
-
-  const loadRankings = async () => {
+    console.log('🔥 Iniciando listener em tempo real para ranking:', activeTab);
     setLoading(true);
-    try {
-      const usersRef = collection(db, 'users');
-      
-      // Define ordenação baseada na aba ativa
-      let orderByField = 'coins';
-      if (activeTab === 'perSecond') orderByField = 'perSecond';
-      if (activeTab === 'upgrades') orderByField = 'upgradesOwned';
+    
+    const usersRef = collection(db, 'users');
+    
+    // Define ordenação baseada na aba ativa
+    let orderByField = 'coins';
+    if (activeTab === 'perSecond') orderByField = 'perSecond';
+    if (activeTab === 'upgrades') orderByField = 'upgradesOwned';
 
-      const q = query(
-        usersRef,
-        orderBy(orderByField, 'desc'),
-        limit(100)
-      );
+    const q = query(
+      usersRef,
+      orderBy(orderByField, 'desc'),
+      limit(100)
+    );
 
-      const querySnapshot = await getDocs(q);
+    // ⚡ onSnapshot cria um listener que atualiza automaticamente
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const data: RankingEntry[] = [];
+      const newChangedUsers = new Set<string>();
       
       querySnapshot.forEach((doc) => {
         const docData = doc.data();
-        data.push({
+        const newEntry = {
           uid: doc.id,
           username: docData.username || 'Jogador',
           coins: docData.coins || 0,
           perSecond: docData.perSecond || 0,
           upgradesOwned: docData.upgradesOwned || 0,
           lastUpdated: docData.lastUpdated || 0,
-        });
+        };
+        
+        // Detectar mudanças
+        const oldEntry = rankings.find(r => r.uid === doc.id);
+        if (oldEntry) {
+          if (activeTab === 'coins' && oldEntry.coins !== newEntry.coins) {
+            newChangedUsers.add(doc.id);
+          } else if (activeTab === 'perSecond' && oldEntry.perSecond !== newEntry.perSecond) {
+            newChangedUsers.add(doc.id);
+          } else if (activeTab === 'upgrades' && oldEntry.upgradesOwned !== newEntry.upgradesOwned) {
+            newChangedUsers.add(doc.id);
+          }
+        }
+        
+        data.push(newEntry);
       });
 
+      console.log('✅ Ranking atualizado em tempo real!', data.length, 'jogadores', newChangedUsers.size, 'mudanças');
       setRankings(data);
+      setChangedUsers(newChangedUsers);
+      setUpdatesCount(prev => prev + 1);
+
+      // Limpar highlights após 2 segundos
+      if (newChangedUsers.size > 0) {
+        setTimeout(() => {
+          setChangedUsers(new Set());
+        }, 2000);
+      }
 
       // Encontrar posição do usuário atual
       const userIndex = data.findIndex(entry => entry.uid === currentUserId);
       setCurrentUserRank(userIndex !== -1 ? userIndex + 1 : null);
-    } catch (error) {
-      console.error('Erro ao carregar ranking:', error);
-    } finally {
+      
       setLoading(false);
-    }
-  };
+    }, (error) => {
+      console.error('❌ Erro no listener de ranking:', error);
+      setLoading(false);
+    });
+
+    // Cleanup: desconectar listener quando componente desmontar ou aba mudar
+    return () => {
+      console.log('🔌 Desconectando listener de ranking');
+      unsubscribe();
+    };
+  }, [activeTab, currentUserId]);
 
   const formatNumber = (num: number): string => {
     return num.toLocaleString('pt-BR', { 
@@ -118,6 +151,26 @@ export default function Ranking({
 
   return (
     <div className="space-y-6">
+      {/* Header com Indicador de Tempo Real */}
+      <div className="glass-vibrant rounded-2xl p-4 border-2 border-white/30 shadow-xl">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <div className="absolute inset-0 w-3 h-3 bg-green-500 rounded-full animate-ping"></div>
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-gray-900">🔥 Ranking ao Vivo</h3>
+              <p className="text-xs text-gray-600">Atualização em tempo real • {updatesCount} atualizações</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-gray-600">Total de jogadores</p>
+            <p className="text-2xl font-black text-gray-900">{rankings.length}</p>
+          </div>
+        </div>
+      </div>
+      
       {/* Tabs */}
       <div className="flex gap-3">
         <button
@@ -190,6 +243,7 @@ export default function Ranking({
             const position = index + 1;
             const isCurrentUser = entry.uid === currentUserId;
             const isTopThree = position <= 3;
+            const hasChanged = changedUsers.has(entry.uid);
             
             let displayValue = 0;
             if (activeTab === 'coins') displayValue = entry.coins;
@@ -200,12 +254,14 @@ export default function Ranking({
               <div
                 key={entry.uid}
                 className={`glass-vibrant p-5 rounded-2xl border-2 transition-all duration-300 shadow-lg ${
-                  isCurrentUser
+                  hasChanged
+                    ? 'border-green-400 bg-green-50/50 animate-pulse-fast shadow-[0_0_30px_rgba(34,197,94,0.6)]'
+                    : isCurrentUser
                     ? 'border-blue-300 achievement-glow scale-[1.02]'
                     : isTopThree
                     ? 'border-yellow-300/50 hover:scale-[1.01] dopamine-hover'
                     : 'border-white/20 hover:scale-[1.01] dopamine-hover'
-                } ${isTopThree && 'shadow-[0_0_30px_rgba(251,191,36,0.3)]'}`}
+                } ${isTopThree && !hasChanged && 'shadow-[0_0_30px_rgba(251,191,36,0.3)]'}`}
               >
                 <div className="flex items-center gap-5">
                   {/* Posição */}
@@ -223,9 +279,12 @@ export default function Ranking({
                       }`}>
                         {entry.username}
                         {isCurrentUser && <span className="ml-2 text-xs bg-gradient-to-r from-blue-400 to-cyan-400 text-white px-3 py-1 rounded-full font-black shadow-lg animate-pulse">VOCÊ</span>}
+                        {hasChanged && <span className="ml-2 text-xs bg-gradient-to-r from-green-400 to-emerald-400 text-white px-2 py-1 rounded-full font-black shadow-lg animate-bounce">🔥 ATUALIZADO!</span>}
                       </h3>
                     </div>
-                    <p className="font-black text-lg mt-1 bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">
+                    <p className={`font-black text-lg mt-1 bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable ${
+                      hasChanged ? 'animate-pulse-fast' : ''
+                    }`}>
                       {tabInfo.icon} {formatNumber(displayValue)} {activeTab === 'perSecond' && '/s'}
                     </p>
                   </div>
@@ -246,14 +305,9 @@ export default function Ranking({
           })}
         </div>
       )}
-
-      {/* Botão de Atualizar */}
-      <button
-        onClick={loadRankings}
-        disabled={loading}
-        className={`w-full py-3 rounded-lg font-bold transition-all ${
-          loading
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+    </div>
+  );
+}
             : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-lg hover:scale-105'
         }`}
       >
