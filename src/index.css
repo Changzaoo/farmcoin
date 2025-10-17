@@ -624,4 +624,34 @@
       font-size: 16px !important;
     }
   }
+  
+  /* Mobile Bottom Navigation - Aprimorado */
+  .mobile-nav-shadow {
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15), 
+                0 -1px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Garantir que o conteúdo não fique atrás do bottom nav */
+  @media (max-width: 768px) {
+    .main-content {
+      padding-bottom: calc(env(safe-area-inset-bottom) + 80px) !important;
+    }
+  }
+  
+  /* Smooth scroll para mobile */
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Otimizar performance mobile */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Prevenir pull-to-refresh no Chrome mobile */
+  body {
+    overscroll-behavior-y: contain;
+  }
 }

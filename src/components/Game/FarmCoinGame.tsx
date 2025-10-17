@@ -575,7 +575,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
   console.log('🎨 FarmCoinGame: Pronto para renderizar UI');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-yellow-50 to-green-100 p-mobile sm:p-4 pb-safe">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-yellow-50 to-green-100 p-mobile sm:p-4 pb-24 md:pb-4">
       {/* 🎁 Notificação de Item Único */}
       {showUniqueItemNotification && (
         <div className="fixed top-20 right-4 z-50 animate-bounce">
@@ -838,8 +838,8 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
         {/* Inventário, Marketplace, Ranking ou Lista de Upgrades */}
         <div className="lg:col-span-2">
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border-2 border-gray-200 overflow-hidden">
-            {/* Sistema de Abas */}
-            <div className="flex border-b-2 border-gray-200">
+            {/* Sistema de Abas - Desktop */}
+            <div className="hidden md:flex border-b-2 border-gray-200">
               <button
                 onClick={() => setActiveTab('melhorias')}
                 className={`flex-1 px-6 py-4 font-bold text-lg transition-all ${
@@ -894,6 +894,26 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
               >
                 🏆 Ranking
               </button>
+            </div>
+            
+            {/* Indicador de Aba Ativa - Mobile */}
+            <div className="md:hidden bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-6 py-3">
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-3xl animate-bounce">
+                  {activeTab === 'melhorias' && '🛒'}
+                  {activeTab === 'inventario' && '📦'}
+                  {activeTab === 'guild' && '🏰'}
+                  {activeTab === 'marketplace' && '🏪'}
+                  {activeTab === 'ranking' && '🏆'}
+                </span>
+                <span className="text-white font-black text-xl">
+                  {activeTab === 'melhorias' && 'Melhorias'}
+                  {activeTab === 'inventario' && 'Inventário'}
+                  {activeTab === 'guild' && 'Guildas'}
+                  {activeTab === 'marketplace' && 'Marketplace'}
+                  {activeTab === 'ranking' && 'Ranking'}
+                </span>
+              </div>
             </div>
 
             {/* Conteúdo das Abas */}
@@ -1624,7 +1644,141 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
         .animate-glow {
           animation: glow 2s ease-in-out infinite;
         }
+        
+        /* Bottom Navigation Mobile - Animações */
+        @keyframes tab-active {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.15); }
+          100% { transform: scale(1); }
+        }
+        
+        @keyframes icon-bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
+        
+        .tab-active {
+          animation: tab-active 0.3s ease-out;
+        }
+        
+        .icon-bounce {
+          animation: icon-bounce 0.5s ease-in-out;
+        }
       `}</style>
+      
+      {/* 📱 Bottom Navigation - MOBILE ONLY */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
+        {/* Fundo com Blur e Gradiente */}
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/95 via-gray-800/95 to-transparent backdrop-blur-xl"></div>
+        
+        {/* Barra de Navegação */}
+        <div className="relative grid grid-cols-5 gap-1 px-2 py-3 pb-safe">
+          {/* Melhorias */}
+          <button
+            onClick={() => setActiveTab('melhorias')}
+            className={`flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-2xl transition-all duration-300 ${
+              activeTab === 'melhorias'
+                ? 'bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/50 scale-105 tab-active'
+                : 'text-gray-400 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            <span className={`text-2xl ${activeTab === 'melhorias' ? 'icon-bounce' : ''}`}>
+              🛒
+            </span>
+            <span className="text-[10px] font-bold tracking-tight">
+              Melhorias
+            </span>
+            {activeTab === 'melhorias' && (
+              <div className="absolute -top-1 w-12 h-1 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"></div>
+            )}
+          </button>
+          
+          {/* Inventário */}
+          <button
+            onClick={() => setActiveTab('inventario')}
+            className={`flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-2xl transition-all duration-300 ${
+              activeTab === 'inventario'
+                ? 'bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-lg shadow-blue-500/50 scale-105 tab-active'
+                : 'text-gray-400 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            <span className={`text-2xl ${activeTab === 'inventario' ? 'icon-bounce' : ''}`}>
+              📦
+            </span>
+            <span className="text-[10px] font-bold tracking-tight">
+              Inventário
+            </span>
+            {activeTab === 'inventario' && (
+              <div className="absolute -top-1 w-12 h-1 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full"></div>
+            )}
+          </button>
+          
+          {/* Guildas - Botão Central Destacado */}
+          <button
+            onClick={() => setActiveTab('guild')}
+            className={`flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-2xl transition-all duration-300 ${
+              activeTab === 'guild'
+                ? 'bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-lg shadow-purple-500/50 scale-110 tab-active -translate-y-2'
+                : 'text-gray-400 hover:text-white hover:bg-white/10 -translate-y-1'
+            }`}
+          >
+            <div className={`${activeTab === 'guild' ? 'bg-gradient-to-br from-purple-600 to-pink-700 rounded-full p-2 shadow-xl' : ''}`}>
+              <span className={`text-3xl ${activeTab === 'guild' ? 'icon-bounce' : ''}`}>
+                🏰
+              </span>
+            </div>
+            <span className="text-[10px] font-bold tracking-tight">
+              Guildas
+            </span>
+            {activeTab === 'guild' && (
+              <div className="absolute -top-3 w-12 h-1 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full"></div>
+            )}
+          </button>
+          
+          {/* Marketplace */}
+          <button
+            onClick={() => setActiveTab('marketplace')}
+            className={`flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-2xl transition-all duration-300 ${
+              activeTab === 'marketplace'
+                ? 'bg-gradient-to-br from-orange-500 to-amber-600 text-white shadow-lg shadow-orange-500/50 scale-105 tab-active'
+                : 'text-gray-400 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            <span className={`text-2xl ${activeTab === 'marketplace' ? 'icon-bounce' : ''}`}>
+              🏪
+            </span>
+            <span className="text-[10px] font-bold tracking-tight">
+              Marketplace
+            </span>
+            {activeTab === 'marketplace' && (
+              <div className="absolute -top-1 w-12 h-1 bg-gradient-to-r from-orange-400 to-amber-500 rounded-full"></div>
+            )}
+          </button>
+          
+          {/* Ranking */}
+          <button
+            onClick={() => setActiveTab('ranking')}
+            className={`flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-2xl transition-all duration-300 ${
+              activeTab === 'ranking'
+                ? 'bg-gradient-to-br from-yellow-500 to-amber-600 text-white shadow-lg shadow-yellow-500/50 scale-105 tab-active'
+                : 'text-gray-400 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            <span className={`text-2xl ${activeTab === 'ranking' ? 'icon-bounce' : ''}`}>
+              🏆
+            </span>
+            <span className="text-[10px] font-bold tracking-tight">
+              Ranking
+            </span>
+            {activeTab === 'ranking' && (
+              <div className="absolute -top-1 w-12 h-1 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full"></div>
+            )}
+          </button>
+        </div>
+        
+        {/* Indicador de Notch/Home Bar iOS */}
+        <div className="h-safe bg-gray-900/95 backdrop-blur-xl"></div>
+      </div>
     </div>
   );
 };
