@@ -58,20 +58,31 @@ export async function saveGameState(
       unlocked: u.unlocked
     }));
     
-    const compositeCount = upgradesClean.filter(u => u.count > 0 && u.id.includes('composite')).length;
-    const chainCount = upgradesClean.filter(u => u.count > 0 && u.id.includes('chain')).length;
-    const landCount = upgradesClean.filter(u => u.count > 0 && u.id.includes('land')).length;
+    // 🐛 FILTRAR apenas upgrades COM COUNT > 0 para debug
+    const upgradesWithCount = upgradesClean.filter(u => u.count > 0);
     
-    console.log('💾 Salvando no Firestore:', {
-      userId,
-      coins: gameState.coins,
-      perSecond: gameState.perSecond,
-      upgradesOwned,
-      upgradesTotal: upgrades.length,
-      compositeUpgrades: compositeCount,
-      chainUpgrades: chainCount,
-      landUpgrades: landCount
-    });
+    const compositeUpgrades = upgradesWithCount.filter(u => u.id.includes('composite'));
+    const chainUpgrades = upgradesWithCount.filter(u => u.id.includes('chain'));
+    const landUpgrades = upgradesWithCount.filter(u => u.id.includes('land'));
+    
+    console.log('💾 ========== SALVANDO NO FIRESTORE ==========');
+    console.log('💾 User ID:', userId);
+    console.log('💾 Total de upgrades:', upgrades.length);
+    console.log('💾 Upgrades com count > 0:', upgradesWithCount.length);
+    console.log('💾 Compostos (count > 0):', compositeUpgrades.length);
+    console.log('💾 Cadeia (count > 0):', chainUpgrades.length);
+    console.log('💾 Terrenos (count > 0):', landUpgrades.length);
+    
+    if (compositeUpgrades.length > 0) {
+      console.log('💾 📦 COMPOSTOS:', compositeUpgrades.map(u => `${u.id} (${u.count}x)`).join(', '));
+    }
+    if (chainUpgrades.length > 0) {
+      console.log('💾 ⚙️ CADEIA:', chainUpgrades.map(u => `${u.id} (${u.count}x)`).join(', '));
+    }
+    if (landUpgrades.length > 0) {
+      console.log('💾 🏡 TERRENOS:', landUpgrades.map(u => `${u.id} (${u.count}x)`).join(', '));
+    }
+    console.log('💾 ==========================================');
     
     await updateDoc(userRef, {
       gameState,

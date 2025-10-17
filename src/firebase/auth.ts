@@ -179,20 +179,33 @@ export async function getUserData(uid: string): Promise<UserData> {
       // Garantir que upgrades sempre exista
       const upgrades = data.upgrades || [];
       
-      const compositeCount = upgrades.filter((u: any) => u.count > 0 && u.id.includes('composite')).length;
-      const chainCount = upgrades.filter((u: any) => u.count > 0 && u.id.includes('chain')).length;
-      const landCount = upgrades.filter((u: any) => u.count > 0 && u.id.includes('land')).length;
+      // 🐛 FILTRAR apenas upgrades COM COUNT > 0 para debug
+      const upgradesWithCount = upgrades.filter((u: any) => u.count > 0);
       
-      console.log('📥 Dados carregados do Firestore:', {
-        uid: data.uid,
-        username: data.username,
-        coins: gameState.coins,
-        upgradesCount: upgrades.length,
-        upgradesWithCount: upgrades.filter((u: any) => u.count > 0).length,
-        compositeUpgrades: compositeCount,
-        chainUpgrades: chainCount,
-        landUpgrades: landCount
-      });
+      const compositeUpgrades = upgradesWithCount.filter((u: any) => u.id.includes('composite'));
+      const chainUpgrades = upgradesWithCount.filter((u: any) => u.id.includes('chain'));
+      const landUpgrades = upgradesWithCount.filter((u: any) => u.id.includes('land'));
+      
+      console.log('📥 ========== CARREGANDO DO FIRESTORE ==========');
+      console.log('📥 User ID:', uid);
+      console.log('📥 Username:', data.username);
+      console.log('📥 Coins:', gameState.coins);
+      console.log('📥 Total de upgrades no DB:', upgrades.length);
+      console.log('📥 Upgrades com count > 0:', upgradesWithCount.length);
+      console.log('📥 Compostos (count > 0):', compositeUpgrades.length);
+      console.log('📥 Cadeia (count > 0):', chainUpgrades.length);
+      console.log('📥 Terrenos (count > 0):', landUpgrades.length);
+      
+      if (compositeUpgrades.length > 0) {
+        console.log('📥 📦 COMPOSTOS:', compositeUpgrades.map((u: any) => `${u.id} (${u.count}x)`).join(', '));
+      }
+      if (chainUpgrades.length > 0) {
+        console.log('📥 ⚙️ CADEIA:', chainUpgrades.map((u: any) => `${u.id} (${u.count}x)`).join(', '));
+      }
+      if (landUpgrades.length > 0) {
+        console.log('📥 🏡 TERRENOS:', landUpgrades.map((u: any) => `${u.id} (${u.count}x)`).join(', '));
+      }
+      console.log('📥 ===============================================');
       
       return {
         uid: data.uid,

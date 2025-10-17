@@ -57,7 +57,8 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
 
   // Inicializar upgrades
   useEffect(() => {
-    console.log('🔧 Inicializando upgrades com dados salvos:', initialUpgrades?.length || 0);
+    console.log('🔧 ========== INICIALIZANDO UPGRADES ==========');
+    console.log('🔧 Dados salvos recebidos:', initialUpgrades?.length || 0, 'upgrades');
     
     const initializedUpgrades = upgradesData.map(upgrade => {
       // Buscar dados salvos do usuário primeiro
@@ -65,7 +66,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
       const count = savedUpgrade?.count || 0;
       
       if (count > 0) {
-        console.log(`  ✅ ${upgrade.name}: ${count} unidades`);
+        console.log(`  ✅ ${upgrade.name}: ${count} unidades (ID: ${upgrade.id})`);
       }
       
       // Verificar se upgrade composto está desbloqueado
@@ -87,7 +88,27 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
       };
     });
     
-    console.log('✨ Upgrades inicializados:', initializedUpgrades.filter(u => u.count > 0).length, 'itens possuídos');
+    const itemsWithCount = initializedUpgrades.filter(u => u.count > 0);
+    const composites = itemsWithCount.filter(u => u.id.includes('composite'));
+    const chains = itemsWithCount.filter(u => u.id.includes('chain'));
+    const lands = itemsWithCount.filter(u => u.id.includes('land'));
+    
+    console.log('✨ Upgrades inicializados:', itemsWithCount.length, 'itens possuídos');
+    console.log('✨ Compostos:', composites.length);
+    console.log('✨ Cadeia:', chains.length);
+    console.log('✨ Terrenos:', lands.length);
+    
+    if (composites.length > 0) {
+      console.log('✨ 📦 COMPOSTOS:', composites.map(u => `${u.id} (${u.count}x)`).join(', '));
+    }
+    if (chains.length > 0) {
+      console.log('✨ ⚙️ CADEIA:', chains.map(u => `${u.id} (${u.count}x)`).join(', '));
+    }
+    if (lands.length > 0) {
+      console.log('✨ 🏡 TERRENOS:', lands.map(u => `${u.id} (${u.count}x)`).join(', '));
+    }
+    console.log('🔧 ==========================================');
+    
     setUpgrades(initializedUpgrades);
   }, [initialUpgrades]);
 
