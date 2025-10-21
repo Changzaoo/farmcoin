@@ -1,9 +1,11 @@
 import React, { useState, useRef } from 'react';
+import { TrendingUp, Search, Package, Shield, AlertTriangle, Lock } from 'lucide-react';
 import { Upgrade, UpgradeTier } from '../../types';
 import { createMarketplaceListing, updateGuildMaxMembers, getUserGuild } from '../../firebase/firestore';
-import { canUnlockCompositeUpgrade } from '../../utils/tierSystem';
+import { getTierColor, getTierName, getTierGlow, canUnlockCompositeUpgrade, getMissingRequirements } from '../../utils/tierSystem';
 import { antiBot } from '../../utils/antiBot';
 import { uniqueItems, UniqueItem } from '../../utils/uniqueItems';
+import { categories } from '../../data/upgrades';
 import { useGame } from '../../contexts/GameContext';
 import { useGameLoop } from '../../hooks/useGameLoop';
 import { useAutoSave } from '../../hooks/useAutoSave';
@@ -321,7 +323,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
       try {
         await createMarketplaceListing({
           sellerId: uid,
-          sellerUsername: gameState.username || 'Jogador',
+          sellerUsername: state.gameState.username || 'Jogador',
           upgradeId: item.id,
           upgradeName: item.name,
           upgradeIcon: item.icon,
@@ -348,23 +350,18 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
 
   // Calcular estatísticas de upgrades
   const upgradeStats = {
-    total: upgrades.length,
-    owned: upgrades.filter(u => (u.count || 0) > 0).length,
-    available: upgrades.filter(u => {
-      const canAfford = gameState.coins >= (u.cost || 0);
+    total: state.upgrades.length,
+    owned: state.upgrades.filter(u => (u.count || 0) > 0).length,
+    available: state.upgrades.filter(u => {
+      const canAffordItem = state.gameState.coins >= (u.cost || 0);
       const isUnlocked = !u.isComposite || u.unlocked;
-      return canAfford && isUnlocked;
+      return canAffordItem && isUnlocked;
     }).length,
-    locked: upgrades.filter(u => u.isComposite && !u.unlocked).length
+    locked: state.upgrades.filter(u => u.isComposite && !u.unlocked).length
   };
 
-  // Filtrar upgrades
-  const filteredUpgrades = upgrades.filter(upgrade => {
-    const matchesCategory = selectedCategory === 'Todos' || upgrade.category === selectedCategory;
-    const matchesSearch = upgrade.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         upgrade.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  // ⚠️ filteredUpgrades já vem do hook useUpgradeFilters (linha 71)
+  // Removido código duplicado
 
   // Itens do inventário (upgrades com count > 0)
   const inventoryItems = state.upgrades
@@ -387,14 +384,14 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
       return state.upgrades.filter(u => {
         const canAffordItem = state.gameState.coins >= (u.cost || 0);
         const isUnlocked = !u.isComposite || u.unlocked;
-        return canAfford && isUnlocked;
+        return canAffordItem && isUnlocked;
       }).length;
     }
-    return upgrades.filter(u => {
+    return state.upgrades.filter(u => {
       const matchesCategory = u.category === category;
-      const canAfford = gameState.coins >= (u.cost || 0);
+      const canAffordItem = state.gameState.coins >= (u.cost || 0);
       const isUnlocked = !u.isComposite || u.unlocked;
-      return matchesCategory && canAfford && isUnlocked;
+      return matchesCategory && canAffordItem && isUnlocked;
     }).length;
   };
 
@@ -475,7 +472,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
               <div>
                 <p className="text-mobile-xs sm:text-sm text-gray-900/90 mb-1 font-semibold">💰 Moedas</p>
                 <p className="text-mobile-lg sm:text-4xl font-black bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">
-                  {formatNumber(gameState.coins)}
+                  {formatNumber(state.gameState.coins)}
                 </p>
               </div>
               <div className="text-4xl sm:text-5xl animate-float filter drop-shadow-2xl">
@@ -490,7 +487,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
               <div className="flex-1">
                 <p className="text-mobile-xs sm:text-sm text-gray-900/90 mb-1 font-semibold">📈 Por Segundo</p>
                 <p className="text-mobile-lg sm:text-4xl font-black bg-gradient-to-r from-green-500 via-emerald-600 to-teal-600 bg-clip-text text-transparent gradient-text-readable">
-                  {formatNumber(gameState.perSecond)}
+                  {formatNumber(state.gameState.perSecond)}
                 </p>
                 
                 {/* Display de itens geradores de moeda */}
@@ -984,11 +981,11 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
             {/* Lista de Upgrades */}
             <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
               {filteredUpgrades.map(upgrade => {
-                const canBuy = gameState.coins >= (upgrade.cost || 0);
+                const canBuy = state.gameState.coins >= (upgrade.cost || 0);
                 const isLocked = upgrade.isComposite && !upgrade.unlocked;
                 const tierColors = upgrade.tier ? getTierColor(upgrade.tier) : null;
                 const tierGlow = upgrade.tier ? getTierGlow(upgrade.tier) : '';
-                const userUpgrades = upgrades.map(u => ({ id: u.id, count: u.count || 0 }));
+                const userUpgrades = state.upgrades.map(u => ({ id: u.id, count: u.count || 0 }));
                 
                 // ⚙️ VALIDAÇÃO CONTÍNUA: Verificar requisitos sempre, mesmo depois de desbloqueado
                 const hasRequirementsContinuous = upgrade.isComposite && upgrade.requirements
@@ -996,14 +993,14 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                   : true;
                 
                 const missingReqs = isLocked && upgrade.requirements 
-                  ? getMissingRequirements(upgrade.requirements, userUpgrades, upgradesData)
+                  ? getMissingRequirements(upgrade.requirements, userUpgrades, state.upgrades)
                   : [];
                 
                 // Pegar os upgrades que faltam (objetos completos) - SEMPRE para compostos
                 const missingUpgrades = upgrade.isComposite && upgrade.requirements && !hasRequirementsContinuous
                   ? upgrade.requirements
                       .map(req => {
-                        const reqUpgrade = upgradesData.find(u => u.id === req.upgradeId);
+                        const reqUpgrade = state.upgrades.find(u => u.id === req.upgradeId);
                         const userUpgrade = userUpgrades.find(u => u.id === req.upgradeId);
                         const hasEnough = (userUpgrade?.count || 0) >= req.minCount;
                         
@@ -1067,7 +1064,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                             {/* Lista de itens faltantes com botões de compra */}
                             <div className="space-y-2">
                               {missingUpgrades.map((missingUpg: any) => {
-                                const canBuyReq = gameState.coins >= (missingUpg.baseCost || 0);
+                                const canBuyReq = state.gameState.coins >= (missingUpg.baseCost || 0);
                                 const totalCost = (missingUpg.baseCost || 0) * missingUpg.needToBuy;
                                 
                                 return (
@@ -1095,14 +1092,14 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                                           handleBuyUpgrade(missingUpg.id);
                                         }
                                       }}
-                                      disabled={gameState.coins < totalCost}
+                                      disabled={state.gameState.coins < totalCost}
                                       className={`px-4 py-2 rounded-xl font-black text-xs transition-all shadow-lg whitespace-nowrap ${
-                                        gameState.coins >= totalCost
+                                        state.gameState.coins >= totalCost
                                           ? 'bg-gradient-to-r from-blue-400 to-cyan-400 text-white hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:scale-105 active:scale-95'
                                           : 'bg-gray-400/50 text-gray-300 cursor-not-allowed'
                                       }`}
                                     >
-                                      {gameState.coins >= totalCost 
+                                      {state.gameState.coins >= totalCost 
                                         ? `🛒 ${formatNumber(totalCost)}` 
                                         : '💰 Sem Moedas'
                                       }
@@ -1164,8 +1161,8 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                 <>
                   <Marketplace
                     userId={uid}
-                    username={gameState.username || 'Jogador'}
-                    coins={gameState.coins}
+                    username={state.gameState.username || 'Jogador'}
+                    coins={state.gameState.coins}
                     ownedUpgrades={inventoryItems.map(u => ({
                       id: u.id,
                       name: u.name,
@@ -1184,8 +1181,8 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                 <>
                   <Guild
                     user={{ uid } as any}
-                    username={gameState.username || 'Jogador'}
-                    userUpgrades={upgrades}
+                    username={state.gameState.username || 'Jogador'}
+                    userUpgrades={state.upgrades}
                   />
                 </>
               )}
@@ -1194,9 +1191,9 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                 <>
                   <Ranking
                     currentUserId={uid}
-                    currentUsername={gameState.username || 'Jogador'}
-                    currentCoins={gameState.coins}
-                    currentPerSecond={gameState.perSecond}
+                    currentUsername={state.gameState.username || 'Jogador'}
+                    currentCoins={state.gameState.coins}
+                    currentPerSecond={state.gameState.perSecond}
                     currentUpgradesOwned={upgradeStats.owned}
                   />
                 </>
@@ -1634,6 +1631,20 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
         {/* Indicador de Notch/Home Bar iOS */}
         <div className="h-safe bg-gray-900/95 backdrop-blur-xl"></div>
       </div>
+
+      {/* 🏆 Notificações de Achievements */}
+      {newAchievements.map(achievement => (
+        <AchievementNotification
+          key={achievement.id}
+          achievement={achievement}
+          onClose={() => {
+            // Achievement já foi marcado como visto pelo hook
+          }}
+        />
+      ))}
+
+      {/* 🐛 Debug Panel (só em DEV) */}
+      <DebugPanel />
     </div>
   );
 };
