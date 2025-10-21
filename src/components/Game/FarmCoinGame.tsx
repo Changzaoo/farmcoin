@@ -1,12 +1,19 @@
-// @ts-nocheck
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { Coins, TrendingUp, ShoppingCart, Search, Lock, Package, Shield, AlertTriangle } from 'lucide-react';
-import { upgrades as upgradesData, categories } from '../../data/upgrades';
-import { GameState, Upgrade, UpgradeTier } from '../../types';
-import { saveGameState, createMarketplaceListing, updateGuildMaxMembers, getUserGuild } from '../../firebase/firestore';
+import { categories } from '../../data/upgrades';
+import { UpgradeTier } from '../../types';
+import { createMarketplaceListing, updateGuildMaxMembers, getUserGuild } from '../../firebase/firestore';
 import { getTierColor, getTierName, getTierGlow, canUnlockCompositeUpgrade, getMissingRequirements } from '../../utils/tierSystem';
 import { antiBot } from '../../utils/antiBot';
 import { uniqueItems, UniqueItem } from '../../utils/uniqueItems';
+import { useGame } from '../../contexts/GameContext';
+import { useGameLoop } from '../../hooks/useGameLoop';
+import { useAutoSave } from '../../hooks/useAutoSave';
+import { useUpgradeFilters } from '../../hooks/useUpgradeFilters';
+import { useAchievements } from '../../features/achievements/useAchievements';
+import UpgradeCard from './UpgradeCard';
+import AchievementNotification from './AchievementNotification';
+import AchievementsPanel from './AchievementsPanel';
 import Marketplace from './Marketplace';
 import Ranking from './Ranking';
 import Guild from './Guild';
@@ -19,30 +26,26 @@ interface FloatingCoin {
 
 interface FarmCoinGameProps {
   uid: string;
-  initialGameState: GameState;
-  initialUpgrades?: Upgrade[];
 }
 
-export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameState, initialUpgrades }) => {
+export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
+  // 🎮 Usar Context ao invés de props
+  const { state, dispatch, buyUpgrade: contextBuyUpgrade, canAfford, addCoins } = useGame();
+  
   console.log('🎮 FarmCoinGame iniciado com:', {
     uid,
-    initialCoins: initialGameState.coins,
-    initialUpgrades: initialUpgrades?.length || 0,
-    initialPerSecond: initialGameState.perSecond
+    initialCoins: state.gameState.coins,
+    upgrades: state.upgrades.length,
+    initialPerSecond: state.gameState.perSecond
   });
   
-  const [gameState, setGameState] = useState<GameState>(initialGameState);
-  const [upgrades, setUpgrades] = useState<Upgrade[]>([]);
+  // Estados locais (UI apenas)
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
-  const [lastSave, setLastSave] = useState(Date.now());
   const [floatingCoins, setFloatingCoins] = useState<FloatingCoin[]>([]);
   const [clickEffect, setClickEffect] = useState(false);
   const [isMining, setIsMining] = useState(false);
-  const [showInventory, setShowInventory] = useState(false);
-  const [showMarketplace, setShowMarketplace] = useState(false);
-  const [showRanking, setShowRanking] = useState(false);
-  const [activeTab, setActiveTab] = useState<'melhorias' | 'inventario' | 'marketplace' | 'ranking' | 'guild'>('melhorias');
+  const [activeTab, setActiveTab] = useState<'melhorias' | 'inventario' | 'marketplace' | 'ranking' | 'guild' | 'achievements'>('melhorias');
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [itemQuantities, setItemQuantities] = useState<Map<string, number>>(new Map());
   const [showBulkSellModal, setShowBulkSellModal] = useState(false);
@@ -55,10 +58,16 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid, initialGameStat
   const buttonRef = useRef<HTMLButtonElement>(null);
   const coinIdRef = useRef(0);
 
-  // Inicializar upgrades
-  useEffect(() => {
-    console.log('🔧 ========== INICIALIZANDO UPGRADES ==========');
-    console.log('🔧 Dados salvos recebidos:', initialUpgrades?.length || 0, 'upgrades');
+  // ⚡ Hooks otimizados
+  useGameLoop(state.gameState.perSecond, (income) => {
+    addCoins(income);
+  }, true);
+
+  const { saveStatus, lastSaveTime } = useAutoSave(uid, state.gameState, state.upgrades, 5000);
+
+  const { filteredUpgrades, stats } = useUpgradeFilters(state.upgrades, selectedCategory, searchTerm);
+
+  const { achievements, newAchievements, stats: achievementStats } = useAchievements(state.gameState);
     
     const initializedUpgrades = upgradesData.map(upgrade => {
       // Buscar dados salvos do usuário primeiro

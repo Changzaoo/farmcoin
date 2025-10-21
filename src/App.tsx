@@ -1,11 +1,12 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import { FarmCoinGame } from './components/Game/FarmCoinGame';
+import { GameProvider } from './contexts/GameContext';
 import { UserRole } from './types';
+import { upgrades as upgradesData } from './data/upgrades';
 // import './utils/devToolsProtection'; // Desabilitado temporariamente para debug
 
 // Placeholder components - precisam ser implementados
@@ -75,15 +76,37 @@ function App() {
     upgrades: userData.upgrades?.length
   });
 
+  // Inicializar upgrades corretamente mesclando dados salvos com estrutura completa
+  const initializedUpgrades = upgradesData.map(upgrade => {
+    const savedUpgrade = userData.upgrades?.find((u: any) => u.id === upgrade.id);
+    const count = savedUpgrade?.count || 0;
+    
+    return {
+      ...upgrade,
+      count,
+      unlocked: true, // TODO: verificar requisitos para compostos
+      cost: upgrade.baseCost * Math.pow(upgrade.costMultiplier, count),
+      income: upgrade.baseIncome * Math.pow(upgrade.incomeMultiplier, count),
+    };
+  });
+
+  // Preparar estado inicial para o GameProvider
+  const initialState = {
+    gameState: gameStateWithUsername,
+    upgrades: initializedUpgrades,
+  };
+
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<FarmCoinGame uid={user.uid} initialGameState={gameStateWithUsername} initialUpgrades={userData.upgrades} />} />
-        {canAccessAdmin && (
-          <Route path="/admin" element={<AdminPanel />} />
-        )}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <GameProvider initialState={initialState}>
+        <Routes>
+          <Route path="/" element={<FarmCoinGame uid={user.uid} />} />
+          {canAccessAdmin && (
+            <Route path="/admin" element={<AdminPanel />} />
+          )}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </GameProvider>
     </BrowserRouter>
   );
 }
