@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Upgrade, UpgradeTier } from '../../types';
 import { createMarketplaceListing, updateGuildMaxMembers, getUserGuild } from '../../firebase/firestore';
 import { canUnlockCompositeUpgrade } from '../../utils/tierSystem';
 import { antiBot } from '../../utils/antiBot';
@@ -193,37 +194,25 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
     }
   };
 
-  // Lidar com compra do marketplace
-  const handleMarketplacePurchase = (sellerId: string, totalPrice: number, upgradeId: string, quantity: number) => {
-    let updatedUpgrades: Upgrade[] = [];
+  // 🛒 Lidar com compra do marketplace (SIMPLIFICADO - Context cuida do resto)
+  const handleMarketplacePurchase = (_sellerId: string, totalPrice: number, upgradeId: string, quantity: number) => {
+    // Verificar se tem moedas suficientes
+    if (state.gameState.coins < totalPrice) {
+      haptic.error();
+      return;
+    }
 
-    // Adicionar upgrades comprados
-    setUpgrades(prev => {
-      updatedUpgrades = prev.map(u => {
-        if (u.id === upgradeId) {
-          const newCount = (u.count || 0) + quantity;
-          return {
-            ...u,
-            count: newCount,
-            cost: u.baseCost * Math.pow(u.costMultiplier, newCount),
-            income: u.baseIncome * Math.pow(u.incomeMultiplier, newCount)
-          };
-        }
-        return u;
-      });
-      return updatedUpgrades;
-    });
+    // Comprar os upgrades (buyUpgrade já deduz moedas)
+    for (let i = 0; i < quantity; i++) {
+      const success = contextBuyUpgrade(upgradeId);
+      if (!success) {
+        haptic.error();
+        console.error('Erro ao comprar upgrade do marketplace');
+        break;
+      }
+    }
 
-    // Deduzir moedas e salvar COM os upgrades atualizados
-    setGameState(prev => {
-      const newState = {
-        ...prev,
-        coins: prev.coins - totalPrice,
-      };
-      // Salvar com os upgrades atualizados
-      setTimeout(() => saveGameState(uid, newState, updatedUpgrades), 0);
-      return newState;
-    });
+    haptic.success();
   };
 
   // Toggles de seleção
@@ -378,12 +367,12 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
   });
 
   // Itens do inventário (upgrades com count > 0)
-  const inventoryItems = upgrades
+  const inventoryItems = state.upgrades
     .filter(u => (u.count || 0) > 0)
     .sort((a, b) => (b.count || 0) - (a.count || 0));
 
   // Itens que geram moedas (com income > 0 e count > 0)
-  const incomeGeneratingItems = upgrades
+  const incomeGeneratingItems = state.upgrades
     .filter(u => (u.count || 0) > 0 && (u.income || 0) > 0)
     .sort((a, b) => {
       // Ordenar por total de income gerado (income * count)
@@ -395,8 +384,8 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
   // Calcular quantidade de itens por categoria
   const getCategoryCount = (category: string) => {
     if (category === 'Todos') {
-      return upgrades.filter(u => {
-        const canAfford = gameState.coins >= (u.cost || 0);
+      return state.upgrades.filter(u => {
+        const canAffordItem = state.gameState.coins >= (u.cost || 0);
         const isUnlocked = !u.isComposite || u.unlocked;
         return canAfford && isUnlocked;
       }).length;
