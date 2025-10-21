@@ -308,11 +308,3 @@ export default function Ranking({
     </div>
   );
 }
-            : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-lg hover:scale-105'
-        }`}
-      >
-        {loading ? '🔄 Carregando...' : '🔄 Atualizar Ranking'}
-      </button>
-    </div>
-  );
-}
