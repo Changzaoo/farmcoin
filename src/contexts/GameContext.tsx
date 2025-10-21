@@ -17,7 +17,8 @@ type GameAction =
   | { type: 'SET_UPGRADES'; payload: Upgrade[] }
   | { type: 'UPDATE_UPGRADE'; payload: { id: string; upgrade: Partial<Upgrade> } }
   | { type: 'LOAD_GAME_STATE'; payload: { gameState: GameState; upgrades: Upgrade[] } }
-  | { type: 'PRESTIGE'; payload: { prestigePoints: number; timestamp: number } };
+  | { type: 'PRESTIGE'; payload: { prestigePoints: number; timestamp: number } }
+  | { type: 'RESET_GAME' };
 
 // Reducer
 const gameReducer = (state: GameContextState, action: GameAction): GameContextState => {
@@ -111,6 +112,25 @@ const gameReducer = (state: GameContextState, action: GameAction): GameContextSt
         gameState: {
           coins: 0,
           totalCoins: state.gameState.totalCoins,
+          perSecond: 0,
+          totalClicks: 0,
+          totalPurchases: 0,
+          username: state.gameState.username,
+        },
+        upgrades: state.upgrades.map(u => ({
+          ...u,
+          count: 0,
+          cost: u.baseCost,
+          income: u.baseIncome,
+        })),
+      };
+
+    case 'RESET_GAME':
+      // Reset completo do jogo (para debug)
+      return {
+        gameState: {
+          coins: 0,
+          totalCoins: 0,
           perSecond: 0,
           totalClicks: 0,
           totalPurchases: 0,

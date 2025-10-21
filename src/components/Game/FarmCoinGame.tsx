@@ -12,9 +12,7 @@ import { useAutoSave } from '../../hooks/useAutoSave';
 import { useUpgradeFilters } from '../../hooks/useUpgradeFilters';
 import { useAchievements } from '../../features/achievements/useAchievements';
 import { useHaptic } from '../../utils/haptics';
-import UpgradeCard from './UpgradeCard';
 import AchievementNotification from './AchievementNotification';
-import AchievementsPanel from './AchievementsPanel';
 import Marketplace from './Marketplace';
 import Ranking from './Ranking';
 import Guild from './Guild';
@@ -70,9 +68,9 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
 
   useAutoSave(uid, state.gameState, state.upgrades, 5000);
 
-  const { filteredUpgrades, stats } = useUpgradeFilters(state.upgrades, selectedCategory, searchTerm);
+  const { filteredUpgrades } = useUpgradeFilters(state.upgrades, selectedCategory, searchTerm);
 
-  const { achievements, newAchievements, stats: achievementStats } = useAchievements(state.gameState);
+  const { newAchievements } = useAchievements(state.gameState);
 
   // 🎯 Click manual com efeitos visuais, proteção anti-bot e HAPTIC FEEDBACK
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {

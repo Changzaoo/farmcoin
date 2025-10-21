@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Bug, ChevronDown, ChevronUp, Coins, TrendingUp, Award } from 'lucide-react';
+import { Bug, ChevronDown, Coins, TrendingUp, Award } from 'lucide-react';
 import { useGame } from '../../contexts/GameContext';
 
 interface DebugPanelProps {
@@ -97,7 +97,7 @@ export const DebugPanel: React.FC<DebugPanelProps> = ({ visible = false }) => {
           <div className="flex items-center justify-between text-xs">
             <span className="text-purple-400">Upgrades:</span>
             <span className="font-mono font-bold">
-              {state.upgrades.filter(u => u.count > 0).length} / {state.upgrades.length}
+              {state.upgrades.filter(u => (u.count || 0) > 0).length} / {state.upgrades.length}
             </span>
           </div>
         </div>
