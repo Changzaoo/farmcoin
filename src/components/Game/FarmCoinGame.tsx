@@ -1,9 +1,6 @@
-import React, { useState, useCallback, useRef, useMemo } from 'react';
-import { Coins, TrendingUp, ShoppingCart, Search, Lock, Package, Shield, AlertTriangle } from 'lucide-react';
-import { categories } from '../../data/upgrades';
-import { UpgradeTier } from '../../types';
+import React, { useState, useRef } from 'react';
 import { createMarketplaceListing, updateGuildMaxMembers, getUserGuild } from '../../firebase/firestore';
-import { getTierColor, getTierName, getTierGlow, canUnlockCompositeUpgrade, getMissingRequirements } from '../../utils/tierSystem';
+import { canUnlockCompositeUpgrade } from '../../utils/tierSystem';
 import { antiBot } from '../../utils/antiBot';
 import { uniqueItems, UniqueItem } from '../../utils/uniqueItems';
 import { useGame } from '../../contexts/GameContext';
@@ -11,12 +8,14 @@ import { useGameLoop } from '../../hooks/useGameLoop';
 import { useAutoSave } from '../../hooks/useAutoSave';
 import { useUpgradeFilters } from '../../hooks/useUpgradeFilters';
 import { useAchievements } from '../../features/achievements/useAchievements';
+import { useHaptic } from '../../utils/haptics';
 import UpgradeCard from './UpgradeCard';
 import AchievementNotification from './AchievementNotification';
 import AchievementsPanel from './AchievementsPanel';
 import Marketplace from './Marketplace';
 import Ranking from './Ranking';
 import Guild from './Guild';
+import { DebugPanel } from '../Debug/DebugPanel';
 
 interface FloatingCoin {
   id: number;
@@ -29,8 +28,11 @@ interface FarmCoinGameProps {
 }
 
 export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
-  // 🎮 Usar Context ao invés de props
-  const { state, dispatch, buyUpgrade: contextBuyUpgrade, canAfford, addCoins } = useGame();
+  // 🎮 Context API - Estado Global
+  const { state, buyUpgrade: contextBuyUpgrade, canAfford, addCoins } = useGame();
+  
+  // 📱 Feedback Háptico
+  const haptic = useHaptic();
   
   console.log('🎮 FarmCoinGame iniciado com:', {
     uid,
@@ -63,127 +65,20 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
     addCoins(income);
   }, true);
 
-  const { saveStatus, lastSaveTime } = useAutoSave(uid, state.gameState, state.upgrades, 5000);
+  useAutoSave(uid, state.gameState, state.upgrades, 5000);
 
   const { filteredUpgrades, stats } = useUpgradeFilters(state.upgrades, selectedCategory, searchTerm);
 
   const { achievements, newAchievements, stats: achievementStats } = useAchievements(state.gameState);
-    
-    const initializedUpgrades = upgradesData.map(upgrade => {
-      // Buscar dados salvos do usuário primeiro
-      const savedUpgrade = initialUpgrades?.find(u => u.id === upgrade.id);
-      const count = savedUpgrade?.count || 0;
-      
-      if (count > 0) {
-        console.log(`  ✅ ${upgrade.name}: ${count} unidades (ID: ${upgrade.id})`);
-      }
-      
-      // Verificar se upgrade composto está desbloqueado
-      let unlocked = true;
-      if (upgrade.isComposite && upgrade.requirements) {
-        const userUpgrades = upgradesData.map(u => {
-          const saved = initialUpgrades?.find(s => s.id === u.id);
-          return { ...u, count: saved?.count || 0 };
-        });
-        unlocked = canUnlockCompositeUpgrade(upgrade.requirements, userUpgrades);
-      }
-      
-      return {
-        ...upgrade,
-        count,
-        unlocked,
-        cost: upgrade.baseCost * Math.pow(upgrade.costMultiplier, count),
-        income: upgrade.baseIncome * Math.pow(upgrade.incomeMultiplier, count)
-      };
-    });
-    
-    const itemsWithCount = initializedUpgrades.filter(u => u.count > 0);
-    const composites = itemsWithCount.filter(u => u.id.includes('composite'));
-    const chains = itemsWithCount.filter(u => u.id.includes('chain'));
-    const lands = itemsWithCount.filter(u => u.id.includes('land'));
-    
-    console.log('✨ Upgrades inicializados:', itemsWithCount.length, 'itens possuídos');
-    console.log('✨ Compostos:', composites.length);
-    console.log('✨ Cadeia:', chains.length);
-    console.log('✨ Terrenos:', lands.length);
-    
-    if (composites.length > 0) {
-      console.log('✨ 📦 COMPOSTOS:', composites.map(u => `${u.id} (${u.count}x)`).join(', '));
-    }
-    if (chains.length > 0) {
-      console.log('✨ ⚙️ CADEIA:', chains.map(u => `${u.id} (${u.count}x)`).join(', '));
-    }
-    if (lands.length > 0) {
-      console.log('✨ 🏡 TERRENOS:', lands.map(u => `${u.id} (${u.count}x)`).join(', '));
-    }
-    console.log('🔧 ==========================================');
-    
-    setUpgrades(initializedUpgrades);
-  }, [initialUpgrades]);
 
-  // Calcular renda passiva total
-  const calculatePassiveIncome = useCallback(() => {
-    return upgrades.reduce((total, upgrade) => {
-      if (upgrade.count && upgrade.count > 0) {
-        return total + (upgrade.income || 0) * upgrade.count;
-      }
-      return total;
-    }, 0);
-  }, [upgrades]);
-
-  // Atualizar moedas passivamente em tempo real (100ms para aspecto fluido)
-  useEffect(() => {
-    const perSecond = calculatePassiveIncome();
-    
-    if (perSecond > 0) {
-      const interval = setInterval(() => {
-        setGameState(prev => ({
-          ...prev,
-          coins: prev.coins + (perSecond / 10), // Divide por 10 pois atualiza 10x por segundo
-          totalCoins: prev.totalCoins + (perSecond / 10),
-          perSecond
-        }));
-      }, 100); // Atualiza a cada 100ms (10x por segundo) para efeito fluido
-
-      return () => clearInterval(interval);
-    }
-  }, [calculatePassiveIncome]);
-
-  // Salvar no banco de dados periodicamente (a cada 3 segundos)
-  useEffect(() => {
-    const saveInterval = setInterval(() => {
-      // Usar uma função para pegar os valores mais recentes
-      setGameState(currentState => {
-        setUpgrades(currentUpgrades => {
-          // Salvar com os valores atuais
-          saveGameState(uid, currentState, currentUpgrades).catch(console.error);
-          return currentUpgrades;
-        });
-        return currentState;
-      });
-    }, 3000); // Salva a cada 3 segundos
-
-    return () => clearInterval(saveInterval);
-  }, [uid]); // Apenas uid como dependência
-
-  // Salvar jogo (pode receber estado opcional)
-  const saveGame = async (stateToSave?: GameState) => {
-    try {
-      const currentState = stateToSave || gameState;
-      await saveGameState(uid, currentState, upgrades);
-      setLastSave(Date.now());
-    } catch (error) {
-      console.error('Erro ao salvar jogo:', error);
-    }
-  };
-
-  // Click manual com efeitos visuais e proteção anti-bot
+  // 🎯 Click manual com efeitos visuais, proteção anti-bot e HAPTIC FEEDBACK
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     // 🛡️ PROTEÇÃO ANTI-BOT
     const validation = antiBot.validateClick(uid);
     
     if (!validation.allowed) {
       // Bloquear click
+      haptic.error(); // 📱 Vibração de erro
       setBotWarning(validation.reason || 'Click bloqueado');
       setTimeout(() => setBotWarning(''), 5000);
       return;
@@ -191,9 +86,13 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
 
     // Mostrar aviso se houver
     if (validation.warning) {
+      haptic.warning(); // 📱 Vibração de aviso
       setBotWarning(validation.warning);
       setTimeout(() => setBotWarning(''), 3000);
     }
+
+    // 📱 HAPTIC FEEDBACK - Vibração leve
+    haptic.light();
 
     // Efeito de click no botão
     setClickEffect(true);
@@ -223,25 +122,13 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
       }, 1000);
     }
 
-    // Atualizar estado e salvar
-    setGameState(prev => {
-      const newState = {
-        ...prev,
-        coins: prev.coins + 0.1,
-        totalCoins: prev.totalCoins + 0.1,
-        totalClicks: prev.totalClicks + 1
-      };
-      
-      // Salvar após cada click
-      saveGame(newState);
-      
-      return newState;
-    });
+    // 💰 Adicionar moedas via Context
+    addCoins(0.1);
   };
 
-  // Comprar upgrade e salvar
+  // 🛒 Comprar upgrade via Context
   const handleBuyUpgrade = (upgradeId: string) => {
-    const upgrade = upgrades.find(u => u.id === upgradeId);
+    const upgrade = state.upgrades.find(u => u.id === upgradeId);
     if (!upgrade || !upgrade.cost) return;
 
     // Verificar se upgrade composto está desbloqueado
@@ -249,89 +136,59 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
 
     // ⚙️ VALIDAÇÃO CONTÍNUA: Para Produção em Cadeia, sempre verificar requisitos
     if (upgrade.isComposite && upgrade.requirements) {
-      const userUpgradesForCheck = upgrades.map(u => ({ id: u.id, count: u.count || 0 }));
+      const userUpgradesForCheck = state.upgrades.map(u => ({ id: u.id, count: u.count || 0 }));
       const hasRequirements = canUnlockCompositeUpgrade(upgrade.requirements, userUpgradesForCheck);
       
       if (!hasRequirements) {
         console.warn('⚠️ Requisitos não atendidos para comprar:', upgrade.name);
+        haptic.warning(); // 📱 Vibração de aviso
         return;
       }
     }
 
-    if (gameState.coins >= upgrade.cost) {
-      const newCount = (upgrade.count || 0) + 1;
-      const newCost = upgrade.baseCost * Math.pow(upgrade.costMultiplier, newCount);
-      const newIncome = upgrade.baseIncome * Math.pow(upgrade.incomeMultiplier, newCount);
+    // Verificar se tem moedas suficientes
+    if (!canAfford(upgradeId)) {
+      haptic.error(); // 📱 Vibração de erro
+      return;
+    }
 
-      let updatedUpgrades: Upgrade[] = [];
+    // 📱 HAPTIC FEEDBACK - Vibração de sucesso
+    haptic.success();
 
-      // 🎁 TENTAR GERAR ITEM ÚNICO (apenas para upgrades de produção em cadeia)
-      if (upgrade.isComposite) {
-        const uniqueItem = uniqueItems.generateUniqueItem(
-          uid,
-          upgrade.id,
-          upgrade.name,
-          upgrade.baseCost
-        );
+    // 🎁 TENTAR GERAR ITEM ÚNICO (apenas para upgrades de produção em cadeia)
+    if (upgrade.isComposite) {
+      const uniqueItem = uniqueItems.generateUniqueItem(
+        uid,
+        upgrade.id,
+        upgrade.name,
+        upgrade.baseCost
+      );
 
-        if (uniqueItem) {
-          // Mostrar notificação de item único gerado!
-          setShowUniqueItemNotification(uniqueItem);
-          setTimeout(() => setShowUniqueItemNotification(null), 10000);
+      if (uniqueItem) {
+        // Mostrar notificação de item único gerado!
+        setShowUniqueItemNotification(uniqueItem);
+        setTimeout(() => setShowUniqueItemNotification(null), 10000);
 
-          // Atualizar lista de itens únicos
-          setUniqueItemsOwned(prev => [...prev, uniqueItem]);
-          
-          console.log(`🎉 ITEM ÚNICO GERADO! ${uniqueItem.name} #${uniqueItem.serialNumber}`);
-        }
+        // Atualizar lista de itens únicos
+        setUniqueItemsOwned(prev => [...prev, uniqueItem]);
+        
+        console.log(`🎉 ITEM ÚNICO GERADO! ${uniqueItem.name} #${uniqueItem.serialNumber}`);
       }
+    }
 
-      // Atualizar upgrades e recalcular desbloqueios
-      setUpgrades(prev => {
-        const updated = prev.map(u =>
-          u.id === upgradeId
-            ? { ...u, count: newCount, cost: newCost, income: newIncome }
-            : u
-        );
+    // 💰 Comprar via Context
+    contextBuyUpgrade(upgradeId);
 
-        // Recalcular quais upgrades compostos estão desbloqueados
-        const userUpgradesForCheck = updated.map(u => ({ id: u.id, count: u.count || 0 }));
-        updatedUpgrades = updated.map(u => {
-          if (u.isComposite && u.requirements) {
-            const unlocked = canUnlockCompositeUpgrade(u.requirements, userUpgradesForCheck);
-            return { ...u, unlocked };
-          }
-          return u;
-        });
-        return updatedUpgrades;
-      });
-
-      // Atualizar estado e salvar COM os upgrades atualizados
-      setGameState(prev => {
-        const newState = {
-          ...prev,
-          coins: prev.coins - upgrade.cost!,
-          totalPurchases: prev.totalPurchases + 1
-        };
-        
-        // Salvar após cada compra com os upgrades atualizados
-        setTimeout(() => saveGameState(uid, newState, updatedUpgrades), 0);
-        
-        // 🏰 Se comprou um TERRENO e tem GUILDA, atualizar limite de membros (acumulativo)
-        if (upgrade.category === 'Terrenos') {
-          getUserGuild(uid).then(guild => {
-            if (guild && guild.ownerId === uid) {
-              // Se o usuário é dono de uma guilda, atualizar o limite
-              updateGuildMaxMembers(guild.id).catch(err => {
-                console.error('Erro ao atualizar limite de membros da guilda:', err);
-              });
-            }
-          }).catch(err => {
-            console.error('Erro ao verificar guilda:', err);
+    // 🏰 Se comprou um TERRENO e tem GUILDA, atualizar limite de membros
+    if (upgrade.category === 'Terrenos') {
+      getUserGuild(uid).then(guild => {
+        if (guild && guild.ownerId === uid) {
+          updateGuildMaxMembers(guild.id).catch(err => {
+            console.error('Erro ao atualizar limite de membros da guilda:', err);
           });
         }
-        
-        return newState;
+      }).catch(err => {
+        console.error('Erro ao verificar guilda:', err);
       });
     }
   };
