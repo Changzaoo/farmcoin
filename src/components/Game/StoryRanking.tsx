@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { StoryRanking } from '../../types/story';
-import { Trophy, Medal, Award, TrendingUp, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { type StoryRanking } from '../../types/story';
+import { Trophy, Award, TrendingUp, Clock } from 'lucide-react';
 
 export default function StoryRanking() {
   const [rankings, setRankings] = useState<StoryRanking[]>([]);

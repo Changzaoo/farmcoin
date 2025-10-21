@@ -31,6 +31,101 @@
 @layer utilities {
   /* ========== ANIMAÇÕES GLOBAIS DE DOPAMINA ========== */
   
+  /* Animações do Modo História */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(100px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slideInFromTop {
+    from {
+      opacity: 0;
+      transform: translateY(-50px) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-100px) scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+  
+  @keyframes glow {
+    0%, 100% {
+      box-shadow: 0 0 5px rgba(168, 85, 247, 0.5),
+                  0 0 10px rgba(168, 85, 247, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.8),
+                  0 0 30px rgba(168, 85, 247, 0.5),
+                  0 0 40px rgba(168, 85, 247, 0.3);
+    }
+  }
+  
+  @keyframes tabGlow {
+    0%, 100% {
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3),
+                  0 0 40px currentColor;
+    }
+  }
+  
+  /* Scrollbar personalizada */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
   /* Hover universal com dopamina */
   .dopamine-hover {
     @apply transition-all duration-200;

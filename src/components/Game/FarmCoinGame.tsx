@@ -15,11 +15,12 @@ import { useAchievements } from '../../features/achievements/useAchievements';
 import { useHaptic } from '../../utils/haptics';
 import AchievementNotification from './AchievementNotification';
 import AchievementsPanel from './AchievementsPanel';
-import StoryMode from './StoryMode';
+import StoryModeNew from './StoryModeNew';
 import Marketplace from './Marketplace';
 import Ranking from './Ranking';
 import Guild from './Guild';
 import { DebugPanel } from '../Debug/DebugPanel';
+import { ToastContainer } from '../UI/Toast';
 
 interface FloatingCoin {
   id: number;
@@ -51,7 +52,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
   const [floatingCoins, setFloatingCoins] = useState<FloatingCoin[]>([]);
   const [clickEffect, setClickEffect] = useState(false);
   const [isMining, setIsMining] = useState(false);
-  const [activeTab, setActiveTab] = useState<'melhorias' | 'inventario' | 'marketplace' | 'ranking' | 'guild' | 'achievements' | 'story'>('melhorias');
+  const [activeTab, setActiveTab] = useState<'melhorias' | 'inventario' | 'ranking' | 'achievements' | 'story'>('melhorias');
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [itemQuantities, setItemQuantities] = useState<Map<string, number>>(new Map());
   const [showBulkSellModal, setShowBulkSellModal] = useState(false);
@@ -684,82 +685,110 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
         <div className="lg:col-span-2">
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border-2 border-gray-200 overflow-hidden">
             {/* Sistema de Abas - Desktop */}
-            <div className="hidden md:flex border-b-2 border-gray-200">
+            <div className="hidden md:flex border-b-2 border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
               <button
                 onClick={() => setActiveTab('melhorias')}
-                className={`flex-1 px-6 py-4 font-bold text-lg transition-all ${
+                style={{
+                  animation: activeTab === 'melhorias' ? 'tabGlow 2s ease-in-out infinite' : 'none'
+                }}
+                className={`group relative flex-1 px-6 py-4 font-black text-lg transition-all duration-500 overflow-hidden flex flex-col items-center gap-2 ${
                   activeTab === 'melhorias'
-                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white border-b-4 border-green-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-green-500 via-emerald-500 to-green-500 text-white border-b-4 border-green-700 shadow-lg shadow-green-300'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gradient-to-r hover:from-green-100 hover:to-emerald-100 hover:text-green-700 hover:-translate-y-1'
                 }`}
               >
-                🛒 Melhorias
+                <span className={`transition-transform duration-300 inline-block text-3xl ${
+                  activeTab === 'melhorias' ? 'scale-125 animate-bounce' : 'group-hover:scale-110 group-hover:rotate-12'
+                }`}>🛒</span>
+                <span className="text-sm">Melhorias</span>
+                {activeTab === 'melhorias' && (
+                  <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white to-transparent" 
+                    style={{ animation: 'shimmer 2s linear infinite' }} />
+                )}
               </button>
               
               <button
                 onClick={() => setActiveTab('inventario')}
-                className={`flex-1 px-6 py-4 font-bold text-lg transition-all ${
+                style={{
+                  animation: activeTab === 'inventario' ? 'tabGlow 2s ease-in-out infinite' : 'none'
+                }}
+                className={`group relative flex-1 px-6 py-4 font-black text-lg transition-all duration-500 overflow-hidden flex flex-col items-center gap-2 ${
                   activeTab === 'inventario'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-b-4 border-blue-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 text-white border-b-4 border-blue-700 shadow-lg shadow-blue-300'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gradient-to-r hover:from-blue-100 hover:to-cyan-100 hover:text-blue-700 hover:-translate-y-1'
                 }`}
               >
-                📦 Inventário
-              </button>
-              
-              <button
-                onClick={() => setActiveTab('guild')}
-                className={`flex-1 px-6 py-4 font-bold text-lg transition-all ${
-                  activeTab === 'guild'
-                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-b-4 border-purple-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                🏰 Guildas
-              </button>
-              
-              <button
-                onClick={() => setActiveTab('marketplace')}
-                className={`flex-1 px-6 py-4 font-bold text-lg transition-all ${
-                  activeTab === 'marketplace'
-                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border-b-4 border-orange-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                🏪 Marketplace
+                <span className={`transition-transform duration-300 inline-block text-3xl ${
+                  activeTab === 'inventario' ? 'scale-125 animate-bounce' : 'group-hover:scale-110 group-hover:rotate-12'
+                }`}>📦</span>
+                <span className="text-sm">Inventário</span>
+                {activeTab === 'inventario' && (
+                  <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white to-transparent" 
+                    style={{ animation: 'shimmer 2s linear infinite' }} />
+                )}
               </button>
               
               <button
                 onClick={() => setActiveTab('ranking')}
-                className={`flex-1 px-6 py-4 font-bold text-lg transition-all ${
+                style={{
+                  animation: activeTab === 'ranking' ? 'tabGlow 2s ease-in-out infinite' : 'none'
+                }}
+                className={`group relative flex-1 px-6 py-4 font-black text-lg transition-all duration-500 overflow-hidden flex flex-col items-center gap-2 ${
                   activeTab === 'ranking'
-                    ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-b-4 border-yellow-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 text-white border-b-4 border-yellow-700 shadow-lg shadow-yellow-300'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gradient-to-r hover:from-yellow-100 hover:to-amber-100 hover:text-yellow-700 hover:-translate-y-1'
                 }`}
               >
-                🏆 Ranking
+                <span className={`transition-transform duration-300 inline-block text-3xl ${
+                  activeTab === 'ranking' ? 'scale-125 animate-bounce' : 'group-hover:scale-110 group-hover:rotate-12'
+                }`}>🏆</span>
+                <span className="text-sm">Ranking</span>
+                {activeTab === 'ranking' && (
+                  <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white to-transparent" 
+                    style={{ animation: 'shimmer 2s linear infinite' }} />
+                )}
               </button>
               
               <button
                 onClick={() => setActiveTab('achievements')}
-                className={`flex-1 px-6 py-4 font-bold text-lg transition-all ${
+                style={{
+                  animation: activeTab === 'achievements' ? 'tabGlow 2s ease-in-out infinite' : 'none'
+                }}
+                className={`group relative flex-1 px-6 py-4 font-black text-lg transition-all duration-500 overflow-hidden flex flex-col items-center gap-2 ${
                   activeTab === 'achievements'
-                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-b-4 border-purple-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 text-white border-b-4 border-pink-700 shadow-lg shadow-pink-300'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gradient-to-r hover:from-pink-100 hover:to-rose-100 hover:text-pink-700 hover:-translate-y-1'
                 }`}
               >
-                🎯 Conquistas
+                <span className={`transition-transform duration-300 inline-block text-3xl ${
+                  activeTab === 'achievements' ? 'scale-125 animate-bounce' : 'group-hover:scale-110 group-hover:rotate-12'
+                }`}>🎯</span>
+                <span className="text-sm">Conquistas</span>
+                {activeTab === 'achievements' && (
+                  <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white to-transparent" 
+                    style={{ animation: 'shimmer 2s linear infinite' }} />
+                )}
               </button>
               
               <button
                 onClick={() => setActiveTab('story')}
-                className={`flex-1 px-6 py-4 font-bold text-lg transition-all ${
+                style={{
+                  animation: activeTab === 'story' ? 'tabGlow 2s ease-in-out infinite' : 'none'
+                }}
+                className={`group relative flex-1 px-6 py-4 font-black text-lg transition-all duration-500 overflow-hidden flex flex-col items-center gap-2 ${
                   activeTab === 'story'
-                    ? 'bg-gradient-to-r from-red-500 to-red-600 text-white border-b-4 border-red-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-red-500 via-rose-500 to-red-500 text-white border-b-4 border-red-700 shadow-lg shadow-red-300'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gradient-to-r hover:from-red-100 hover:to-rose-100 hover:text-red-700 hover:-translate-y-1'
                 }`}
               >
-                📖 Modo História
+                <span className={`transition-transform duration-300 inline-block text-3xl ${
+                  activeTab === 'story' ? 'scale-125 animate-bounce' : 'group-hover:scale-110 group-hover:rotate-12'
+                }`}>📖</span>
+                <span className="text-sm">História</span>
+                {activeTab === 'story' && (
+                  <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white to-transparent" 
+                    style={{ animation: 'shimmer 2s linear infinite' }} />
+                )}
               </button>
             </div>
             
@@ -769,8 +798,6 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                 <span className="text-3xl animate-bounce">
                   {activeTab === 'melhorias' && '🛒'}
                   {activeTab === 'inventario' && '📦'}
-                  {activeTab === 'guild' && '🏰'}
-                  {activeTab === 'marketplace' && '🏪'}
                   {activeTab === 'ranking' && '🏆'}
                   {activeTab === 'achievements' && '🎯'}
                   {activeTab === 'story' && '📖'}
@@ -778,11 +805,9 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                 <span className="text-white font-black text-xl">
                   {activeTab === 'melhorias' && 'Melhorias'}
                   {activeTab === 'inventario' && 'Inventário'}
-                  {activeTab === 'guild' && 'Guildas'}
-                  {activeTab === 'marketplace' && 'Marketplace'}
                   {activeTab === 'ranking' && 'Ranking'}
                   {activeTab === 'achievements' && 'Conquistas'}
-                  {activeTab === 'story' && 'Modo História'}
+                  {activeTab === 'story' && 'História'}
                 </span>
               </div>
             </div>
@@ -1213,36 +1238,6 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
           </>
               )}
 
-              {activeTab === 'marketplace' && (
-                <>
-                  <Marketplace
-                    userId={uid}
-                    username={state.gameState.username || 'Jogador'}
-                    coins={state.gameState.coins}
-                    ownedUpgrades={inventoryItems.map(u => ({
-                      id: u.id,
-                      name: u.name,
-                      icon: u.icon,
-                      tier: u.tier || UpgradeTier.COMUM,
-                      count: u.count || 0,
-                      baseIncome: u.baseIncome,
-                      baseCost: u.baseCost
-                    }))}
-                    onPurchaseComplete={handleMarketplacePurchase}
-                  />
-                </>
-              )}
-              
-              {activeTab === 'guild' && (
-                <>
-                  <Guild
-                    user={{ uid } as any}
-                    username={state.gameState.username || 'Jogador'}
-                    userUpgrades={state.upgrades}
-                  />
-                </>
-              )}
-
               {activeTab === 'ranking' && (
                 <>
                   <Ranking
@@ -1266,11 +1261,42 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
               
               {activeTab === 'story' && (
                 <>
-                  <StoryMode
+                  <StoryModeNew
                     gameState={state.gameState}
-                    onClaimReward={(chapterId) => {
-                      // TODO: Implementar lógica de recompensas
-                      console.log('Recompensa reivindicada do capítulo:', chapterId);
+                    onSpendCoins={(amount) => {
+                      // Gastar moedas na loja do capítulo
+                      if (state.gameState.coins >= amount) {
+                        addCoins(-amount); // Remove moedas
+                        haptic.success();
+                      } else {
+                        haptic.error();
+                      }
+                    }}
+                    onClaimReward={(chapterId, campaignId, exp) => {
+                      // Encontrar o capítulo para pegar as recompensas
+                      const campaign = campaignId === 'cursed-farm' 
+                        ? require('../../data/storyChapters').campaign1Chapters
+                        : require('../../data/storyCampaign2').campaign2Chapters;
+                      
+                      const chapter = campaign.find((ch: any) => ch.id === chapterId);
+                      
+                      if (chapter && chapter.rewards) {
+                        // Adicionar moedas
+                        if (chapter.rewards.coins) {
+                          addCoins(chapter.rewards.coins);
+                        }
+                        
+                        // Aplicar multiplicador (temporário ou permanente)
+                        if (chapter.rewards.multiplier) {
+                          // TODO: Implementar sistema de multiplicadores permanentes
+                          console.log('Multiplicador aplicado:', chapter.rewards.multiplier);
+                        }
+                        
+                        // Feedback visual
+                        haptic.success();
+                        console.log(`✅ Recompensas reivindicadas do capítulo ${chapterId}:`, chapter.rewards);
+                        console.log(`⚡ EXP ganho: ${exp}`);
+                      }
                     }}
                   />
                 </>
@@ -1642,48 +1668,6 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
             )}
           </button>
           
-          {/* Guildas - Botão Central Destacado */}
-          <button
-            onClick={() => setActiveTab('guild')}
-            className={`flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-2xl transition-all duration-300 ${
-              activeTab === 'guild'
-                ? 'bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-lg shadow-purple-500/50 scale-110 tab-active -translate-y-2'
-                : 'text-gray-400 hover:text-white hover:bg-white/10 -translate-y-1'
-            }`}
-          >
-            <div className={`${activeTab === 'guild' ? 'bg-gradient-to-br from-purple-600 to-pink-700 rounded-full p-2 shadow-xl' : ''}`}>
-              <span className={`text-3xl ${activeTab === 'guild' ? 'icon-bounce' : ''}`}>
-                🏰
-              </span>
-            </div>
-            <span className="text-[10px] font-bold tracking-tight">
-              Guildas
-            </span>
-            {activeTab === 'guild' && (
-              <div className="absolute -top-3 w-12 h-1 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full"></div>
-            )}
-          </button>
-          
-          {/* Marketplace */}
-          <button
-            onClick={() => setActiveTab('marketplace')}
-            className={`flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-2xl transition-all duration-300 ${
-              activeTab === 'marketplace'
-                ? 'bg-gradient-to-br from-orange-500 to-amber-600 text-white shadow-lg shadow-orange-500/50 scale-105 tab-active'
-                : 'text-gray-400 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            <span className={`text-2xl ${activeTab === 'marketplace' ? 'icon-bounce' : ''}`}>
-              🏪
-            </span>
-            <span className="text-[10px] font-bold tracking-tight">
-              Marketplace
-            </span>
-            {activeTab === 'marketplace' && (
-              <div className="absolute -top-1 w-12 h-1 bg-gradient-to-r from-orange-400 to-amber-500 rounded-full"></div>
-            )}
-          </button>
-          
           {/* Ranking */}
           <button
             onClick={() => setActiveTab('ranking')}
@@ -1720,7 +1704,10 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
         />
       ))}
 
-      {/* 🐛 Debug Panel (só em DEV) */}
+      {/* � Sistema de Notificações Toast */}
+      <ToastContainer />
+
+      {/* �🐛 Debug Panel (só em DEV) */}
       <DebugPanel />
     </div>
   );
