@@ -6,6 +6,7 @@ import { getTierColor, getTierName, getTierGlow, canUnlockCompositeUpgrade, getM
 import { antiBot } from '../../utils/antiBot';
 import { uniqueItems, UniqueItem } from '../../utils/uniqueItems';
 import { categories } from '../../data/upgrades';
+import { formatNumber } from '../../utils/formatNumber';
 import { useGame } from '../../contexts/GameContext';
 import { useGameLoop } from '../../hooks/useGameLoop';
 import { useAutoSave } from '../../hooks/useAutoSave';
@@ -13,6 +14,8 @@ import { useUpgradeFilters } from '../../hooks/useUpgradeFilters';
 import { useAchievements } from '../../features/achievements/useAchievements';
 import { useHaptic } from '../../utils/haptics';
 import AchievementNotification from './AchievementNotification';
+import AchievementsPanel from './AchievementsPanel';
+import StoryMode from './StoryMode';
 import Marketplace from './Marketplace';
 import Ranking from './Ranking';
 import Guild from './Guild';
@@ -48,7 +51,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
   const [floatingCoins, setFloatingCoins] = useState<FloatingCoin[]>([]);
   const [clickEffect, setClickEffect] = useState(false);
   const [isMining, setIsMining] = useState(false);
-  const [activeTab, setActiveTab] = useState<'melhorias' | 'inventario' | 'marketplace' | 'ranking' | 'guild' | 'achievements'>('melhorias');
+  const [activeTab, setActiveTab] = useState<'melhorias' | 'inventario' | 'marketplace' | 'ranking' | 'guild' | 'achievements' | 'story'>('melhorias');
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [itemQuantities, setItemQuantities] = useState<Map<string, number>>(new Map());
   const [showBulkSellModal, setShowBulkSellModal] = useState(false);
@@ -70,7 +73,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
 
   const { filteredUpgrades } = useUpgradeFilters(state.upgrades, selectedCategory, searchTerm);
 
-  const { newAchievements } = useAchievements(state.gameState);
+  const { achievements, newAchievements } = useAchievements(state.gameState);
 
   // 🎯 Click manual com efeitos visuais, proteção anti-bot e HAPTIC FEEDBACK
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -414,14 +417,6 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
     return emojiMap[category] || '📦';
   };
 
-  // Formatar número (mostra número completo sem abreviação)
-  const formatNumber = (num: number): string => {
-    return num.toLocaleString('pt-BR', { 
-      minimumFractionDigits: 2, 
-      maximumFractionDigits: 2 
-    });
-  };
-
   console.log('🎨 FarmCoinGame: Pronto para renderizar UI');
 
   return (
@@ -744,6 +739,28 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
               >
                 🏆 Ranking
               </button>
+              
+              <button
+                onClick={() => setActiveTab('achievements')}
+                className={`flex-1 px-6 py-4 font-bold text-lg transition-all ${
+                  activeTab === 'achievements'
+                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-b-4 border-purple-700'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                🎯 Conquistas
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('story')}
+                className={`flex-1 px-6 py-4 font-bold text-lg transition-all ${
+                  activeTab === 'story'
+                    ? 'bg-gradient-to-r from-red-500 to-red-600 text-white border-b-4 border-red-700'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                📖 Modo História
+              </button>
             </div>
             
             {/* Indicador de Aba Ativa - Mobile */}
@@ -755,6 +772,8 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                   {activeTab === 'guild' && '🏰'}
                   {activeTab === 'marketplace' && '🏪'}
                   {activeTab === 'ranking' && '🏆'}
+                  {activeTab === 'achievements' && '🎯'}
+                  {activeTab === 'story' && '📖'}
                 </span>
                 <span className="text-white font-black text-xl">
                   {activeTab === 'melhorias' && 'Melhorias'}
@@ -762,6 +781,8 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                   {activeTab === 'guild' && 'Guildas'}
                   {activeTab === 'marketplace' && 'Marketplace'}
                   {activeTab === 'ranking' && 'Ranking'}
+                  {activeTab === 'achievements' && 'Conquistas'}
+                  {activeTab === 'story' && 'Modo História'}
                 </span>
               </div>
             </div>
@@ -1018,48 +1039,94 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                 return (
                   <div
                     key={upgrade.id}
-                    className={`glass-vibrant p-5 rounded-2xl border-2 transition-all duration-300 ${
+                    className={`relative p-5 rounded-2xl border-4 transition-all duration-300 shadow-xl ${
                       isLocked
-                        ? 'border-red-300/50'
+                        ? 'border-red-500/50 bg-gradient-to-br from-red-50/90 to-pink-50/90 backdrop-blur-sm'
                         : canBuy
-                        ? 'achievement-glow dopamine-hover border-yellow-300/50 hover:scale-[1.02] hover:-translate-y-1'
-                        : 'opacity-70 border-white/20'
+                        ? `${tierColors?.border || 'border-yellow-300'} ${tierColors?.bg || 'bg-gradient-to-br from-yellow-50/90 to-amber-50/90'} backdrop-blur-sm achievement-glow dopamine-hover hover:scale-[1.02] hover:-translate-y-1`
+                        : `opacity-70 ${tierColors?.border || 'border-gray-300'} ${tierColors?.bg || 'bg-gradient-to-br from-gray-50/90 to-gray-100/90'} backdrop-blur-sm`
                     } ${tierGlow}`}
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="text-6xl relative animate-float drop-shadow-2xl">
-                        {upgrade.icon}
-                        {isLocked && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl backdrop-blur-sm">
-                            <Lock className="w-8 h-8 text-white animate-pulse" />
+                    {/* Faixa de Raridade no Topo */}
+                    {upgrade.tier && tierColors && (
+                      <div className={`absolute top-0 left-0 right-0 h-2 ${tierColors.bg} rounded-t-xl`}></div>
+                    )}
+                    
+                    <div className="flex flex-col gap-3">
+                      {/* Header com ícone e título */}
+                      <div className="flex items-start gap-3">
+                        <div className="relative flex-shrink-0">
+                          <div className={`text-5xl animate-float drop-shadow-2xl ${tierColors?.text || ''}`}>
+                            {upgrade.icon}
                           </div>
-                        )}
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-black text-xl text-gray-900">
+                          {isLocked && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl backdrop-blur-sm">
+                              <Lock className="w-6 h-6 text-white animate-pulse" />
+                            </div>
+                          )}
+                          {upgrade.count && upgrade.count > 0 && (
+                            <div className={`absolute -top-2 -right-2 ${tierColors?.bg || 'bg-gradient-to-r from-blue-500 to-purple-500'} text-white rounded-full w-8 h-8 flex items-center justify-center text-xs font-black shadow-lg border-2 border-white`}>
+                              {upgrade.count}
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-black text-base sm:text-lg text-gray-900 truncate">
                             {upgrade.name}
-                            {upgrade.count ? ` (${upgrade.count})` : ''}
                           </h3>
                           {upgrade.tier && tierColors && (
-                            <span className={`px-3 py-1 rounded-full text-xs font-black ${tierColors.bg} ${tierColors.text} shadow-lg animate-pulse`}>
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black ${tierColors.bg} ${tierColors.text} shadow-md mt-1`}>
                               ✨ {getTierName(upgrade.tier)}
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-800 font-medium mt-1">
-                          {upgrade.description}
-                        </p>
-                        
-                        {missingUpgrades.length > 0 ? (
-                          <div className="mt-3 space-y-2">
-                            <div className="text-sm font-bold text-red-700 flex items-center gap-2">
-                              <Lock className="w-4 h-4" />
-                              <span>🔒 Requisitos Faltantes:</span>
-                            </div>
+                      </div>
+                      
+                      {/* Descrição */}
+                      <p className="text-xs sm:text-sm text-gray-800 font-medium line-clamp-2">
+                        {upgrade.description}
+                      </p>
+                      
+                      {/* Informações de Stats */}
+                      {missingUpgrades.length === 0 && (
+                        <div className="flex items-center justify-between gap-3 p-2 bg-white/50 rounded-lg">
+                          <div className="flex-1">
+                            <p className="text-[10px] text-gray-600 font-semibold">CUSTO</p>
+                            <p className="font-black text-sm sm:text-base bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+                              💰 {formatNumber(upgrade.cost || 0)}
+                            </p>
+                          </div>
+                          <div className="w-px h-8 bg-gray-300"></div>
+                          <div className="flex-1">
+                            <p className="text-[10px] text-gray-600 font-semibold">RENDA/s</p>
+                            <p className="font-black text-sm sm:text-base bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                              📈 +{formatNumber(upgrade.income || 0)}
+                            </p>
+                          </div>
+                          {(upgrade.count ?? 0) > 0 && (
+                            <>
+                              <div className="w-px h-8 bg-gray-300"></div>
+                              <div className="flex-1">
+                                <p className="text-[10px] text-gray-600 font-semibold">TOTAL/s</p>
+                                <p className="font-black text-sm sm:text-base bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                  💎 {formatNumber((upgrade.income || 0) * (upgrade.count ?? 0))}
+                                </p>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Requisitos Faltantes */}
+                      {missingUpgrades.length > 0 && (
+                        <div className="mt-3 space-y-2">
+                          <div className="text-sm font-bold text-red-700 flex items-center gap-2">
+                            <Lock className="w-4 h-4" />
+                            <span>🔒 Requisitos Faltantes:</span>
+                          </div>
                             
-                            {/* Lista de itens faltantes com botões de compra */}
+                          {/* Lista de itens faltantes com botões de compra */}
                             <div className="space-y-2">
                               {missingUpgrades.map((missingUpg: any) => {
                                 const canBuyReq = state.gameState.coins >= (missingUpg.baseCost || 0);
@@ -1107,18 +1174,9 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                               })}
                             </div>
                           </div>
-                        ) : (
-                          <div className="flex gap-4 mt-2 text-sm">
-                            <span className="font-black text-lg bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">
-                              💰 {formatNumber(upgrade.cost || 0)}
-                            </span>
-                            <span className="font-black text-lg bg-gradient-to-r from-green-500 via-emerald-600 to-teal-600 bg-clip-text text-transparent gradient-text-readable">
-                              📈 +{formatNumber(upgrade.income || 0)}/s
-                            </span>
-                          </div>
                         )}
-                      </div>
-
+                      
+                      {/* Botão de Compra */}
                       <button
                         onClick={() => handleBuyUpgrade(upgrade.id)}
                         disabled={!canBuy || isLocked || !hasRequirementsContinuous}
@@ -1193,6 +1251,27 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                     currentCoins={state.gameState.coins}
                     currentPerSecond={state.gameState.perSecond}
                     currentUpgradesOwned={upgradeStats.owned}
+                  />
+                </>
+              )}
+              
+              {activeTab === 'achievements' && (
+                <>
+                  <AchievementsPanel 
+                    achievements={achievements}
+                    gameState={state.gameState}
+                  />
+                </>
+              )}
+              
+              {activeTab === 'story' && (
+                <>
+                  <StoryMode
+                    gameState={state.gameState}
+                    onClaimReward={(chapterId) => {
+                      // TODO: Implementar lógica de recompensas
+                      console.log('Recompensa reivindicada do capítulo:', chapterId);
+                    }}
                   />
                 </>
               )}

@@ -10,6 +10,7 @@ import {
   cancelMarketplaceListing,
 } from '../../firebase/firestore';
 import { getTierColor, getTierName, getTierGlow } from '../../utils/tierSystem';
+import { formatNumber } from '../../utils/formatNumber';
 
 // arquivo marcado com ts-nocheck para evitar erros de tipagem JSX locais
 
@@ -254,10 +255,6 @@ export default function Marketplace({
     setPricePerUnit(0);
     setAcceptOffers(false);
     setMinOfferPrice(0);
-  };
-
-  const formatNumber = (num: number) => {
-    return num.toLocaleString('pt-BR');
   };
 
   return (

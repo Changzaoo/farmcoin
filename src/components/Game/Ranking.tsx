@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/config';
+import { formatNumber } from '../../utils/formatNumber';
 
 interface RankingEntry {
   uid: string;
@@ -114,13 +115,6 @@ export default function Ranking({
       unsubscribe();
     };
   }, [activeTab, currentUserId]);
-
-  const formatNumber = (num: number): string => {
-    return num.toLocaleString('pt-BR', { 
-      minimumFractionDigits: 2, 
-      maximumFractionDigits: 2 
-    });
-  };
 
   const getMedalEmoji = (position: number): string => {
     if (position === 1) return '🥇';
