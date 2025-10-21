@@ -462,48 +462,47 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
       )}
 
       {/* Header Stats */}
-      <div className="max-w-7xl mx-auto mb-mobile">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-mobile">
+      <div className="max-w-7xl mx-auto mb-6 px-2 sm:px-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           {/* Moedas Atuais */}
-          <div className="glass-vibrant rounded-2xl p-mobile sm:p-6 shadow-2xl achievement-glow dopamine-hover">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-mobile-xs sm:text-sm text-gray-900/90 mb-1 font-semibold">💰 Moedas</p>
-                <p className="text-mobile-lg sm:text-4xl font-black bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">
+          <div className="glass-vibrant rounded-2xl p-4 sm:p-6 shadow-2xl achievement-glow dopamine-hover">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm text-gray-900/90 mb-1 font-semibold truncate">💰 Moedas</p>
+                <p className="text-xl sm:text-4xl font-black bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable truncate">
                   {formatNumber(state.gameState.coins)}
                 </p>
               </div>
-              <div className="text-4xl sm:text-5xl animate-float filter drop-shadow-2xl">
+              <div className="text-3xl sm:text-5xl animate-float filter drop-shadow-2xl flex-shrink-0">
                 💎
               </div>
             </div>
           </div>
 
           {/* Renda Passiva */}
-          <div className="glass-vibrant rounded-2xl p-mobile sm:p-6 shadow-2xl achievement-glow dopamine-hover">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <p className="text-mobile-xs sm:text-sm text-gray-900/90 mb-1 font-semibold">📈 Por Segundo</p>
-                <p className="text-mobile-lg sm:text-4xl font-black bg-gradient-to-r from-green-500 via-emerald-600 to-teal-600 bg-clip-text text-transparent gradient-text-readable">
+          <div className="glass-vibrant rounded-2xl p-4 sm:p-6 shadow-2xl achievement-glow dopamine-hover">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm text-gray-900/90 mb-1 font-semibold truncate">📈 Por Segundo</p>
+                <p className="text-xl sm:text-4xl font-black bg-gradient-to-r from-green-500 via-emerald-600 to-teal-600 bg-clip-text text-transparent gradient-text-readable truncate">
                   {formatNumber(state.gameState.perSecond)}
                 </p>
                 
                 {/* Display de itens geradores de moeda */}
                 {incomeGeneratingItems.length > 0 && (
                   <div className="mt-3">
-                    <div className="flex items-center flex-wrap gap-1">
+                    <div className="flex items-center flex-wrap gap-1.5">
                       {/* Mostrar até 20 itens ou todos se expandido */}
                       {(showAllIncomeItems ? incomeGeneratingItems : incomeGeneratingItems.slice(0, 20)).map((item, index) => (
                         <div
                           key={item.id}
                           className="relative group cursor-pointer transition-transform hover:scale-110 hover:z-10"
                           style={{
-                            marginLeft: index > 0 ? '-12px' : '0',
                             zIndex: incomeGeneratingItems.length - index
                           }}
                           title={`${item.name} - ${item.count}x (+${formatNumber((item.income || 0) * (item.count || 0))}/s)`}
                         >
-                          <div className="text-2xl bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md border-2 border-green-200 group-hover:border-green-400 transition-all">
+                          <div className="text-xl bg-white rounded-full w-9 h-9 flex items-center justify-center shadow-md border-2 border-green-200 group-hover:border-green-400 transition-all">
                             {item.icon}
                           </div>
                           
@@ -520,10 +519,10 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                       {incomeGeneratingItems.length > 20 && (
                         <button
                           onClick={() => setShowAllIncomeItems(!showAllIncomeItems)}
-                          className="relative group cursor-pointer transition-all hover:scale-110 hover:z-10 ml-1"
+                          className="relative group cursor-pointer transition-all hover:scale-110 hover:z-10"
                           style={{ zIndex: 0 }}
                         >
-                          <div className="text-xl bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-md border-2 border-purple-300 hover:border-purple-400 font-bold transition-all">
+                          <div className="text-base bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-md border-2 border-purple-300 hover:border-purple-400 font-bold transition-all">
                             {showAllIncomeItems ? '−' : `+${incomeGeneratingItems.length - 20}`}
                           </div>
                           
@@ -537,29 +536,29 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                   </div>
                 )}
               </div>
-              <TrendingUp className="w-12 h-12 text-green-500" />
+              <TrendingUp className="w-10 h-10 sm:w-12 sm:h-12 text-green-500 flex-shrink-0" />
             </div>
           </div>
 
           {/* Upgrades Info */}
-          <div className="glass-vibrant rounded-2xl p-6 shadow-2xl achievement-glow dopamine-hover">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <p className="text-sm text-gray-900/90 mb-1 font-semibold">🎁 Upgrades</p>
-                <p className="text-4xl font-black bg-gradient-to-r from-blue-500 via-cyan-600 to-purple-600 bg-clip-text text-transparent gradient-text-readable">
+          <div className="glass-vibrant rounded-2xl p-4 sm:p-6 shadow-2xl achievement-glow dopamine-hover col-span-2 md:col-span-1">
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm text-gray-900/90 mb-1 font-semibold truncate">🎁 Upgrades</p>
+                <p className="text-xl sm:text-4xl font-black bg-gradient-to-r from-blue-500 via-cyan-600 to-purple-600 bg-clip-text text-transparent gradient-text-readable truncate">
                   {upgradeStats.owned}/{upgradeStats.total}
                 </p>
               </div>
-              <div className="text-5xl animate-float filter drop-shadow-2xl">
+              <div className="text-3xl sm:text-5xl animate-float filter drop-shadow-2xl flex-shrink-0">
                 🎮
               </div>
             </div>
-            <div className="flex gap-2 text-xs">
-              <span className="px-3 py-1 bg-gradient-to-r from-green-400 to-emerald-400 text-white rounded-full font-bold shadow-lg">
+            <div className="flex flex-wrap gap-2 text-xs sm:text-sm mt-3">
+              <span className="px-2.5 py-1 bg-gradient-to-r from-green-400 to-emerald-400 text-white rounded-full font-bold shadow-lg whitespace-nowrap">
                 ✅ {upgradeStats.available}
               </span>
               {upgradeStats.locked > 0 && (
-                <span className="px-3 py-1 bg-gradient-to-r from-red-400 to-pink-400 text-white rounded-full font-bold shadow-lg">
+                <span className="px-2.5 py-1 bg-gradient-to-r from-red-400 to-pink-400 text-white rounded-full font-bold shadow-lg whitespace-nowrap">
                   🔒 {upgradeStats.locked}
                 </span>
               )}
@@ -568,11 +567,11 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 px-2 sm:px-4">
         {/* Área de Click */}
         <div className="lg:col-span-1">
-          <div className="glass-vibrant rounded-3xl p-8 shadow-2xl achievement-glow">
-            <h2 className="text-3xl font-black text-center mb-6 bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">
+          <div className="glass-vibrant rounded-3xl p-6 sm:p-8 shadow-2xl achievement-glow">
+            <h2 className="text-2xl sm:text-3xl font-black text-center mb-4 sm:mb-6 bg-gradient-to-r from-yellow-500 via-amber-600 to-orange-600 bg-clip-text text-transparent gradient-text-readable">
               ⛏️ Fazenda
             </h2>
             
@@ -588,6 +587,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                   flex items-center justify-center
                   border-4 border-yellow-300/60
                   cursor-pointer select-none
+                  shadow-xl hover:shadow-2xl
                   ${isMining ? 'btn-mine-active' : 'btn-mine-idle'}
                 `}
               >
@@ -931,21 +931,21 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
               /* ========== LOJA DE UPGRADES ========== */
               <>
                 {/* Filtros */}
-                <div className="mb-6 space-y-4">
+                <div className="mb-4 sm:mb-6 space-y-3 sm:space-y-4">
                   {/* Busca */}
-                  <div className="relative glass-vibrant rounded-2xl p-1">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600 w-6 h-6" />
+                  <div className="relative glass-vibrant rounded-xl sm:rounded-2xl p-1">
+                    <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-600 w-5 h-5 sm:w-6 sm:h-6" />
                     <input
                       type="text"
-                      placeholder="🔎 Buscar melhorias mágicas..."
+                      placeholder="🔎 Buscar melhorias..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-14 pr-4 py-4 rounded-xl bg-white/10 backdrop-blur-sm border-2 border-white/30 text-gray-900 placeholder-gray-600 font-semibold focus:border-yellow-300 focus:ring-4 focus:ring-yellow-400/50 outline-none transition-all"
+                      className="w-full pl-10 sm:pl-14 pr-3 sm:pr-4 py-3 sm:py-4 rounded-lg sm:rounded-xl bg-white/10 backdrop-blur-sm border-2 border-white/30 text-sm sm:text-base text-gray-900 placeholder-gray-600 font-semibold focus:border-yellow-300 focus:ring-4 focus:ring-yellow-400/50 outline-none transition-all"
                     />
                   </div>
 
                   {/* Categorias */}
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-2 sm:gap-3">
                     {categories.map(category => {
                       const availableCount = getCategoryCount(category);
                       const emoji = getCategoryEmoji(category);
@@ -953,16 +953,16 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
                         <button
                           key={category}
                           onClick={() => setSelectedCategory(category)}
-                          className={`px-5 py-3 rounded-2xl font-black text-sm transition-all duration-200 flex items-center gap-2 shadow-lg ${
+                          className={`px-3 sm:px-5 py-2 sm:py-3 rounded-xl sm:rounded-2xl font-black text-xs sm:text-sm transition-all duration-200 flex items-center gap-1.5 sm:gap-2 shadow-lg ${
                             selectedCategory === category
-                              ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 text-white scale-110 shadow-[0_0_20px_rgba(16,185,129,0.5)]'
+                              ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 text-white scale-105 sm:scale-110 shadow-[0_0_20px_rgba(16,185,129,0.5)]'
                               : 'glass-vibrant text-gray-900 hover:scale-105 dopamine-hover'
                           }`}
                         >
-                          <span className="text-xl">{emoji}</span>
-                          <span>{category}</span>
+                          <span className="text-base sm:text-xl">{emoji}</span>
+                          <span className="whitespace-nowrap">{category}</span>
                           {availableCount > 0 && (
-                            <span className={`px-2.5 py-1 rounded-full text-xs font-black shadow-lg animate-pulse ${
+                            <span className={`px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-black shadow-lg animate-pulse whitespace-nowrap ${
                               selectedCategory === category
                                 ? 'bg-white/30 text-gray-900'
                                 : 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white'
@@ -977,7 +977,7 @@ export const FarmCoinGame: React.FC<FarmCoinGameProps> = ({ uid }) => {
             </div>
 
             {/* Lista de Upgrades */}
-            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 max-h-[700px] overflow-y-auto pr-2 custom-scrollbar">
               {filteredUpgrades.map(upgrade => {
                 const canBuy = state.gameState.coins >= (upgrade.cost || 0);
                 const isLocked = upgrade.isComposite && !upgrade.unlocked;
